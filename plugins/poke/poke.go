@@ -1,6 +1,7 @@
 package poke
 
 import (
+
 	"math/rand"
 	"regexp"
 	"strconv"
@@ -35,11 +36,13 @@ config-plugin配置项：
 不准戳我！[mute 0.5] ：当随机选取到这一回复时，会有50%的概率将其禁言2分钟`,
 }
 
+
 func init() {
 	proxy = manager.RegisterPlugin(info)
 	if proxy == nil {
 		return
 	}
+
 	proxy.OnNotice(func(ctx *zero.Ctx) bool {
 		return ctx.Event.NoticeType == "notify" && ctx.Event.SubType == "poke" && ctx.Event.TargetID == ctx.Event.SelfID
 	}).SetBlock(true).ThirdPriority().Handle(pokeHandler)
@@ -120,3 +123,4 @@ func dealActions(ctx *zero.Ctx, action string, rate float64) {
 		}
 	}
 }
+
