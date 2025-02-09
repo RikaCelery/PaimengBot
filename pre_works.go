@@ -172,7 +172,11 @@ func flushMainConfig(configPath string, configFileName string) error {
 	}
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) { // 配置文件发生变更之后会调用的回调函数
-		zero.BotConfig.SuperUsers = viper.GetStringSlice("superuser")
+		zero.BotConfig.SuperUsers = []int64{}
+		for _, id := range viper.GetIntSlice("superuser") {
+			zero.BotConfig.SuperUsers = append(zero.BotConfig.SuperUsers, int64(id))
+		}
+		zero.BotConfig.CommandPrefix = viper.GetString("command_prefix")
 		zero.BotConfig.NickName = []string{viper.GetString("nickname")}
 		_ = setupLogger()
 		log.Infof("reload main config from %v", e.Name)

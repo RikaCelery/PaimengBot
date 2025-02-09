@@ -63,13 +63,18 @@ func main() {
 		log.Fatal("FlushConfig err: ", err)
 	}
 	// 启动服务
-	log.Infof("读取超级管理员列表：%v", viper.GetStringSlice("superuser"))
-	zero.RunAndBlock(zero.Config{
+	log.Infof("读取超级管理员列表：%v", viper.GetIntSlice("superuser"))
+	config := zero.Config{
 		NickName:      []string{viper.GetString("nickname")},
-		CommandPrefix: "",
-		SuperUsers:    viper.GetStringSlice("superuser"),
+		CommandPrefix: viper.GetString("command_prefix"),
 		Driver: []zero.Driver{
 			driver.NewWebSocketClient(viper.GetString("server.address"), viper.GetString("server.token")),
 		},
+	}
+	for _, id := range viper.GetIntSlice("superuser") {
+		config.SuperUsers = append(config.SuperUsers, int64(id))
+	}
+	zero.RunAndBlock(&config, func() {
+		log.Infoln(zero.BotConfig.NickName[0], "启动成功～")
 	})
 }
