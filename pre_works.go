@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -173,8 +174,12 @@ func flushMainConfig(configPath string, configFileName string) error {
 	viper.WatchConfig()
 	viper.OnConfigChange(func(e fsnotify.Event) { // 配置文件发生变更之后会调用的回调函数
 		zero.BotConfig.SuperUsers = []int64{}
-		for _, id := range viper.GetIntSlice("superuser") {
-			zero.BotConfig.SuperUsers = append(zero.BotConfig.SuperUsers, int64(id))
+		for _, sid := range viper.GetStringSlice("superuser") {
+			id, err := strconv.ParseInt(sid, 10, 64)
+			if err != nil {
+				panic(err)
+			}
+			zero.BotConfig.SuperUsers = append(zero.BotConfig.SuperUsers, id)
 		}
 		zero.BotConfig.CommandPrefix = viper.GetString("command_prefix")
 		zero.BotConfig.NickName = []string{viper.GetString("nickname")}
