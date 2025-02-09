@@ -177,7 +177,7 @@ func flushMainConfig(configPath string, configFileName string) error {
 		for _, sid := range viper.GetStringSlice("superuser") {
 			id, err := strconv.ParseInt(sid, 10, 64)
 			if err != nil {
-				panic(err)
+				log.Warnln("读取更新的超级用户出错", err)
 			}
 			zero.BotConfig.SuperUsers = append(zero.BotConfig.SuperUsers, id)
 		}
