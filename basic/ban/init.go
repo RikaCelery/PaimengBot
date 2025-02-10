@@ -48,6 +48,8 @@ func init() {
 	proxy.OnCommands([]string{"封禁", "ban", "Ban"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(banUser)
 	proxy.OnCommands([]string{"解封", "unban", "Unban"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(unbanUser)
 	proxy.OnCommands([]string{"黑名单"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(showBlack)
+	// 仅超级用户可以使用白名单查看某个白名单模式群的启用功能
+	proxy.OnCommands([]string{"白名单"}, zero.OnlyToMe, zero.SuperUserPermission).SetBlock(true).FirstPriority().Handle(showWhite)
 	proxy.AddConfig("tip", false)
 	manager.AddPreHook(checkPluginStatus)
 }

@@ -141,6 +141,7 @@ func GetGroupRunningMode(groupID int64) bool {
 	return preGroup.WhiteMode
 }
 
+// GetUserRunningMode 获取用户运行模式（白名单模式为true，黑名单为false）
 func GetUserRunningMode(userID int64) bool {
 	var preUser dao.UserSetting
 	proxy.GetDB().Take(&preUser, userID)

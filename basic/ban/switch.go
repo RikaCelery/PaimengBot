@@ -98,6 +98,9 @@ func setModeWhite(ctx *zero.Ctx) {
 			return
 		}
 		preGroup.WhiteMode = true
+		if preGroup.WhitePlugins == "" {
+			preGroup.WhitePlugins = "auth|ban|event|help|invite|limiter|nickname|sc"
+		}
 		if err := proxy.GetDB().Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "id"}},
 			DoUpdates: clause.AssignmentColumns([]string{"white_mode"}), // Upsert
@@ -111,8 +114,15 @@ func setModeWhite(ctx *zero.Ctx) {
 		//私聊如果是超级管理员设置全局
 		if utils.IsSuperUser(ctx.Event.UserID) {
 			var preUser dao.UserSetting
-			if err := proxy.GetDB().Model(&preUser).Where("id = ?", 0).Update("white_mode", false).Error; err != nil {
-				log.Errorf("setModeBlack err: %v", err)
+			preUser.WhiteMode = true
+			if preUser.WhitePlugins == "" {
+				preUser.WhitePlugins = "auth|ban|event|help|invite|limiter|nickname|sc"
+			}
+			if err := proxy.GetDB().Clauses(clause.OnConflict{
+				Columns:   []clause.Column{{Name: "id"}},
+				DoUpdates: clause.AssignmentColumns([]string{"white_mode", "white_plugins"}), // Upsert
+			}).Create(&preUser).Error; err != nil {
+				log.Errorf("setModeWhite err: %v", err)
 				ctx.Send("失败了...")
 				return
 			}
@@ -135,9 +145,6 @@ func setModeBlack(ctx *zero.Ctx) {
 			return
 		}
 		preGroup.WhiteMode = false
-		if preGroup.WhitePlugins == "" {
-			preGroup.WhitePlugins = "auth|ban|event|help|invite|limiter|nickname|sc"
-		}
 		if err := proxy.GetDB().Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "id"}},
 			DoUpdates: clause.AssignmentColumns([]string{"white_mode"}), // Upsert
