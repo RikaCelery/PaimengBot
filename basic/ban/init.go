@@ -43,6 +43,8 @@ func init() {
 	}
 	proxy.OnCommands([]string{"开启"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(openPlugin)
 	proxy.OnCommands([]string{"关闭"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(closePlugin)
+	proxy.OnCommands([]string{"白名单模式"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(setModeWhite)
+	proxy.OnCommands([]string{"黑名单模式"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(setModeBlack)
 	proxy.OnCommands([]string{"封禁", "ban", "Ban"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(banUser)
 	proxy.OnCommands([]string{"解封", "unban", "Unban"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(unbanUser)
 	proxy.OnCommands([]string{"黑名单"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(showBlack)

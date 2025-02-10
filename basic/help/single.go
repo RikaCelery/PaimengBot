@@ -9,7 +9,7 @@ import (
 	"github.com/wdvxdr1123/ZeroBot/message"
 )
 
-func formSingleHelpMsg(cmd string, isSuper, isPrimary bool, priority int, blackKeys map[string]struct{}) message.MessageSegment {
+func formSingleHelpMsg(cmd string, isSuper, isPrimary bool, priority int, white bool, blackKeys map[string]struct{}) message.MessageSegment {
 	plugins := manager.GetAllPluginConditions()
 	// 寻找插件
 	var selected *manager.PluginCondition
@@ -31,7 +31,10 @@ func formSingleHelpMsg(cmd string, isSuper, isPrimary bool, priority int, blackK
 		return message.Text("没有找到这个功能哦，或在群聊中无法查看功能详情")
 	}
 	// 插件状态检查
-	if _, ok := blackKeys[selected.Key]; ok {
+	if _, ok := blackKeys[selected.Key]; !white && ok {
+		return message.Text("功能被禁用中")
+	}
+	if _, ok := blackKeys[selected.Key]; white && !ok {
 		return message.Text("功能被禁用中")
 	}
 	// 生成图片 名称|普通用法|超级用户用法
