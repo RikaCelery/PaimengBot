@@ -69,7 +69,7 @@ func init() {
 	proxy.OnRegex(`^删除第(\d+)?个问答`).SetBlock(true).SetPriority(7).Handle(delDialogue)
 	proxy.OnCommands([]string{"已有对话", "已有问答"}).SetBlock(true).SetPriority(5).Handle(showDialogue)
 
-	proxy.OnMessage(zero.OnlyToMe).SetBlock(true).SetPriority(10).Handle(dealChat)
+	proxy.OnMessage(zero.OnlyToMe, dealPreProcess).SetBlock(true).SetPriority(10).Handle(dealChat)
 
 	proxy.AddConfig("default.self", "我是派蒙，最好的伙伴！\n才不是应急食品呢")
 	proxy.AddConfig("default.donotknow", "{nickname}不知道哦")
@@ -83,6 +83,29 @@ func init() {
 	proxy.AddConfig("ai.response", "")
 	proxy.AddConfig("ai.tip", "来自AI问答：\\n")
 	proxy.AddConfig("ai.timeout", "10s")
+}
+
+func dealPreProcess(ctx *zero.Ctx) bool {
+
+	question := preprocessQuestion(ctx.MessageString())
+	// 优先尝试自定义问答
+	msg := DIYDialogue(ctx, question)
+	if len(msg) > 0 {
+		ctx.State["deal_msg"] = msg
+		return true
+	}
+	// 自定义问答无内容，则仅处理OnlyToMe且非空消息
+	if !ctx.Event.IsToMe || len(question) == 0 {
+		return false
+	}
+	for _, deal := range dealers {
+		msg = deal(ctx, question)
+		if len(msg) > 0 {
+			ctx.State["deal_msg"] = msg
+			return true
+		}
+	}
+	return false
 }
 
 func addDialogue(ctx *zero.Ctx) {

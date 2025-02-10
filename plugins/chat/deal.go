@@ -23,29 +23,9 @@ var dealers = []Dealer{ // 在此添加新的Dealer即可，其它事宜会自�
 }
 
 func dealChat(ctx *zero.Ctx) {
-	question := preprocessQuestion(ctx.MessageString())
-	// 优先尝试自定义问答
-	msg := DIYDialogue(ctx, question)
-	if len(msg) > 0 {
-		sendChatMessage(ctx, msg)
-		return
-	}
-	defer func() { // 若并没有回复消息，则无需统计
-		if len(msg) == 0 {
-			utils.SetNotStatistic(ctx)
-		}
-	}()
-	// 自定义问答无内容，则仅处理OnlyToMe且非空消息
-	if !ctx.Event.IsToMe || len(question) == 0 {
-		return
-	}
-	for _, deal := range dealers {
-		msg = deal(ctx, question)
-		if len(msg) > 0 {
-			sendChatMessage(ctx, msg)
-			return
-		}
-	}
+	msg := ctx.State["deal_msg"].(message.Message)
+	sendChatMessage(ctx, msg)
+	return
 }
 
 var singleCQTypeSet = map[string]struct{}{
