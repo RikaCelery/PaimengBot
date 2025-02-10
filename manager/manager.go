@@ -352,7 +352,7 @@ func (manager *PluginManager) preHandlerWithHook(ctx *zero.Ctx) bool {
 		err := hook.fn(&proxy.c, ctx)
 		if err != nil {
 			log.Infof("[End] <%s> 插件处理被 pre hook 取消，原因: %v", proxy.key, err)
-			panic(consts.AbortLogIgnoreSymbol + err.Error()) // TODO 由于暂时没有Abort机制，只能使用panic来阻断执行
+			return false
 		}
 	}
 	log.Infof("[Begin] 前置Hook检查完毕，正式开始被 <%s> 插件处理", proxy.key)
