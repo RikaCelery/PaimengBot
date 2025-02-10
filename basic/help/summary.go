@@ -18,20 +18,23 @@ import (
 const defaultClassify = "一般功能"
 const passiveClassify = "被动"
 
-func formSummaryHelpMsg(isSuper, isPrimary bool, priority int, blackKeys map[string]struct{}) message.Segment {
+func formSummaryHelpMsg(isSuper, isPrimary bool, priority int, white bool, keys map[string]struct{}) message.Segment {
 	plugins := manager.GetAllPluginConditions()
 	// 获取所有插件信息
 	var helps helpSummaryMap = make(map[string]*blockInfo)
 	for _, plugin := range plugins {
 		// 过滤
-		if !checkPluginCouldShow(plugin, isSuper, isPrimary, priority, blackKeys) {
+		if !checkPluginCouldShow(plugin, isSuper, isPrimary, priority, keys) {
 			continue
 		}
 		// 生成项目(一个插件)
 		var item blockItem
 		item.name = plugin.Name
 		item.color = "black"
-		if _, ok := blackKeys[plugin.Key]; ok {
+		if _, ok := keys[plugin.Key]; white && !ok {
+			item.disabled = true // 插件对该用户或群被禁用
+		}
+		if _, ok := keys[plugin.Key]; !white && ok {
 			item.disabled = true // 插件对该用户或群被禁用
 		}
 		if plugin.IsPassive && len(plugin.Classify) != 0 && plugin.Classify != passiveClassify {
