@@ -2,11 +2,13 @@ package help
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/RicheyJang/PaimengBot/basic/ban"
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils/images"
 	log "github.com/sirupsen/logrus"
+	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
 )
 
@@ -63,6 +65,7 @@ func formSingleHelpMsg(cmd string, isSuper, isPrimary bool, priority int, userID
 	if isSuper && len(selected.SuperUsage) > 0 {
 		usages += "\n超级用户额外用法：\n" + selected.SuperUsage
 	}
+	usages = strings.ReplaceAll(usages, "{cmd}", zero.BotConfig.CommandPrefix)
 	// 计算图片大小并初始化
 	fontSize, lineSpace := 20.0, 1.3
 	w, h := images.MeasureStringDefault(usages, fontSize, lineSpace)
