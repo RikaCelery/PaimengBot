@@ -64,11 +64,13 @@ func formSingleHelpMsg(cmd string, isSuper, isPrimary bool, priority int, userID
 	if isSuper && isPrimary { // Key
 		classify = "（插件Key：" + selected.Key + "）"
 	}
-	usages := name + classify + "\n" + selected.Usage
+	normalUsage := strings.ReplaceAll(selected.Usage, "{cmd}", zero.BotConfig.CommandPrefix)
+	superUsage := strings.ReplaceAll(selected.SuperUsage, "{cmd}", zero.BotConfig.CommandPrefix)
+	usages := name + classify + "\n" + normalUsage
 	if isSuper && len(selected.SuperUsage) > 0 {
-		usages += "\n超级用户额外用法：\n" + selected.SuperUsage
+		usages += "\n超级用户额外用法：\n" + superUsage
 	}
-	usages = strings.ReplaceAll(usages, "{cmd}", zero.BotConfig.CommandPrefix)
+
 	// 计算图片大小并初始化
 	fontSize, lineSpace := 20.0, 1.3
 	w, h := images.MeasureStringDefault(usages, fontSize, lineSpace)
@@ -83,17 +85,17 @@ func formSingleHelpMsg(cmd string, isSuper, isPrimary bool, priority int, userID
 	// 普通用法
 	_, nameH := images.MeasureStringDefault(name+classify, fontSize, lineSpace)
 	img.PasteLine(10, 10+nameH+10, w-10, 10+nameH+10, 2, "gray")
-	err = img.PasteStringDefault(selected.Usage, fontSize, lineSpace, 10, 10+nameH+20, w)
+	err = img.PasteStringDefault(normalUsage, fontSize, lineSpace, 10, 10+nameH+20, w)
 	if err != nil {
 		log.Warnf("formSingleHelpMsg img err: %v", err)
 		return message.Text(usages)
 	}
 	// 超级用户用法
-	if isSuper && len(selected.SuperUsage) > 0 {
-		_, usageH := images.MeasureStringDefault(selected.Usage, fontSize, lineSpace)
+	if isSuper && len(superUsage) > 0 {
+		_, usageH := images.MeasureStringDefault(normalUsage, fontSize, lineSpace)
 		img.PasteLine(10, 10+nameH+20+usageH+10, w-10, 10+nameH+20+usageH+10, 2, "green")
 		_ = img.PasteStringDefault("S", fontSize-5, 1, w-20, 10+nameH+20+usageH, fontSize)
-		superUsage := "超级用户额外用法：\n" + selected.SuperUsage
+		superUsage := "超级用户额外用法：\n" + superUsage
 		err = img.PasteStringDefault(superUsage, fontSize, lineSpace, 10, 10+nameH+20+usageH+20, w)
 		if err != nil {
 			log.Warnf("formSingleHelpMsg img err: %v", err)
