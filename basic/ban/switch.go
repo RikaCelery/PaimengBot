@@ -6,9 +6,10 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm/clause"
+
 	"github.com/RicheyJang/PaimengBot/basic/auth"
 	"github.com/RicheyJang/PaimengBot/basic/dao"
-	"gorm.io/gorm/clause"
 
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils"
@@ -130,6 +131,10 @@ func switchPlugin(status bool, ctx *zero.Ctx) {
 			log.Errorf("switchPlugin err: %v", err)
 			return
 		}
+		if isImportant(plugin) {
+			ctx.Send("这个插件很重要，你不能关闭！")
+			return
+		}
 		if groupID > 0 {
 			dealGroupPluginStatus(ctx, status, groupID, plugin, period)
 		} else {
@@ -173,7 +178,7 @@ func setModeWhite(ctx *zero.Ctx) {
 		}
 		ctx.Send(fmt.Sprintf("群%d运行模式切换为白名单", ctx.Event.GroupID))
 	} else {
-		//私聊如果是超级管理员设置全局
+		// 私聊如果是超级管理员设置全局
 		if utils.IsSuperUser(ctx.Event.UserID) {
 			var preUser dao.UserSetting
 			preUser.WhiteMode = true
@@ -217,10 +222,10 @@ func setModeBlack(ctx *zero.Ctx) {
 		}
 		ctx.Send(fmt.Sprintf("群%d运行模式切换为黑名单", ctx.Event.GroupID))
 	} else {
-		//私聊如果是超级管理员设置全局
+		// 私聊如果是超级管理员设置全局
 		if utils.IsSuperUser(ctx.Event.UserID) {
 			var preUser dao.UserSetting
-			if err := proxy.GetDB().Model(&preUser).Where("id = ?", 0).Update("white_mode", true).Error; err != nil {
+			if err := proxy.GetDB().Model(&preUser).Where("id = ?", 0).Update("white_mode", false).Error; err != nil {
 				log.Errorf("setModeBlack err: %v", err)
 				ctx.Send("失败了...")
 				return

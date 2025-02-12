@@ -53,6 +53,12 @@ func formSummaryHelpMsg(isSuper, isPrimary bool, priority int, userID int64, gro
 		}
 		if _, ok := globalBan[plugin.Key]; ok {
 			item.disabled = true
+			item.name += "（全局禁用）"
+		}
+
+		if groupID != 0 && !ban.CheckPluginWhiteList(plugin, groupID) || groupID == 0 && !ban.CheckPluginWhiteList(plugin, -userID) {
+			item.disabled = true
+			item.name += "（不在白名单）"
 		}
 		if plugin.IsPassive && len(plugin.Classify) != 0 && plugin.Classify != passiveClassify {
 			item.name += "（被动）" // 被动且已有其它分类

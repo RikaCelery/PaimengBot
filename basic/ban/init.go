@@ -2,10 +2,14 @@ package ban
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
+	"gorm.io/gorm/clause"
+
 	"github.com/RicheyJang/PaimengBot/basic/auth"
+	"github.com/RicheyJang/PaimengBot/basic/dao"
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils"
 	log "github.com/sirupsen/logrus"
@@ -18,21 +22,30 @@ var info = manager.PluginInfo{
 	Name: "功能开关",
 	Usage: `
 用法：
-	*只有本群最高权限群管理员在群聊中才可触发*
-	开启\关闭[功能] [时长]?：将开启\关闭本群的指定功能，时长为可选项，形式参照示例
-	封禁[用户ID] [功能]? [时长]?：封禁指定用户使用指定功能（当指定功能时）或全部功能，时长为可选项，形式参照示例
-	解封[用户ID] [功能]?：解封指定用户使用指定功能，时长为可选项，形式参照示例
-	黑名单：获取所有被封禁用户的被封禁功能列表
+	{cmd}开启[功能] [时长]?：将开启本群的指定功能，时长为可选项，形式参照示例
+	{cmd}关闭[功能] [时长]?：将关闭本群的指定功能，时长为可选项，形式参照示例
+	{cmd}全部开启[时长]?：将开启本群的全部功能，时长为可选项，形式参照示例
+	{cmd}全部关闭[时长]?：将关闭本群的全部功能，时长为可选项，形式参照示例
+	{cmd}重置功能状态：恢复为拉群时的初始状态（黑名单模式，无禁用功能（被主人全局关闭的功能不算））
+	{cmd}封禁[qq号] [功能]? [时长]?：封禁指定用户使用指定功能（当指定功能时）或全部功能，时长为可选项，形式参照示例
+	{cmd}解封[qq号] [功能]?：解封指定用户使用指定功能，时长为可选项，形式参照示例
+	{cmd}黑名单：获取所有被封禁用户的被封禁功能列表
+	{cmd}白名单模式：只能运行开启的功能
+	{cmd}黑名单模式：无法运行关闭的功能
 示例：
-	封禁123456：封禁用户ID为123456的所有功能
-	封禁123456 25m：封禁用户ID为123456的所有功能25分钟
-	封禁123456 翻译 1h30m：封禁用户ID123456的翻译功能1小时零30分钟`,
+	{cmd}封禁123456：封禁用户ID为123456的所有功能
+	{cmd}封禁123456 25m：封禁用户ID为123456的所有功能25分钟
+	{cmd}封禁123456 翻译 1h30m：封禁用户ID123456的翻译功能1小时零30分钟`,
+
 	SuperUsage: `
 用法：
+	{cmd}设置功能白名单[功能名] [群号]+：讲这个功能的运行模式改为白名单，只允许特定群使用
+	{cmd}取消功能白名单[功能名] [群号]+：删除若干群号，若群号为all则全部删除，为空时自动恢复默认运行模式
+		如果需要设置私聊的白名单，群号需要为负数qq号 -[qq号]
 	在私聊中：
-		使用开启\关闭[功能] [时长]?命令，将针对所有用户和群开启\关闭该功能（全局Ban）
-		还可通过 开启\关闭[群ID] [功能] [时长]? 来开启\关闭指定群的指定功能
-		黑名单：获取所有被封禁用户、群的被封禁功能列表
+		使用{cmd}开启\关闭[功能] [时长]?命令，将针对所有用户和群开启\关闭该功能（全局Ban）
+		还可通过 {cmd}开启\关闭[群ID] [功能] [时长]? 来开启\关闭指定群的指定功能
+		{cmd}黑名单：获取所有被封禁用户、群的被封禁功能列表
 	在群聊中，等同于最高权限群管理员执行命令
 config-plugin配置项：
 	ban.tip: 调用某项被禁用的功能时，是(true)否(false)提示"该功能已被禁用"，但不会提示个人封禁`,
@@ -55,6 +68,8 @@ func init() {
 	proxy.OnCommands([]string{"重置功能状态"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(resetPluginStatus)
 	proxy.OnCommands([]string{"白名单模式"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(setModeWhite)
 	proxy.OnCommands([]string{"黑名单模式"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(setModeBlack)
+	proxy.OnCommands([]string{"设置功能白名单"}, zero.OnlyToMe, zero.SuperUserPermission).SetBlock(true).FirstPriority().Handle(addPluginWhite)
+	proxy.OnCommands([]string{"取消功能白名单"}, zero.OnlyToMe, zero.SuperUserPermission).SetBlock(true).FirstPriority().Handle(removePluginWhite)
 	proxy.OnCommands([]string{"封禁", "ban", "Ban"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(banUser)
 	proxy.OnCommands([]string{"解封", "unban", "Unban"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(unbanUser)
 	proxy.OnCommands([]string{"黑名单"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(showBlack)
@@ -62,6 +77,93 @@ func init() {
 	proxy.OnCommands([]string{"白名单"}, zero.OnlyToMe, zero.SuperUserPermission).SetBlock(true).FirstPriority().Handle(showWhite)
 	proxy.AddConfig("tip", false)
 	manager.AddPreHook(checkPluginStatus)
+}
+
+func removePluginWhite(ctx *zero.Ctx) {
+
+	args := strings.Split(strings.TrimSpace(utils.GetArgs(ctx)), " ")
+	if len(args) < 2 {
+		ctx.Send("参数不够哦，可以参考一下帮助")
+		return
+	}
+	plugin := findPluginByName(args[0])
+	if plugin == nil {
+		ctx.Send("未找到该功能")
+		return
+	}
+	args = args[1:]
+	var groups []string
+	for _, group := range args {
+		if group == "all" {
+			groups = []string{}
+			break
+		}
+		id, err := strconv.ParseInt(group, 10, 64)
+		if err != nil {
+			ctx.Send("参数错误" + err.Error())
+			return
+		}
+		groups = append(groups, strconv.FormatInt(id, 10))
+	}
+	var list dao.PluginWhiteList
+	if err := proxy.GetDB().Find(&list, plugin.Key).Error; err != nil {
+		list = dao.PluginWhiteList{
+			GroupID:   "",
+			PluginKey: plugin.Key,
+		}
+	}
+	list.GroupID = strings.Join(utils.MergeStringSlices(groups), "|")
+	if len(list.GroupID) == 0 {
+		if err := proxy.GetDB().Delete(&list).Error; err != nil {
+			log.Errorf("set plugin(%v) white list error(sql): %v", plugin.Key, err)
+			// return err
+		}
+	}
+	if err := proxy.GetDB().Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "plugin_key"}},
+		DoUpdates: clause.AssignmentColumns([]string{"group_id"}), // Upsert
+	}).Create(&list).Error; err != nil {
+		log.Errorf("set plugin(%v) white list error(sql): %v", plugin.Key, err)
+		// return err
+	}
+}
+
+func addPluginWhite(ctx *zero.Ctx) {
+	args := strings.Split(strings.TrimSpace(utils.GetArgs(ctx)), " ")
+	if len(args) < 2 {
+		ctx.Send("参数不够哦，可以参考一下帮助")
+		return
+	}
+	plugin := findPluginByName(args[0])
+	if plugin == nil {
+		ctx.Send("未找到该功能")
+		return
+	}
+	args = args[1:]
+	var groups []string
+	for _, group := range args {
+		id, err := strconv.ParseInt(group, 10, 64)
+		if err != nil {
+			ctx.Send("参数错误" + err.Error())
+			return
+		}
+		groups = append(groups, strconv.FormatInt(id, 10))
+	}
+	var list dao.PluginWhiteList
+	if err := proxy.GetDB().Find(&list, plugin.Key).Error; err != nil {
+		list = dao.PluginWhiteList{
+			GroupID:   "",
+			PluginKey: plugin.Key,
+		}
+	}
+	list.GroupID = strings.Join(utils.MergeStringSlices(groups), "|")
+	if err := proxy.GetDB().Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "plugin_key"}},
+		DoUpdates: clause.AssignmentColumns([]string{"group_id"}), // Upsert
+	}).Create(&list).Error; err != nil {
+		log.Errorf("set plugin(%v) white list error(sql): %v", plugin.Key, err)
+		// return err
+	}
 }
 
 const AllPluginKey = "all"
@@ -87,8 +189,17 @@ func checkPluginStatus(condition *manager.PluginCondition, ctx *zero.Ctx) error 
 		}
 		return fmt.Errorf("此插件<%v>已全局禁用", condition.Key)
 	}
+	// 白名单插件
+	id := ctx.Event.GroupID
+	if id == 0 {
+		id = -ctx.Event.UserID
+	}
+	if !CheckPluginWhiteList(condition, id) {
+		return fmt.Errorf("群(%d)不在此插件<%v>白名单内", ctx.Event.GroupID, condition.Key)
+	}
 	return nil
 }
+
 func resetPluginStatus(ctx *zero.Ctx) {
 	if utils.IsMessageGroup(ctx) {
 		if !auth.CheckPriority(ctx, 5, false) {

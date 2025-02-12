@@ -49,6 +49,9 @@ func formSingleHelpMsg(cmd string, isSuper, isPrimary bool, priority int, userID
 	if _, ok := keys[selected.Key]; ok {
 		return message.Text("功能被禁用中")
 	}
+	if groupID != 0 && !ban.CheckPluginWhiteList(selected, groupID) || groupID == 0 && !ban.CheckPluginWhiteList(selected, -userID) {
+		return message.Text("当前群不在功能白名单中")
+	}
 	// 生成图片 名称|普通用法|超级用户用法
 	name := selected.Name
 	if selected.AdminLevel > 0 { // 权限等级

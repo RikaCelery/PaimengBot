@@ -1,13 +1,16 @@
 package ban
 
 import (
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/RicheyJang/PaimengBot/basic/dao"
 	"github.com/RicheyJang/PaimengBot/manager"
 
-	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm/clause"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // SetUserPluginStatus 设置指定用户的指定插件状态（于数据库）
@@ -146,4 +149,25 @@ func GetUserRunningMode(userID int64) bool {
 	var preUser dao.UserSetting
 	proxy.GetDB().Take(&preUser, userID)
 	return preUser.WhiteMode
+}
+
+// CheckPluginWhiteList 检查是否在插件白名单内
+func CheckPluginWhiteList(condition *manager.PluginCondition, group int64) bool {
+	var list dao.PluginWhiteList
+	if err := proxy.GetDB().Find(&list, "plugin_key = ?", condition.Key).Error; err != nil {
+		list = dao.PluginWhiteList{
+			GroupID:   "",
+			PluginKey: condition.Key,
+		}
+	}
+	if len(list.GroupID) == 0 {
+		return true
+	}
+	for _, id := range strings.Split(list.GroupID, "|") {
+		if id == strconv.FormatInt(group, 10) {
+			return true
+		}
+	}
+	return false
+
 }
