@@ -5,7 +5,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RicheyJang/PaimengBot/basic/auth"
 	"github.com/RicheyJang/PaimengBot/manager"
+	"github.com/RicheyJang/PaimengBot/utils"
+	log "github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
 )
@@ -43,6 +46,13 @@ func init() {
 	}
 	proxy.OnCommands([]string{"开启"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(openPlugin)
 	proxy.OnCommands([]string{"关闭"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(closePlugin)
+	proxy.OnCommands([]string{"全部开启"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(func(ctx *zero.Ctx) {
+		switchAllPlugins(ctx, true)
+	})
+	proxy.OnCommands([]string{"全部关闭"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(func(ctx *zero.Ctx) {
+		switchAllPlugins(ctx, false)
+	})
+	proxy.OnCommands([]string{"重置功能状态"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(resetPluginStatus)
 	proxy.OnCommands([]string{"白名单模式"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(setModeWhite)
 	proxy.OnCommands([]string{"黑名单模式"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(setModeBlack)
 	proxy.OnCommands([]string{"封禁", "ban", "Ban"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(banUser)
@@ -79,7 +89,37 @@ func checkPluginStatus(condition *manager.PluginCondition, ctx *zero.Ctx) error 
 	}
 	return nil
 }
-
+func resetPluginStatus(ctx *zero.Ctx) {
+	if utils.IsMessageGroup(ctx) {
+		if !auth.CheckPriority(ctx, 5, false) {
+			return
+		}
+		for _, plugin := range manager.GetAllPluginConditions() {
+			err := SetGroupPluginStatus(true, ctx.Event.GroupID, plugin, 0)
+			if err != nil {
+				log.Errorf("resetPluginStatus err: %v", err)
+				ctx.Send("失败了...")
+				return
+			}
+		}
+		ctx.Send("好哒")
+	} else if utils.IsMessagePrimary(ctx) {
+		if !utils.IsSuperUser(ctx.Event.UserID) {
+			ctx.Send("仅超级用户可以执行此命令")
+			return
+		}
+		setModeBlack(ctx)
+		for _, plugin := range manager.GetAllPluginConditions() {
+			err := SetUserPluginStatus(true, 0, plugin, 0)
+			if err != nil {
+				log.Errorf("resetPluginStatus err: %v", err)
+				ctx.Send("失败了...")
+				return
+			}
+		}
+		ctx.Send("好哒")
+	}
+}
 func dealUserPluginStatus(ctx *zero.Ctx, status bool, userID int64, plugin *manager.PluginCondition, period time.Duration) {
 	if status == GetUserPluginStatus(userID, plugin) {
 		ctx.Send("请不要重复开关功能哦")
@@ -91,6 +131,42 @@ func dealUserPluginStatus(ctx *zero.Ctx, status bool, userID int64, plugin *mana
 	} else {
 		ctx.Send("好哒")
 	}
+}
+func dealUserAllPluginStatus(ctx *zero.Ctx, status bool, userID int64, period time.Duration) {
+	for _, plugin := range manager.GetAllPluginConditions() {
+		if status == GetUserPluginStatus(userID, plugin) {
+			continue
+		}
+		if !status && isImportant(plugin) {
+			// 避免全部关闭后无法打开
+			continue
+		}
+		err := SetUserPluginStatus(status, userID, plugin, period)
+		if err != nil {
+			log.Errorf("switchPlugin err: %v", err)
+			ctx.Send("失败了...")
+			return
+		}
+	}
+	ctx.Send("好哒")
+
+}
+
+func isImportant(plugin *manager.PluginCondition) bool {
+	keys := []string{
+		"auth",
+		"ban",
+		"event",
+		"help",
+		"invite",
+		"limiter",
+	}
+	for _, key := range keys {
+		if plugin.Key == key {
+			return true
+		}
+	}
+	return false
 }
 
 func dealGroupPluginStatus(ctx *zero.Ctx, status bool, groupID int64, plugin *manager.PluginCondition, period time.Duration) {
@@ -104,6 +180,24 @@ func dealGroupPluginStatus(ctx *zero.Ctx, status bool, groupID int64, plugin *ma
 	} else {
 		ctx.Send("好哒")
 	}
+}
+func dealGroupAllPluginStatus(ctx *zero.Ctx, status bool, groupID int64, period time.Duration) {
+	for _, plugin := range manager.GetAllPluginConditions() {
+		if status == GetGroupPluginStatus(groupID, plugin) {
+			continue
+		}
+		if !status && isImportant(plugin) {
+			// 避免全部关闭后无法打开
+			continue
+		}
+		err := SetGroupPluginStatus(status, groupID, plugin, period)
+		if err != nil {
+			log.Errorf("switchPlugin err: %v", err)
+			ctx.Send("失败了...")
+			return
+		}
+	}
+	ctx.Send("好哒")
 }
 
 func hasPluginKey(org, key string) bool {

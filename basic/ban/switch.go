@@ -2,12 +2,13 @@ package ban
 
 import (
 	"fmt"
-	"github.com/RicheyJang/PaimengBot/basic/auth"
-	"github.com/RicheyJang/PaimengBot/basic/dao"
-	"gorm.io/gorm/clause"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/RicheyJang/PaimengBot/basic/auth"
+	"github.com/RicheyJang/PaimengBot/basic/dao"
+	"gorm.io/gorm/clause"
 
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils"
@@ -15,6 +16,63 @@ import (
 	log "github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
 )
+
+func dealSwitchAllArgs(ctx *zero.Ctx, dealGroup bool) (
+	groupID int64, period time.Duration, err error) {
+	preArgs := utils.GetArgs(ctx)
+	// 检查
+	args := strings.Split(strings.TrimSpace(preArgs), " ")
+	// 处理群号
+	if dealGroup && len(args) >= 2 {
+		groupID, err = strconv.ParseInt(args[0], 10, 64)
+		if err != nil {
+			groupID = 0
+		} else {
+			args = args[1:]
+		}
+	}
+	if preArgs == "" {
+		return
+	}
+	// 处理时长
+	if len(args) >= 1 {
+		period, err = time.ParseDuration(args[len(args)-1])
+		if err != nil {
+			ctx.Send("时间格式不对哦，可以看看帮助")
+			return
+		}
+	}
+	log.Debugf("dealSwitchAllArgs res: groupID=%v,period=%v,err=%v", groupID, period, err)
+	return
+}
+
+func switchAllPlugins(ctx *zero.Ctx, status bool) {
+	if !utils.IsMessageGroup(ctx) {
+		if !utils.IsSuperUser(ctx.Event.UserID) || !utils.IsMessagePrimary(ctx) {
+			ctx.Send("请在群聊中开关功能哦，或者联系管理员")
+			return
+		}
+		// 全局开关
+		groupID, period, err := dealSwitchAllArgs(ctx, true)
+		if err != nil {
+			log.Errorf("switchPlugin err: %v", err)
+			return
+		}
+		if groupID < 0 {
+			dealGroupAllPluginStatus(ctx, status, groupID, period)
+		} else {
+			dealUserAllPluginStatus(ctx, status, 0, period)
+		}
+		return
+	}
+	// 群聊
+	_, period, err := dealSwitchAllArgs(ctx, false)
+	if err != nil {
+		log.Errorf("switchPlugin err: %v", err)
+		return
+	}
+	dealGroupAllPluginStatus(ctx, status, ctx.Event.GroupID, period)
+}
 
 func openPlugin(ctx *zero.Ctx) {
 	switchPlugin(true, ctx)
@@ -83,6 +141,10 @@ func switchPlugin(status bool, ctx *zero.Ctx) {
 	_, plugin, period, err := dealSwitchArgs(ctx, false)
 	if err != nil {
 		log.Errorf("switchPlugin err: %v", err)
+		return
+	}
+	if isImportant(plugin) {
+		ctx.Send("这个插件很重要，你不能关闭！")
 		return
 	}
 	dealGroupPluginStatus(ctx, status, ctx.Event.GroupID, plugin, period)
