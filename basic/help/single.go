@@ -29,7 +29,7 @@ func formSingleHelpMsg(cmd string, isSuper, isPrimary bool, priority int, userID
 	}
 	var selected *manager.PluginCondition
 	for _, plugin := range plugins { // 优先找插件名
-		if plugin.Name == cmd && checkPluginCouldShow(plugin, isSuper, isPrimary, priority, keys) {
+		if strings.EqualFold(plugin.Name, cmd) && checkPluginCouldShow(plugin, isSuper, isPrimary, priority, keys) {
 			selected = plugin
 			break
 		}
@@ -110,7 +110,7 @@ func isCmdContains(plugin *manager.PluginCondition, cmd string, isSuper bool) bo
 	if isSuper {
 		for _, pCmds := range plugin.SuperCmd {
 			for _, pCmd := range pCmds {
-				if cmd == pCmd {
+				if strings.EqualFold(cmd, pCmd) {
 					return true
 				}
 			}
@@ -118,7 +118,7 @@ func isCmdContains(plugin *manager.PluginCondition, cmd string, isSuper bool) bo
 	}
 	for _, pCmds := range plugin.NormalCmd {
 		for _, pCmd := range pCmds {
-			if cmd == pCmd {
+			if strings.EqualFold(cmd, pCmd) {
 				return true
 			}
 		}
