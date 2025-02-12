@@ -154,7 +154,7 @@ func addPluginWhite(ctx *zero.Ctx) {
 		groups = append(groups, strconv.FormatInt(id, 10))
 	}
 	var list dao.PluginWhiteList
-	if err := proxy.GetDB().Find(&list, plugin.Key).Error; err != nil {
+	if err := proxy.GetDB().Find(&list, "plugin_key = ?", plugin.Key).Error; err != nil {
 		list = dao.PluginWhiteList{
 			GroupID:   "",
 			PluginKey: plugin.Key,
