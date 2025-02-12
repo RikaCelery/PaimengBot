@@ -1,6 +1,7 @@
 package consts
 
 const DefaultTTFPath = "./ttf/zh-cn.ttf"
+const DefaultMonoTTFPath = "./ttf/JetBrainsMono.ttf"
 
 const DefaultTTFDir = "./ttf"
 const DefaultLogDir = "./log"
