@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	// 可选插件，若要启用，去除注释即可
-	// _ "github.com/RicheyJang/PaimengBot/plugins/HiOSU"
+	_ "github.com/RicheyJang/PaimengBot/plugins/HiOSU"
 
 	// 基本插件，建议不要删除，可能会造成依赖问题
 	_ "github.com/RicheyJang/PaimengBot/basic/auth"
@@ -25,33 +25,32 @@ import (
 	// 普通插件
 	_ "github.com/RicheyJang/PaimengBot/plugins/COVID"
 	_ "github.com/RicheyJang/PaimengBot/plugins/admin"
-	_ "github.com/RicheyJang/PaimengBot/plugins/bilibili"
+	//_ "github.com/RicheyJang/PaimengBot/plugins/bilibili" //disable
 	_ "github.com/RicheyJang/PaimengBot/plugins/bottle"
 	_ "github.com/RicheyJang/PaimengBot/plugins/chat"
 	_ "github.com/RicheyJang/PaimengBot/plugins/contact"
 	_ "github.com/RicheyJang/PaimengBot/plugins/echo"
-	_ "github.com/RicheyJang/PaimengBot/plugins/emoji_mix"
-	_ "github.com/RicheyJang/PaimengBot/plugins/genshin"
-	_ "github.com/RicheyJang/PaimengBot/plugins/github"
-	_ "github.com/RicheyJang/PaimengBot/plugins/hhsh"
+	//_ "github.com/RicheyJang/PaimengBot/plugins/emoji_mix" //disable
+	//_ "github.com/RicheyJang/PaimengBot/plugins/genshin" //disable
+	//_ "github.com/RicheyJang/PaimengBot/plugins/github" //disable
+	//_ "github.com/RicheyJang/PaimengBot/plugins/hhsh"  //disable
 	_ "github.com/RicheyJang/PaimengBot/plugins/idioms" // 半失效
 	_ "github.com/RicheyJang/PaimengBot/plugins/inspection"
 	_ "github.com/RicheyJang/PaimengBot/plugins/keyword"
-	_ "github.com/RicheyJang/PaimengBot/plugins/music"
+	//_ "github.com/RicheyJang/PaimengBot/plugins/music" //disable
 	_ "github.com/RicheyJang/PaimengBot/plugins/netease"
 	_ "github.com/RicheyJang/PaimengBot/plugins/note"
 	_ "github.com/RicheyJang/PaimengBot/plugins/pixiv"
 	_ "github.com/RicheyJang/PaimengBot/plugins/pixiv_query"
 	_ "github.com/RicheyJang/PaimengBot/plugins/pixiv_rank"
 	_ "github.com/RicheyJang/PaimengBot/plugins/poke"
-	_ "github.com/RicheyJang/PaimengBot/plugins/random"
 	_ "github.com/RicheyJang/PaimengBot/plugins/short_url"
 	_ "github.com/RicheyJang/PaimengBot/plugins/statistic"
 	_ "github.com/RicheyJang/PaimengBot/plugins/translate"
 	_ "github.com/RicheyJang/PaimengBot/plugins/weather"
 	_ "github.com/RicheyJang/PaimengBot/plugins/welcome"
 	_ "github.com/RicheyJang/PaimengBot/plugins/whatanime"
-	_ "github.com/RicheyJang/PaimengBot/plugins/whatpicture"
+	//_ "github.com/RicheyJang/PaimengBot/plugins/whatpicture" //disable
 	_ "github.com/RicheyJang/PaimengBot/plugins/withdraw"
 	// _ "github.com/RicheyJang/PaimengBot/plugins/geng" // 已失效
 )
