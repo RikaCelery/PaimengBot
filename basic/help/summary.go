@@ -51,6 +51,9 @@ func formSummaryHelpMsg(isSuper, isPrimary bool, priority int, userID int64, gro
 		if _, ok := groupBan[plugin.Key]; ok {
 			item.disabled = true
 		}
+		if _, ok := globalBan[plugin.Key]; ok {
+			item.disabled = true
+		}
 		if plugin.IsPassive && len(plugin.Classify) != 0 && plugin.Classify != passiveClassify {
 			item.name += "（被动）" // 被动且已有其它分类
 		}
