@@ -34,6 +34,12 @@ func formSingleHelpMsg(cmd string, isSuper, isPrimary bool, priority int, userID
 			break
 		}
 	}
+	for _, plugin := range plugins { // 尝试通过插件key
+		if strings.EqualFold(plugin.Key, cmd) && checkPluginCouldShow(plugin, isSuper, isPrimary, priority, keys) {
+			selected = plugin
+			break
+		}
+	}
 	if selected == nil { // 尝试通过命令
 		for _, plugin := range plugins {
 			if isCmdContains(plugin, cmd, isSuper) && checkPluginCouldShow(plugin, isSuper, isPrimary, priority, keys) {
