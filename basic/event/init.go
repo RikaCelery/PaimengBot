@@ -2,12 +2,15 @@ package event
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
 
 	"github.com/RicheyJang/PaimengBot/basic/auth"
 	"github.com/RicheyJang/PaimengBot/basic/dao"
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/rules"
+	"github.com/spf13/viper"
 
 	log "github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
@@ -20,6 +23,8 @@ var info = manager.PluginInfo{
 	Name: "基本事件处理",
 	Usage: `防止被动拉入群聊；捕获好友、群邀请发送给超级用户
 config-plugin配置项：
+	event.greeting_msg: 加好友后的欢迎消息 留空不发送
+	event.join_msg: 加群的介绍消息 留空不发送
 	event.notautoleave: 是(true)否(false)关闭被动拉群时自动退群
 	event.autoagree: 是(true)否(false)自动同意所有好友请求`,
 	IsPassive:   true,
@@ -36,6 +41,8 @@ func init() {
 		return ctx.Event.SelfID == ctx.Event.UserID
 	}).SetBlock(true).FirstPriority().Handle(preventForcedInviteGroup) // 防止被动拉入群聊
 	proxy.OnNotice(rules.CheckDetailType("group_admin")).FirstPriority().Handle(handleGroupAdmin)
+	proxy.AddConfig("greeting_msg", "你好，我是派蒙，可以通过#help来查看可用功能～")
+	proxy.AddConfig("join_msg", "")
 	proxy.AddConfig("notAutoLeave", false)
 	proxy.AddConfig("autoAgree", false)
 }
@@ -64,6 +71,11 @@ func preventForcedInviteGroup(ctx *zero.Ctx) {
 		DoUpdates: clause.AssignmentColumns([]string{"flag"}), // Upsert
 	}).Create(&groupS).Error; err != nil {
 		log.Errorf("set group(id=%v) flag error(sql): %v", groupS.ID, err)
+	}
+	greeting := viper.GetString("join_msg")
+	if greeting != "" {
+		time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
+		ctx.Send(greeting)
 	}
 	utils.SendToSuper(message.Text(fmt.Sprintf("%v成功加入了群%v",
 		utils.GetBotNickname(), ctx.Event.GroupID)))
@@ -124,6 +136,11 @@ func handleFriendRequest(ctx *zero.Ctx) {
 	// 自动同意
 	if proxy.GetConfigBool("autoAgree") {
 		ctx.SetFriendAddRequest(userS.Flag, true, "")
+		greeting := viper.GetString("greeting_msg")
+		if greeting != "" {
+			time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
+			ctx.Send(greeting)
+		}
 		userS.Flag = ""
 		str += "\n根据配置，已自动同意"
 	} else {
