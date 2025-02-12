@@ -124,7 +124,11 @@ func removePluginWhite(ctx *zero.Ctx) {
 		DoUpdates: clause.AssignmentColumns([]string{"group_id"}), // Upsert
 	}).Create(&list).Error; err != nil {
 		log.Errorf("set plugin(%v) white list error(sql): %v", plugin.Key, err)
-		// return err
+	}
+	if list.GroupID == "" {
+		ctx.Send("好哒，取消了白名单模式")
+	} else {
+		ctx.Send("好哒")
 	}
 }
 
@@ -162,8 +166,8 @@ func addPluginWhite(ctx *zero.Ctx) {
 		DoUpdates: clause.AssignmentColumns([]string{"group_id"}), // Upsert
 	}).Create(&list).Error; err != nil {
 		log.Errorf("set plugin(%v) white list error(sql): %v", plugin.Key, err)
-		// return err
 	}
+	ctx.Send("好哒")
 }
 
 const AllPluginKey = "all"
