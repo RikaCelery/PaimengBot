@@ -5,17 +5,17 @@ import (
 	"math/rand"
 	"time"
 
+	"gorm.io/gorm/clause"
+
 	"github.com/RicheyJang/PaimengBot/basic/auth"
 	"github.com/RicheyJang/PaimengBot/basic/dao"
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/rules"
-	"github.com/spf13/viper"
 
 	log "github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
-	"gorm.io/gorm/clause"
 )
 
 var proxy *manager.PluginProxy
@@ -72,7 +72,7 @@ func preventForcedInviteGroup(ctx *zero.Ctx) {
 	}).Create(&groupS).Error; err != nil {
 		log.Errorf("set group(id=%v) flag error(sql): %v", groupS.ID, err)
 	}
-	greeting := viper.GetString("join_msg")
+	greeting := proxy.GetConfigString("join_msg")
 	if greeting != "" {
 		time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
 		ctx.Send(greeting)
@@ -136,7 +136,7 @@ func handleFriendRequest(ctx *zero.Ctx) {
 	// 自动同意
 	if proxy.GetConfigBool("autoAgree") {
 		ctx.SetFriendAddRequest(userS.Flag, true, "")
-		greeting := viper.GetString("greeting_msg")
+		greeting := proxy.GetConfigString("greeting_msg")
 		if greeting != "" {
 			time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
 			ctx.Send(greeting)
