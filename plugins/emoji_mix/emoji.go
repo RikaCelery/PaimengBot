@@ -1,249 +1,293 @@
 package emoji_mix
 
-//copy from zeroBot
-var emojis = map[rune]int64{
-	128516: 20201001, // 😄 grinning face with smiling eyes
-	128512: 20201001, // 😀 grinning face
-	128578: 20201001, // 🙂 slightly smiling face
-	128579: 20201001, // 🙃 upside-down face
-	128521: 20201001, // 😉 winking face
-	128522: 20201001, // 😊 smiling face with smiling eyes
-	128518: 20201001, // 😆 grinning squinting face
-	128515: 20201001, // 😃 grinning face with big eyes
-	128513: 20201001, // 😁 beaming face with smiling eyes
-	129315: 20201001, // 🤣 rolling on the floor laughing
-	128517: 20201001, // 😅 grinning face with sweat
-	128514: 20201001, // 😂 face with tears of joy
-	128519: 20201001, // 😇 smiling face with halo
-	129392: 20201001, // 🥰 smiling face with hearts
-	128525: 20201001, // 😍 smiling face with heart-eyes
-	128536: 20201001, // 😘 face blowing a kiss
-	129321: 20201001, // 🤩 star-struck
-	128535: 20201001, // 😗 kissing face
-	128538: 20201001, // 😚 kissing face with closed eyes
-	128537: 20201001, // 😙 kissing face with smiling eyes
-	128539: 20201001, // 😛 face with tongue
-	128541: 20201001, // 😝 squinting face with tongue
-	128523: 20201001, // 😋 face savoring food
-	129394: 20201001, // 🥲 smiling face with tear
-	129297: 20201001, // 🤑 money-mouth face
-	128540: 20201001, // 😜 winking face with tongue
-	129303: 20201001, // 🤗 smiling face with open hands hugs
-	129323: 20201001, // 🤫 shushing face quiet whisper
-	129300: 20201001, // 🤔 thinking face question hmmm
-	129325: 20201001, // 🤭 face with hand over mouth embarrassed
-	129320: 20201001, // 🤨 face with raised eyebrow question
-	129296: 20201001, // 🤐 zipper-mouth face
-	128528: 20201001, // 😐 neutral face
-	128529: 20201001, // 😑 expressionless face
-	128566: 20201001, // 😶 face without mouth
-	129322: 20201001, // 🤪 zany face
-	128527: 20201001, // 😏 smirking face suspicious
-	128530: 20201001, // 😒 unamused face
-	128580: 20201001, // 🙄 face with rolling eyes
-	128556: 20201001, // 😬 grimacing face
-	128558: 20210218, // 😮 face exhaling
-	129317: 20201001, // 🤥 lying face
-	128524: 20201001, // 😌 relieved face
-	128532: 20201001, // 😔 pensive face
-	128554: 20201001, // 😪 sleepy face
-	129316: 20201001, // 🤤 drooling face
-	128564: 20201001, // 😴 sleeping face
-	128567: 20201001, // 😷 face with medical mask
-	129298: 20201001, // 🤒 face with thermometer
-	129301: 20201001, // 🤕 face with head-bandage
-	129314: 20201001, // 🤢 nauseated face
-	129326: 20201001, // 🤮 face vomiting throw
-	129319: 20201001, // 🤧 sneezing face
-	129397: 20201001, // 🥵 hot face warm
-	129398: 20201001, // 🥶 cold face freezing ice
-	128565: 20201001, // 😵 face with crossed-out eyes
-	129396: 20201001, // 🥴 woozy face drunk tipsy drug high
-	129327: 20201001, // 🤯 exploding head mindblow
-	129312: 20201001, // 🤠 cowboy hat face
-	129395: 20201001, // 🥳 partying face
-	129400: 20201001, // 🥸 disguised face
-	129488: 20201001, // 🧐 face with monocle glasses
-	128526: 20201001, // 😎 smiling face with sunglasses
-	128533: 20201001, // 😕 confused face
-	128543: 20201001, // 😟 worried face
-	128577: 20201001, // 🙁 slightly frowning face
-	128559: 20201001, // 😯 hushed face
-	128562: 20201001, // 😲 astonished face
-	129299: 20201001, // 🤓 nerd face glasses
-	128563: 20201001, // 😳 flushed face
-	129402: 20201001, // 🥺 pleading face
-	128551: 20201001, // 😧 anguished face
-	128552: 20201001, // 😨 fearful face
-	128550: 20201001, // 😦 frowning face with open mouth
-	128560: 20201001, // 😰 anxious face with sweat
-	128549: 20201001, // 😥 sad but relieved face
-	128557: 20201001, // 😭 loudly crying face
-	128553: 20201001, // 😩 weary face
-	128546: 20201001, // 😢 crying face
-	128547: 20201001, // 😣 persevering face
-	128544: 20201001, // 😠 angry face
-	128531: 20201001, // 😓 downcast face with sweat
-	128534: 20201001, // 😖 confounded face
-	129324: 20201001, // 🤬 face with symbols on mouth
-	128542: 20201001, // 😞 disappointed face
-	128555: 20201001, // 😫 tired face
-	128548: 20201001, // 😤 face with steam from nose
-	129393: 20201001, // 🥱 yawning face
-	128169: 20201001, // 💩 pile of poo
-	128545: 20201001, // 😡 pouting face
-	128561: 20201001, // 😱 face screaming in fear
-	128127: 20201001, // 👿 angry face with horns
-	128128: 20201001, // 💀 skull
-	128125: 20201001, // 👽 alien
-	128520: 20201001, // 😈 smiling face with horns devil
-	129313: 20201001, // 🤡 clown face
-	128123: 20201001, // 👻 ghost
-	129302: 20201001, // 🤖 robot
-	128175: 20201001, // 💯 hundred points percent
-	128064: 20201001, // 👀 eyes
-	127801: 20201001, // 🌹 rose flower
-	127804: 20201001, // 🌼 blossom flower
-	127799: 20201001, // 🌷 tulip flower
-	127797: 20201001, // 🌵 cactus
-	127821: 20201001, // 🍍 pineapple
-	127874: 20201001, // 🎂 birthday cake
-	127751: 20210831, // 🌇 sunset
-	129473: 20201001, // 🧁 cupcake muffin
-	127911: 20210521, // 🎧 headphone earphone
-	127800: 20210218, // 🌸 cherry blossom flower
-	129440: 20201001, // 🦠 microbe germ bacteria virus covid corona
-	128144: 20201001, // 💐 bouquet flowers
-	127789: 20201001, // 🌭 hot dog food
-	128139: 20201001, // 💋 kiss mark lips
-	127875: 20201001, // 🎃 jack-o-lantern pumpkin
-	129472: 20201001, // 🧀 cheese wedge
-	9749:   20201001, // ☕ hot beverage coffee cup tea
-	127882: 20201001, // 🎊 confetti ball
-	127880: 20201001, // 🎈 balloon
-	9924:   20201001, // ⛄ snowman without snow
-	128142: 20201001, // 💎 gem stone crystal diamond
-	127794: 20201001, // 🌲 evergreen tree
-	129410: 20210218, // 🦂 scorpion
-	128584: 20201001, // 🙈 see-no-evil monkey
-	128148: 20201001, // 💔 broken heart
-	128140: 20201001, // 💌 love letter heart
-	128152: 20201001, // 💘 heart with arrow
-	128159: 20201001, // 💟 heart decoration
-	128158: 20201001, // 💞 revolving hearts
-	128147: 20201001, // 💓 beating heart
-	128149: 20201001, // 💕 two hearts
-	128151: 20201001, // 💗 growing heart
-	129505: 20201001, // 🧡 orange heart
-	128155: 20201001, // 💛 yellow heart
-	10084:  20210218, // ❤ mending heart
-	128156: 20201001, // 💜 purple heart
-	128154: 20201001, // 💚 green heart
-	128153: 20201001, // 💙 blue heart
-	129294: 20201001, // 🤎 brown heart
-	129293: 20201001, // 🤍 white heart
-	128420: 20201001, // 🖤 black heart
-	128150: 20201001, // 💖 sparkling heart
-	128157: 20201001, // 💝 heart with ribbon
-	127873: 20211115, // 🎁 wrapped-gift
-	129717: 20211115, // 🪵 wood
-	127942: 20211115, // 🏆 trophy
-	127838: 20210831, // 🍞 bread
-	128240: 20201001, // 📰 newspaper
-	128302: 20201001, // 🔮 crystal ball
-	128081: 20201001, // 👑 crown
-	128055: 20201001, // 🐷 pig face
-	129412: 20210831, // 🦄 unicorn
-	127771: 20201001, // 🌛 first quarter moon face
-	129420: 20201001, // 🦌 deer
-	129668: 20210521, // 🪄 magic wand
-	128171: 20201001, // 💫 dizzy
-	128049: 20201001, // 🐱 meow cat face
-	129409: 20201001, // 🦁 lion
-	128293: 20201001, // 🔥 fire
-	128038: 20210831, // 🐦 bird
-	129415: 20201001, // 🦇 bat
-	129417: 20210831, // 🦉 owl
-	127752: 20201001, // 🌈 rainbow
-	128053: 20201001, // 🐵 monkey face
-	128029: 20201001, // 🐝 honeybee bumblebee wasp
-	128034: 20201001, // 🐢 turtle
-	128025: 20201001, // 🐙 octopus
-	129433: 20201001, // 🦙 llama alpaca
-	128016: 20210831, // 🐐 goat
-	128060: 20201001, // 🐼 panda
-	128040: 20201001, // 🐨 koala
-	129445: 20201001, // 🦥 sloth
-	128059: 20210831, // 🐻 bear
-	128048: 20201001, // 🐰 rabbit face
-	129428: 20201001, // 🦔 hedgehog
-	128054: 20211115, // 🐶 dog puppy
-	128041: 20211115, // 🐩 poodle dog
-	129437: 20211115, // 🦝 raccoon
-	128039: 20211115, // 🐧 penguin
-	128012: 20210218, // 🐌 snail
-	128045: 20201001, // 🐭 mouse face rat
-	128031: 20210831, // 🐟 fish
-	127757: 20201001, // 🌍 globe showing Europe-Africa
-	127774: 20201001, // 🌞 sun with face
-	127775: 20201001, // 🌟 glowing star
-	11088:  20201001, // ⭐ star
-	127772: 20201001, // 🌜 last quarter moon face
-	129361: 20201001, // 🥑 avocado
-	127820: 20211115, // 🍌 banana
-	127827: 20210831, // 🍓 strawberry
-	127819: 20210521, // 🍋 lemon
-	127818: 20211115, // 🍊 tangerine orange
+var replaces = map[string]string{
+	"1f4f7": "1f4f8", // 📷=>📸
+
 }
 
-var qqface = map[int]rune{
-	0:   128558, // 😮 face exhaling
-	1:   128556, // 😬 grimacing face
-	2:   128525, // 😍 smiling face with heart-eyes
-	4:   128526, // 😎 smiling face with sunglasses
-	5:   128557, // 😭 loudly crying face
-	6:   129402, // 🥺 pleading face
-	7:   129296, // 🤐 zipper-mouth face
-	8:   128554, // 😪 sleepy face
-	11:  128545, // 😡 pouting face
-	12:  128539, // 😛 face with tongue
-	13:  128513, // 😁 beaming face with smiling eyes
-	14:  128578, // 🙂 slightly smiling face
-	15:  128577, // 🙁 slightly frowning face
-	16:  128526, // 😎 smiling face with sunglasses
-	19:  129326, // 🤮 face vomiting throw
-	20:  129325, // 🤭 face with hand over mouth embarrassed
-	21:  128522, // 😊 smiling face with smiling eyes
-	23:  128533, // 😕 confused face
-	24:  128523, // 😋 face savoring food
-	27:  128531, // 😓 downcast face with sweat
-	28:  128516, // 😄 grinning face with smiling eyes
-	31:  129324, // 🤬 face with symbols on mouth
-	32:  129300, // 🤔 thinking face question hmmm
-	33:  129323, // 🤫 shushing face quiet whisper
-	34:  128565, // 😵 face with crossed-out eyes
-	35:  128547, // 😣 persevering face
-	37:  128128, // 💀 skull
-	46:  128055, // 🐷 pig face
-	53:  127874, // 🎂 birthday cake
-	59:  128169, // 💩 pile of poo
-	60:  9749,   // ☕ hot beverage coffee cup tea
-	63:  127801, // 🌹 rose flower
-	66:  10084,  // ❤ mending heart
-	67:  128148, // 💔 broken heart
-	69:  127873, // 🎁 wrapped-gift
-	74:  127774, // 🌞 sun with face
-	75:  127772, // 🌜 last quarter moon face
-	96:  128517, // 😅 grinning face with sweat
-	104: 129393, // 🥱 yawning face
-	109: 128535, // 😗 kissing face
-	110: 128562, // 😲 astonished face
-	111: 129402, // 🥺 pleading face
-	172: 128539, // 😛 face with tongue
-	182: 128514, // 😂 face with tears of joy
-	187: 128123, // 👻 ghost
-	247: 128567, // 😷 face with medical mask
-	272: 128579, // 🙃 upside-down face
-	320: 129395, // 🥳 partying face
-	325: 128561, // 😱 face screaming in fear
+// dumped from emojimix
+var emojis = map[string]string{"u1f0cf": "20240530",
+	"u1f304":                    "20240206",
+	"u1f307":                    "20210831",
+	"u1f308":                    "20201001",
+	"u1f30a":                    "20230418",
+	"u1f30b":                    "20240206",
+	"u1f30c":                    "20240530",
+	"u1f30d":                    "20201001",
+	"u1f31b":                    "20201001",
+	"u1f31c":                    "20201001",
+	"u1f31e":                    "20201001",
+	"u1f31f":                    "20201001",
+	"u1f32a-ufe0f":              "20201001",
+	"u1f32d":                    "20201001",
+	"u1f332":                    "20201001",
+	"u1f335":                    "20201001",
+	"u1f336-ufe0f":              "20201001",
+	"u1f337":                    "20201001",
+	"u1f338":                    "20210218",
+	"u1f339":                    "20201001",
+	"u1f33c":                    "20201001",
+	"u1f344":                    "20220406",
+	"u1f349":                    "20220406",
+	"u1f34a":                    "20211115",
+	"u1f34b":                    "20210521",
+	"u1f34c":                    "20211115",
+	"u1f34d":                    "20201001",
+	"u1f352":                    "20220406",
+	"u1f353":                    "20210831",
+	"u1f35e":                    "20210831",
+	"u1f365":                    "20240206",
+	"u1f36c":                    "20220815",
+	"u1f37d-ufe0f":              "20201001",
+	"u1f381":                    "20211115",
+	"u1f382":                    "20201001",
+	"u1f383":                    "20201001",
+	"u1f386":                    "20231113",
+	"u1f388":                    "20201001",
+	"u1f38a":                    "20201001",
+	"u1f397-ufe0f":              "20201001",
+	"u1f3a3":                    "20240206",
+	"u1f3a7":                    "20210521",
+	"u1f3ac":                    "20240206",
+	"u1f3af":                    "20240530",
+	"u1f3b0":                    "20231113",
+	"u1f3b3":                    "20240206",
+	"u1f3b6":                    "20240530",
+	"u1f3bf":                    "20231113",
+	"u1f3c0":                    "20230126",
+	"u1f3c6":                    "20211115",
+	"u1f3c8":                    "20231113",
+	"u1f3fa":                    "20240206",
+	"u1f409":                    "20240610",
+	"u1f40c":                    "20210218",
+	"u1f40d":                    "20240530",
+	"u1f40e":                    "20240530",
+	"u1f410":                    "20210831",
+	"u1f414":                    "20230126",
+	"u1f419":                    "20201001",
+	"u1f41d":                    "20201001",
+	"u1f41f":                    "20210831",
+	"u1f422":                    "20201001",
+	"u1f426":                    "20210831",
+	"u1f427":                    "20211115",
+	"u1f428":                    "20201001",
+	"u1f429":                    "20211115",
+	"u1f42d":                    "20201001",
+	"u1f42e":                    "20230803",
+	"u1f42f":                    "20220110",
+	"u1f430":                    "20201001",
+	"u1f431":                    "20201001",
+	"u1f433":                    "20230418",
+	"u1f435":                    "20201001",
+	"u1f436":                    "20211115",
+	"u1f437":                    "20201001",
+	"u1f438":                    "20230803",
+	"u1f43a":                    "20221101",
+	"u1f43b":                    "20210831",
+	"u1f43c":                    "20201001",
+	"u1f440":                    "20201001",
+	"u1f441-ufe0f":              "20201001",
+	"u1f451":                    "20201001",
+	"u1f455":                    "20240530",
+	"u1f460":                    "20240530",
+	"u1f463":                    "20240530",
+	"u1f47b":                    "20201001",
+	"u1f47d":                    "20201001",
+	"u1f47e":                    "20230803",
+	"u1f47f":                    "20201001",
+	"u1f480":                    "20201001",
+	"u1f48b":                    "20201001",
+	"u1f48c":                    "20201001",
+	"u1f48e":                    "20201001",
+	"u1f490":                    "20201001",
+	"u1f493":                    "20201001",
+	"u1f494":                    "20201001",
+	"u1f495":                    "20201001",
+	"u1f496":                    "20201001",
+	"u1f497":                    "20201001",
+	"u1f498":                    "20201001",
+	"u1f499":                    "20201001",
+	"u1f49a":                    "20201001",
+	"u1f49b":                    "20201001",
+	"u1f49c":                    "20201001",
+	"u1f49d":                    "20201001",
+	"u1f49e":                    "20201001",
+	"u1f49f":                    "20201001",
+	"u1f4a1":                    "20231113",
+	"u1f4a5":                    "20220203",
+	"u1f4a9":                    "20201001",
+	"u1f4ab":                    "20201001",
+	"u1f4ae":                    "20231113",
+	"u1f4af":                    "20201001",
+	"u1f4bb":                    "20240206",
+	"u1f4be":                    "20240206",
+	"u1f4c8":                    "20240530",
+	"u1f4c9":                    "20240530",
+	"u1f4da":                    "20231113",
+	"u1f4df":                    "20231113",
+	"u1f4e0":                    "20240610",
+	"u1f4f0":                    "20201001",
+	"u1f514":                    "20240530",
+	"u1f525":                    "20201001",
+	"u1f52e":                    "20201001",
+	"u1f573-ufe0f":              "20201001",
+	"u1f577-ufe0f":              "20201001",
+	"u1f5a4":                    "20201001",
+	"u1f600":                    "20201001",
+	"u1f601":                    "20201001",
+	"u1f602":                    "20201001",
+	"u1f603":                    "20201001",
+	"u1f604":                    "20201001",
+	"u1f605":                    "20201001",
+	"u1f606":                    "20201001",
+	"u1f607":                    "20201001",
+	"u1f608":                    "20201001",
+	"u1f609":                    "20201001",
+	"u1f60a":                    "20201001",
+	"u1f60b":                    "20201001",
+	"u1f60c":                    "20201001",
+	"u1f60d":                    "20201001",
+	"u1f60e":                    "20201001",
+	"u1f60f":                    "20201001",
+	"u1f610":                    "20201001",
+	"u1f611":                    "20201001",
+	"u1f612":                    "20201001",
+	"u1f613":                    "20201001",
+	"u1f614":                    "20201001",
+	"u1f615":                    "20201001",
+	"u1f616":                    "20201001",
+	"u1f617":                    "20201001",
+	"u1f618":                    "20201001",
+	"u1f619":                    "20201001",
+	"u1f61a":                    "20201001",
+	"u1f61b":                    "20201001",
+	"u1f61c":                    "20201001",
+	"u1f61d":                    "20201001",
+	"u1f61e":                    "20201001",
+	"u1f61f":                    "20201001",
+	"u1f620":                    "20201001",
+	"u1f621":                    "20201001",
+	"u1f622":                    "20201001",
+	"u1f623":                    "20201001",
+	"u1f624":                    "20201001",
+	"u1f625":                    "20201001",
+	"u1f626":                    "20201001",
+	"u1f627":                    "20201001",
+	"u1f628":                    "20201001",
+	"u1f629":                    "20201001",
+	"u1f62a":                    "20201001",
+	"u1f62b":                    "20201001",
+	"u1f62c":                    "20201001",
+	"u1f62d":                    "20201001",
+	"u1f62e":                    "20201001",
+	"u1f62e-u200d-u1f4a8":       "20210218",
+	"u1f62f":                    "20201001",
+	"u1f630":                    "20201001",
+	"u1f631":                    "20201001",
+	"u1f632":                    "20201001",
+	"u1f633":                    "20201001",
+	"u1f634":                    "20201001",
+	"u1f635":                    "20201001",
+	"u1f636":                    "20201001",
+	"u1f636-u200d-u1f32b-ufe0f": "20210218",
+	"u1f637":                    "20201001",
+	"u1f641":                    "20201001",
+	"u1f642":                    "20201001",
+	"u1f643":                    "20201001",
+	"u1f644":                    "20201001",
+	"u1f648":                    "20201001",
+	"u1f69a":                    "20240530",
+	"u1f6a6":                    "20240530",
+	"u1f6a8":                    "20240530",
+	"u1f6d1":                    "20240206",
+	"u1f6f8":                    "20231113",
+	"u1f90d":                    "20201001",
+	"u1f90e":                    "20201001",
+	"u1f910":                    "20201001",
+	"u1f911":                    "20201001",
+	"u1f912":                    "20201001",
+	"u1f913":                    "20201001",
+	"u1f914":                    "20201001",
+	"u1f915":                    "20201001",
+	"u1f916":                    "20201001",
+	"u1f917":                    "20201001",
+	"u1f920":                    "20201001",
+	"u1f921":                    "20201001",
+	"u1f922":                    "20201001",
+	"u1f923":                    "20201001",
+	"u1f924":                    "20201001",
+	"u1f925":                    "20201001",
+	"u1f927":                    "20201001",
+	"u1f928":                    "20201001",
+	"u1f929":                    "20201001",
+	"u1f92a":                    "20201001",
+	"u1f92b":                    "20201001",
+	"u1f92c":                    "20201001",
+	"u1f92d":                    "20201001",
+	"u1f92e":                    "20201001",
+	"u1f92f":                    "20201001",
+	"u1f937":                    "20220815",
+	"u1f945":                    "20231113",
+	"u1f951":                    "20201001",
+	"u1f960":                    "20240530",
+	"u1f96b":                    "20240530",
+	"u1f970":                    "20201001",
+	"u1f971":                    "20201001",
+	"u1f972":                    "20201001",
+	"u1f973":                    "20201001",
+	"u1f974":                    "20201001",
+	"u1f975":                    "20201001",
+	"u1f976":                    "20201001",
+	"u1f978":                    "20201001",
+	"u1f979":                    "20211115",
+	"u1f97a":                    "20201001",
+	"u1f981":                    "20201001",
+	"u1f982":                    "20210218",
+	"u1f984":                    "20210831",
+	"u1f987":                    "20201001",
+	"u1f988":                    "20230418",
+	"u1f989":                    "20210831",
+	"u1f98a":                    "20221101",
+	"u1f98c":                    "20201001",
+	"u1f994":                    "20201001",
+	"u1f999":                    "20201001",
+	"u1f99d":                    "20211115",
+	"u1f9a0":                    "20201001",
+	"u1f9a5":                    "20201001",
+	"u1f9a9":                    "20240530",
+	"u1f9c0":                    "20201001",
+	"u1f9c1":                    "20201001",
+	"u1f9c3":                    "20231113",
+	"u1f9ca":                    "20231113",
+	"u1f9d0":                    "20201001",
+	"u1f9e1":                    "20201001",
+	"u1f9e9":                    "20240206",
+	"u1fa82":                    "20231113",
+	"u1fa84":                    "20210521",
+	"u1faa4":                    "20231113",
+	"u1faa8":                    "20220406",
+	"u1fab5":                    "20211115",
+	"u1fae0":                    "20211115",
+	"u1fae1":                    "20211115",
+	"u1fae2":                    "20211115",
+	"u1fae3":                    "20211115",
+	"u1fae4":                    "20211115",
+	"u1fae5":                    "20211115",
+	"u1fae6":                    "20220203",
+	"u231a":                     "20240530",
+	"u2601-ufe0f":               "20201001",
+	"u2615":                     "20201001",
+	"u2639-ufe0f":               "20201001",
+	"u263a-ufe0f":               "20201001",
+	"u2665-ufe0f":               "20201001",
+	"u26bd":                     "20220406",
+	"u26c4":                     "20201001",
+	"u26c5":                     "20240530",
+	"u26f3":                     "20240530",
+	"u26fd":                     "20231113",
+	"u2757":                     "20240530",
+	"u2763-ufe0f":               "20201001",
+	"u2764-ufe0f":               "20201001",
+	"u2764-ufe0f-u200d-u1fa79":  "20210218",
+	"u2b50":                     "20201001",
 }

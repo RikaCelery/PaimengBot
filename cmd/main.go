@@ -34,7 +34,7 @@ import (
 	_ "github.com/RicheyJang/PaimengBot/plugins/chat"
 	_ "github.com/RicheyJang/PaimengBot/plugins/contact"
 	_ "github.com/RicheyJang/PaimengBot/plugins/echo"
-	// _ "github.com/RicheyJang/PaimengBot/plugins/emoji_mix" //disable
+	_ "github.com/RicheyJang/PaimengBot/plugins/emoji_mix"
 	// _ "github.com/RicheyJang/PaimengBot/plugins/genshin" //disable
 	// _ "github.com/RicheyJang/PaimengBot/plugins/github" //disable
 	// _ "github.com/RicheyJang/PaimengBot/plugins/hhsh"  //disable

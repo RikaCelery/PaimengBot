@@ -26,6 +26,7 @@ require (
 	gorm.io/driver/mysql v1.3.2
 	gorm.io/driver/postgres v1.3.1
 	gorm.io/gorm v1.23.1
+	modernc.org/sortutil v1.2.1
 )
 
 require (
@@ -66,7 +67,7 @@ require (
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
-	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
+	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
@@ -82,7 +83,7 @@ require (
 	gopkg.in/ini.v1 v1.66.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	modernc.org/libc v1.14.3 // indirect
-	modernc.org/mathutil v1.4.1 // indirect
+	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.0.5 // indirect
 	modernc.org/sqlite v1.14.5 // indirect
 )
