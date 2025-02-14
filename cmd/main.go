@@ -25,6 +25,7 @@ import (
 	_ "github.com/RicheyJang/PaimengBot/basic/nickname"
 	_ "github.com/RicheyJang/PaimengBot/basic/sc"
 	// 新添加的插件
+	_ "github.com/RicheyJang/PaimengBot/plugins/deer_pipe"
 	_ "github.com/RicheyJang/PaimengBot/plugins/dice"
 	_ "github.com/RicheyJang/PaimengBot/plugins/image_2_ascii"
 

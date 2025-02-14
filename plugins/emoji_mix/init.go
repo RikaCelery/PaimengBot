@@ -43,12 +43,12 @@ func init() {
 	proxy.OnMessage(match, func(ctx *zero.Ctx) bool {
 		// 两个emoji混合，无论是否有{cmd}前缀
 		return len(ctx.State["emojimix"].([]string)) == 2
-	}, checkLimiter).SetBlock(true).SetPriority(4).Handle(mixEmojiHandle)
+	}, checkLimiter).SetBlock(true).SetPriority(10).Handle(mixEmojiHandle)
 
 	proxy.OnMessage(match, func(ctx *zero.Ctx) bool {
 		// 获取动图版本
 		return len(ctx.State["emojimix"].([]string)) == 1 && ctx.State["emojimix_command"].(bool)
-	}, checkLimiter).SetBlock(true).SetPriority(4).Handle(animeEmojiHandle)
+	}, checkLimiter).SetBlock(true).SetPriority(10).Handle(animeEmojiHandle)
 	proxy.AddConfig("mix_limiter", 5)
 	proxy.AddConfig("command_limiter", 2)
 	mixLimiter = rate.NewManager[string](time.Minute*30, int(proxy.GetConfigInt64("mix_limiter")))

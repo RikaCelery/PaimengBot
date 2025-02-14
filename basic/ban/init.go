@@ -39,8 +39,8 @@ var info = manager.PluginInfo{
 
 	SuperUsage: `
 用法：
-	{cmd}设置功能白名单[功能名] [群号]+：讲这个功能的运行模式改为白名单，只允许特定群使用
-	{cmd}取消功能白名单[功能名] [群号]+：删除若干群号，若群号为all则全部删除，为空时自动恢复默认运行模式
+	{cmd}设置插件白名单[功能名] [群号]+：讲这个功能的运行模式改为白名单，只允许特定群使用
+	{cmd}取消插件白名单[功能名] [群号]+：删除若干群号，若群号为all则全部删除，为空时自动恢复默认运行模式
 		如果需要设置私聊的白名单，群号需要为负数qq号 -[qq号]
 	在私聊中：
 		使用{cmd}开启\关闭[功能] [时长]?命令，将针对所有用户和群开启\关闭该功能（全局Ban）
@@ -68,8 +68,8 @@ func init() {
 	proxy.OnCommands([]string{"重置功能状态"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(resetPluginStatus)
 	proxy.OnCommands([]string{"白名单模式"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(setModeWhite)
 	proxy.OnCommands([]string{"黑名单模式"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(setModeBlack)
-	proxy.OnCommands([]string{"设置功能白名单"}, zero.OnlyToMe, zero.SuperUserPermission).SetBlock(true).FirstPriority().Handle(addPluginWhite)
-	proxy.OnCommands([]string{"取消功能白名单"}, zero.OnlyToMe, zero.SuperUserPermission).SetBlock(true).FirstPriority().Handle(removePluginWhite)
+	proxy.OnCommands([]string{"设置插件白名单"}, zero.OnlyToMe, zero.SuperUserPermission).SetBlock(true).FirstPriority().Handle(addPluginWhite)
+	proxy.OnCommands([]string{"取消插件白名单"}, zero.OnlyToMe, zero.SuperUserPermission).SetBlock(true).FirstPriority().Handle(removePluginWhite)
 	proxy.OnCommands([]string{"封禁", "ban", "Ban"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(banUser)
 	proxy.OnCommands([]string{"解封", "unban", "Unban"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(unbanUser)
 	proxy.OnCommands([]string{"黑名单"}, zero.OnlyToMe).SetBlock(true).FirstPriority().Handle(showBlack)
@@ -160,7 +160,7 @@ func addPluginWhite(ctx *zero.Ctx) {
 			PluginKey: plugin.Key,
 		}
 	}
-	list.GroupID = strings.Join(utils.MergeStringSlices(groups), "|")
+	list.GroupID = strings.Join(utils.MergeStringSlices(groups, strings.Split(list.GroupID, "|")), "|")
 	if err := proxy.GetDB().Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "plugin_key"}},
 		DoUpdates: clause.AssignmentColumns([]string{"group_id"}), // Upsert

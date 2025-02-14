@@ -49,8 +49,16 @@ type PluginWhiteList struct {
 	GroupID   string
 }
 
+type DeerPipeCalender struct {
+	QQ    int64 `gorm:"primaryKey,autoIncrement:false"`
+	Year  int   `gorm:"primaryKey"`
+	Month int   `gorm:"primaryKey"`
+	Day   int   `gorm:"primaryKey"`
+	Count int
+}
+
 func init() {
-	err := manager.GetDB().AutoMigrate(&UserSetting{}, &GroupSetting{}, &UserPriority{}, &UserOwn{}, &PluginWhiteList{})
+	err := manager.GetDB().AutoMigrate(&UserSetting{}, &GroupSetting{}, &UserPriority{}, &UserOwn{}, &PluginWhiteList{}, &DeerPipeCalender{})
 	if err != nil {
 		log.Fatalf("初始化基本数据库失败 err: %v", err)
 	}
