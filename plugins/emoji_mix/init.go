@@ -3,6 +3,7 @@ package emoji_mix
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
 	"os"
 	"path"
@@ -42,12 +43,12 @@ func init() {
 	proxy.OnMessage(match, func(ctx *zero.Ctx) bool {
 		// 两个emoji混合，无论是否有{cmd}前缀
 		return len(ctx.State["emojimix"].([]string)) == 2
-	}, checkLimiter).SetBlock(true).SetPriority(4).Handle(msgEmojiHandle)
+	}, checkLimiter).SetBlock(true).SetPriority(4).Handle(mixEmojiHandle)
 
 	proxy.OnMessage(match, func(ctx *zero.Ctx) bool {
 		// 获取动图版本
 		return len(ctx.State["emojimix"].([]string)) == 1 && ctx.State["emojimix_command"].(bool)
-	}, checkLimiter).SetBlock(true).SetPriority(4).Handle(amimeEmojiHandle)
+	}, checkLimiter).SetBlock(true).SetPriority(4).Handle(animeEmojiHandle)
 	proxy.AddConfig("mix_limiter", 5)
 	proxy.AddConfig("command_limiter", 2)
 	mixLimiter = rate.NewManager[string](time.Minute*30, int(proxy.GetConfigInt64("mix_limiter")))
@@ -81,7 +82,7 @@ var (
 	emojiRx           = regexp.MustCompile(`((?:\x{00a9}|\x{00ae}|[\x{2000}-\x{3300}]|\x{d83c}[\x{d000}-\x{dfff}]|\x{d83d}[\x{d000}-\x{dfff}]|\x{d83e}[\x{d000}-\x{dfff}])\x{FE0F}?)`)
 )
 
-func msgEmojiHandle(ctx *zero.Ctx) {
+func mixEmojiHandle(ctx *zero.Ctx) {
 	r := ctx.State["emojimix"].([]string)
 	u1 := mixEmoji(r[0], r[1], false)
 	u2 := mixEmoji(r[0], r[1], true)
@@ -105,27 +106,29 @@ func msgEmojiHandle(ctx *zero.Ctx) {
 		ctx.Send(fmt.Sprintf("ERROR: %v", err))
 	}
 }
-func amimeEmojiHandle(ctx *zero.Ctx) {
+func animeEmojiHandle(ctx *zero.Ctx) {
 	r := ctx.State["emojimix"].([]string)
 	slug, _ := emojiToHashSlug(r[0])
-	if local := path.Join(consts.EmojiMixDir, slug+".gif"); utils.FileExists(local) {
-		bytes, err := os.ReadFile(local)
-		if err != nil {
-			ctx.Send(fmt.Sprintf("ERROR: %v", err))
-			return
+	// 从本地查找
+	var found []os.DirEntry
+	if !utils.DirExists(consts.EmojiMixDir) {
+		if err := os.MkdirAll(consts.EmojiMixDir, 0755); err != nil {
+			log.Warnf("创建表情包目录失败: %v", err)
 		}
-		ctx.Send(message.ImageBytes(bytes))
-		return
-	} else if local = path.Join(consts.EmojiMixDir, strings.ReplaceAll(slug, "-ufe0f", "")+".gif"); utils.FileExists(local) {
-		bytes, err := os.ReadFile(local)
-		if err != nil {
-			ctx.Send(fmt.Sprintf("ERROR: %v", err))
-			return
+	}
+	if entries, err := os.ReadDir(consts.EmojiMixDir); err == nil {
+		for _, entry := range entries {
+			if strings.HasPrefix(entry.Name(), slug+".") {
+				found = append(found, entry)
+			} else if strings.HasPrefix(entry.Name(), strings.ReplaceAll(slug, "-ufe0f", "")+".") {
+				found = append(found, entry)
+			} else if strings.HasPrefix(entry.Name(), slug+"-ufe0f.gif"+".") {
+				found = append(found, entry)
+			}
 		}
-		ctx.Send(message.ImageBytes(bytes))
-		return
-	} else if local = path.Join(consts.EmojiMixDir, slug+"-ufe0f.gif"); utils.FileExists(local) {
-		bytes, err := os.ReadFile(local)
+	}
+	if len(found) > 0 {
+		bytes, err := os.ReadFile(path.Join(consts.EmojiMixDir, found[rand.Intn(len(found))].Name()))
 		if err != nil {
 			ctx.Send(fmt.Sprintf("ERROR: %v", err))
 			return
@@ -145,6 +148,7 @@ func amimeEmojiHandle(ctx *zero.Ctx) {
 		}
 		ctx.SendChain(message.Text(fmt.Sprintf("%s找不到这个表情的动图", utils.GetBotNickname())))
 	} else {
+		log.Errorf("<emoji_mix> http请求出错 %v", err)
 		ctx.Send(fmt.Sprintf("ERROR: %v", err))
 	}
 }
