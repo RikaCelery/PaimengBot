@@ -87,4 +87,4 @@ require (
 	modernc.org/sqlite v1.14.5 // indirect
 )
 
-replace github.com/wdvxdr1123/ZeroBot => github.com/RikaCelery/ZeroBot v0.0.0-20250212090556-279e929b9d83
+replace github.com/wdvxdr1123/ZeroBot => github.com/RikaCelery/ZeroBot v0.0.0-20250214013318-c95484d5f0a1
