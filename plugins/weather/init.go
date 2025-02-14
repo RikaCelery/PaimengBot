@@ -18,7 +18,7 @@ var info = manager.PluginInfo{
 	Name: "天气",
 	Usage: `看看今天和未来几天的天气怎么样
 用法：
-	[城市]天气：查询指定城市未来几天的天气`,
+	（无需{cmd}）[城市]天气：查询指定城市未来几天的天气`,
 	Classify: "实用工具",
 }
 var proxy *manager.PluginProxy

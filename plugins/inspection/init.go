@@ -21,11 +21,11 @@ var info = manager.PluginInfo{
 	Name: "控制命令",
 	Usage: `用于Bot的基本控制，仅限私聊
 用法：
-	自检：展示程序与环境状态
-	清理临时数据：清空临时文件夹，并统计大小
-	检查更新：检查Bot是否有更新
-	关机：紧急关闭Bot程序
-	重启：重启Bot程序
+	{cmd}自检：展示程序与环境状态
+	{cmd}清理临时数据：清空临时文件夹，并统计大小
+	{cmd}检查更新：检查Bot是否有更新
+	{cmd}关机：紧急关闭Bot程序
+	{cmd}重启：重启Bot程序
 
 config-plugin配置项：
 	inspection.timeout: 自动更新的下载超时时间，默认为10分钟
@@ -48,11 +48,11 @@ func init() {
 	if proxy == nil {
 		return
 	}
-	proxy.OnFullMatch([]string{"自检", "check", "状态"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(selfCheckHandler)
-	proxy.OnFullMatch([]string{"清理临时数据"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(cleanTemp)
-	proxy.OnFullMatch([]string{"检查更新"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(updateHandler)
-	proxy.OnFullMatch([]string{"关机"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(shutdownHandler)
-	proxy.OnFullMatch([]string{"重启"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(restartHandler)
+	proxy.OnCommands([]string{"自检", "check", "状态"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(selfCheckHandler)
+	proxy.OnCommands([]string{"清理临时数据"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(cleanTemp)
+	proxy.OnCommands([]string{"检查更新"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(updateHandler)
+	proxy.OnCommands([]string{"关机"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(shutdownHandler)
+	proxy.OnCommands([]string{"重启"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(restartHandler)
 	proxy.AddConfig("timeout", "10m") // 默认超时 10分钟
 	proxy.AddConfig("proxy", "https://ghproxy.com/?q=")
 	proxy.AddConfig("heartbeat.receiver", []int64{})

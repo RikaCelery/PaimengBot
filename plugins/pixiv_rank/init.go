@@ -19,7 +19,7 @@ import (
 var info = manager.PluginInfo{
 	Name: "pixiv排行榜",
 	Usage: `用法：
-	pixiv排行榜 [类型]? [数量]? [日期]?：获取指定日期指定数量指定类型的Pixiv排行榜图片
+	{cmd}pixiv排行榜 [类型]? [数量]? [日期]?：获取指定日期指定数量指定类型的Pixiv排行榜图片
 可选类型（左侧数字）：
 	1. 日排行
 	2. 周排行

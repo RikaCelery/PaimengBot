@@ -28,18 +28,18 @@ var info = manager.PluginInfo{
 	Name: "统计",
 	Usage: `统计并展示各种功能使用情况
 个人命令：（统计你自己的使用情况）
-	统计
-	今日统计
+	{cmd}统计
+	{cmd}今日统计
 群命令：（统计本群的使用情况）
-	群统计
-	群今日统计
+	{cmd}群统计
+	{cmd}群今日统计
 `,
 	SuperUsage: `
-	全局统计
-	全局今日统计
+	{cmd}全局统计
+	{cmd}全局今日统计
 统计某人的使用情况：
-	统计 [QQ号]
-	今日统计 [QQ号]
+	{cmd}统计 [QQ号]
+	{cmd}今日统计 [QQ号]
 配置项：
 	statistic.ignore: 不纳入统计范围的插件Key列表`,
 }

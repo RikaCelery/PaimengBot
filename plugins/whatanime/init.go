@@ -13,7 +13,7 @@ import (
 var info = manager.PluginInfo{
 	Name: "看图识番",
 	Usage: `用法：
-	识番/搜番 [图片]: 搜索该图出现的番剧以及时间点`,
+	{cmd}识番/{cmd}搜番 [图片]: 搜索该图出现的番剧以及时间点`,
 	SuperUsage: `config-plugin配置项：
 	whatanime.timeout: 单次搜索超时时间`,
 	Classify: "实用工具",

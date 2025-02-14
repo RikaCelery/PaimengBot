@@ -19,7 +19,7 @@ var info = manager.PluginInfo{
 	Usage: `
 搜索一个梗背后的梗知识
 用法：
-	搜梗 [梗]+
+	{cmd}搜梗 [梗]+
 `,
 	SuperUsage: `config-plugin配置项：
 	geng.max: 单个梗查询的最大答案条数

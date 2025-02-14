@@ -15,7 +15,7 @@ var proxy *manager.PluginProxy
 var info = manager.PluginInfo{
 	Name: "短网址还原",
 	Usage: `用法：
-	还原短网址 [短网址]：还原一个短链接，支持任意来源
+	{cmd}还原短网址 [短网址]：还原一个短链接，支持任意来源
 `,
 	Classify: "实用工具",
 }

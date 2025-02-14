@@ -17,20 +17,20 @@ var info = manager.PluginInfo{
 	Name: "b站订阅",
 	Usage: `订阅B站番剧、up主动态、直播，自动推送
 用法：
-	b站订阅番剧 [番剧名称或ID]: 订阅指定番剧或影视，支持按名称模糊搜索
-	b站订阅up [up主名称或ID]：订阅指定up主的动态，支持用户名称模糊搜索
-	b站订阅直播 [直播间ID]：订阅指定直播间的直播
+	{cmd}b站订阅番剧 [番剧名称或ID]: 订阅指定番剧或影视，支持按名称模糊搜索
+	{cmd}b站订阅up [up主名称或ID]：订阅指定up主的动态，支持用户名称模糊搜索
+	{cmd}b站订阅直播 [直播间ID]：订阅指定直播间的直播
 
-	b站已有订阅：群聊中，展示该群所有群订阅；私聊中，展示你的所有个人订阅
-	b站取消订阅 [订阅ID]：取消指定订阅，订阅ID请参照"b站已有订阅"中的订阅ID！
+	{cmd}b站已有订阅：群聊中，展示该群所有群订阅；私聊中，展示你的所有个人订阅
+	{cmd}b站取消订阅 [订阅ID]：取消指定订阅，订阅ID请参照"b站已有订阅"中的订阅ID！
 
 在私聊中调用时，代表个人订阅，只会私聊推送给你一个人
 在群聊中调用时，代表群订阅（即会在该群中推送），需要拥有管理员权限`,
 	SuperUsage: `
-	b站全部订阅：（仅限私聊）展示所有用户、所有群的订阅
-	b站取消订阅 [订阅ID] [QQ号]：取消指定用户的指定订阅；若QQ号为0，则取消该订阅ID下的所有订阅
-	b站取消订阅 [订阅ID] 群[群号]：取消指定群的指定订阅
-	b站cookie [你的b站cookie]：（仅限私聊）设置一个全局Cookie，全部cookie或仅SESSDATA皆可
+	{cmd}b站全部订阅：（仅限私聊）展示所有用户、所有群的订阅
+	{cmd}b站取消订阅 [订阅ID] [QQ号]：取消指定用户的指定订阅；若QQ号为0，则取消该订阅ID下的所有订阅
+	{cmd}b站取消订阅 [订阅ID] 群[群号]：取消指定群的指定订阅
+	{cmd}b站cookie [你的b站cookie]：（仅限私聊）设置一个全局Cookie，全部cookie或仅SESSDATA皆可
 即使不设置全局cookie，上述所有功能也可以正常使用，但设置后可以减小被b站限流的可能性；获取方法请自行百度
 config-plugin配置项：
 	bilibili.maxsearch: 最大搜索结果条数
@@ -49,9 +49,9 @@ func init() {
 		return
 	}
 	proxy.OnCommands([]string{"b站订阅"}).SetBlock(true).SetPriority(3).Handle(subscribeHandler)
-	proxy.OnFullMatch([]string{"b站已有订阅"}).SetBlock(true).SetPriority(3).Handle(listSubscribeHandler)
+	proxy.OnCommands([]string{"b站已有订阅"}).SetBlock(true).SetPriority(3).Handle(listSubscribeHandler)
 	proxy.OnCommands([]string{"b站取消订阅"}).SetBlock(true).SetPriority(3).Handle(unsubscribeHandler)
-	proxy.OnFullMatch([]string{"b站全部订阅"}, zero.SuperUserPermission, zero.OnlyPrivate).
+	proxy.OnCommands([]string{"b站全部订阅"}, zero.SuperUserPermission, zero.OnlyPrivate).
 		SetBlock(true).SetPriority(3).Handle(allSubscribeHandler)
 	proxy.OnCommands([]string{"b站cookie"}, zero.SuperUserPermission, zero.OnlyPrivate).
 		SetBlock(true).SetPriority(3).Handle(cookieHandler)

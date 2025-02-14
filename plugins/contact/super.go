@@ -15,7 +15,7 @@ import (
 var info = manager.PluginInfo{
 	Name: "联系管理员",
 	Usage: `用法：
-	联系管理员 [XXX]：将消息XXX发给管理本机器人的管理者(超级用户)`,
+	{cmd}联系管理员 [XXX]：将消息XXX发给管理本机器人的管理者(超级用户)`,
 }
 var proxy *manager.PluginProxy
 

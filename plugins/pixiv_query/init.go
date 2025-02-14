@@ -17,7 +17,7 @@ import (
 var info = manager.PluginInfo{
 	Name: "pixiv搜索",
 	Usage: `用法：(以下功能仅限私聊)
-	pixiv搜索 p[PID]：发送指定PID的所有分P插画`,
+	{cmd}pixiv搜索 p[PID]：发送指定PID的所有分P插画`,
 	SuperUsage: `config-plugin配置项:
 	api.hibiapi: 所选用HibiAPI的网址，若失效，可以自行搭建
 搭建方法：https://github.com/mixmoe/HibiAPI`,

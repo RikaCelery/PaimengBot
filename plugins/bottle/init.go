@@ -10,21 +10,22 @@ import (
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/images"
 
+	"gorm.io/gorm"
+
 	log "github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
-	"gorm.io/gorm"
 )
 
 var info = manager.PluginInfo{
 	Name: "漂流瓶",
 	Usage: `随风飘去或捡起他思
 用法：
-	扔漂流瓶 [内容]：请文明用语哦
-	捡漂流瓶`,
+	{cmd}扔漂流瓶 [内容]：请文明用语哦
+	{cmd}捡漂流瓶`,
 	SuperUsage: `
-	删除漂流瓶 [漂流瓶ID]：让这个漂流瓶永远消失（群管也可执行）
-	删除所有漂流瓶：让当前已有的所有漂流瓶永远消失
+	{cmd}删除漂流瓶 [漂流瓶ID]：让这个漂流瓶永远消失（群管也可执行）
+	{cmd}删除所有漂流瓶：让当前已有的所有漂流瓶永远消失
 config-plugin配置项：
 	bottle.max：最多容纳多少漂流瓶，溢出时会丢弃较早放入的漂流瓶
 	bottle.black：禁用词汇列表
@@ -39,11 +40,11 @@ func init() {
 		return
 	}
 	proxy.OnCommands([]string{"扔漂流瓶", "丢漂流瓶"}).SetBlock(true).SetPriority(3).Handle(dropHandler)
-	proxy.OnFullMatch([]string{"捡漂流瓶", "捡起漂流瓶"}).SetBlock(true).SetPriority(3).Handle(pickHandler)
+	proxy.OnCommands([]string{"捡漂流瓶", "捡起漂流瓶"}).SetBlock(true).SetPriority(3).Handle(pickHandler)
 	proxy.OnCommands([]string{"删除漂流瓶"}, func(ctx *zero.Ctx) bool {
 		return zero.SuperUserPermission(ctx) || auth.CheckPriority(ctx, auth.DefaultAdminLevel, false)
 	}).SetBlock(true).SetPriority(3).Handle(deleteHandler)
-	proxy.OnFullMatch([]string{"删除所有漂流瓶"}, zero.SuperUserPermission).SetBlock(true).SetPriority(3).Handle(deleteAllHandler)
+	proxy.OnCommands([]string{"删除所有漂流瓶"}, zero.SuperUserPermission).SetBlock(true).SetPriority(3).Handle(deleteAllHandler)
 	proxy.AddConfig("max", 200)
 	proxy.AddConfig("black", []string{"爹", "爸"})
 	proxy.AddConfig("notip", "啥都没捞着")

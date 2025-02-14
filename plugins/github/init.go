@@ -17,7 +17,7 @@ var info = manager.PluginInfo{
 	Name: "GitHub查询",
 	Usage: `查询某个Github仓库的相关信息
 用法：
-	github [仓库名称]
+	（无需{cmd}）github [仓库名称]
 例子：
 	github RicheyJang/PaimengBot`,
 	SuperUsage: `config-plugin配置项：

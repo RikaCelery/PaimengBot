@@ -11,7 +11,7 @@ import (
 var info = manager.PluginInfo{
 	Name: "网易云评论",
 	Usage: `用法：
-	网易云评论：随机给出一条网易云评论`,
+	{cmd}网易云评论：随机给出一条网易云评论`,
 }
 
 var proxy *manager.PluginProxy

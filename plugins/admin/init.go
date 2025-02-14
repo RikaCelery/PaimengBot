@@ -20,21 +20,21 @@ var info = manager.PluginInfo{
 	Name:     "群管理",
 	Classify: "群功能",
 	Usage: `用法：（需要将{bot}设为群管理员）
-	踢了 [QQ号或@]：并在后续询问中答复"是"，则将指定QQ号或@的人踢出本群
-	禁言 [QQ号或@] [时长]：将指定QQ号或@的人指定时长（时长为0则解除禁言; QQ号为0则全体禁言）
-	拉黑 [QQ号或@]：并在后续询问中答复"是"，则将指定QQ号或@的人拉黑
-	取消拉黑 [QQ号或@]：将指定QQ号或@的人取消拉黑
-另外，回复某条消息"禁言 [时长]"，则可以将原消息发送者禁言指定时长
+	{cmd}踢了 [QQ号或@]：并在后续询问中答复"是"，则将指定QQ号或@的人踢出本群
+	{cmd}禁言 [QQ号或@] [时长]：将指定QQ号或@的人指定时长（时长为0则解除禁言; QQ号为0则全体禁言）
+	{cmd}拉黑 [QQ号或@]：并在后续询问中答复"是"，则将指定QQ号或@的人拉黑
+	{cmd}取消拉黑 [QQ号或@]：将指定QQ号或@的人取消拉黑
+另外，回复某条消息"{cmd}禁言 [时长]"，则可以将原消息发送者禁言指定时长
 拉黑指：踢出并自动拒绝该用户加入任何{bot}作为管理员的群聊，删除并禁止其加{bot}为好友，封禁该用户的所有功能使用权
-此拉黑与"功能开关"插件中的封禁、黑名单等功能没有任何联系，请注意区别！
+此拉黑与"功能开关"插件中的{cmd}封禁、{cmd}黑名单等功能没有任何联系，请注意区别！
 示例：
-	禁言 123456 30m：将123456禁言30分钟
-	禁言 @XXX 1d12h：将XXX禁言1天12小时
-	禁言 123456 0：将123456解除禁言`,
+	{cmd}禁言 123456 30m：将123456禁言30分钟
+	{cmd}禁言 @XXX 1d12h：将XXX禁言1天12小时
+	{cmd}禁言 123456 0：将123456解除禁言`,
 	SuperUsage: `
-	当前拉黑：显示当前被拉黑的用户列表
-PS: 超级用户可以在私聊中调用"拉黑"和"取消拉黑"功能
-PPS: 踢了、禁言、拉黑不会对机器人本身及超级用户生效`,
+	{cmd}当前拉黑：显示当前被拉黑的用户列表
+PS: 超级用户可以在私聊中调用"{cmd}拉黑"和"{cmd}取消拉黑"功能
+PPS: {cmd}踢了、{cmd}禁言、{cmd}拉黑不会对机器人本身及超级用户生效`,
 	AdminLevel: 5,
 }
 var proxy *manager.PluginProxy
@@ -51,7 +51,7 @@ func init() {
 	// 拉黑相关
 	proxy.OnCommands([]string{"拉黑"}, zero.OnlyToMe).SetBlock(true).ThirdPriority().Handle(blackSomeone)
 	proxy.OnCommands([]string{"取消拉黑"}, zero.OnlyToMe).SetBlock(true).ThirdPriority().Handle(unBlackSomeone)
-	proxy.OnFullMatch([]string{"当前拉黑"}, zero.SuperUserPermission).SetBlock(true).SetPriority(3).Handle(blackList)
+	proxy.OnCommands([]string{"当前拉黑"}, zero.SuperUserPermission).SetBlock(true).SetPriority(3).Handle(blackList)
 }
 
 func kickSomeone(ctx *zero.Ctx) {

@@ -17,7 +17,7 @@ var info = manager.PluginInfo{
 	Usage: `
 	混合两个表情，表情最好是emoji表情，qq表情没有完全适配
 用法：
-	[emoji表情1][emoji表情2]: 合成两个emoji表情`,
+	（无需{cmd}）[emoji表情1][emoji表情2]: 合成两个emoji表情`,
 }
 
 func init() {
@@ -62,7 +62,7 @@ const bedURL = "https://www.gstatic.com/android/keyboard/emojikitchen/%d/u%x/u%x
 
 // match 判断是否为可以混合的表情 并将emoji索引保存到State
 func match(ctx *zero.Ctx) bool {
-	if len(ctx.Event.Message) == 2 { //两个qq表情或者qq emoji混合表情
+	if len(ctx.Event.Message) == 2 { // 两个qq表情或者qq emoji混合表情
 		r1 := face2emoji(ctx.Event.Message[0])
 		if _, ok := emojis[r1]; !ok {
 			return false
@@ -76,7 +76,7 @@ func match(ctx *zero.Ctx) bool {
 	}
 
 	r := []rune(ctx.Event.RawMessage)
-	if len(r) == 2 { //纯emoji
+	if len(r) == 2 { // 纯emoji
 		if _, ok := emojis[r[0]]; !ok {
 			return false
 		}
@@ -99,7 +99,7 @@ func face2emoji(face message.Segment) rune {
 		return qqface[id]
 	} else if face.Type == "text" {
 		rs := []rune(face.Data["text"])
-		//防止qq表情和一堆emoji也被识别
+		// 防止qq表情和一堆emoji也被识别
 		if len(rs) != 1 {
 			return 0
 		}

@@ -20,9 +20,9 @@ import (
 var info = manager.PluginInfo{
 	Name: "定时提醒",
 	Usage: `用法：
-	[时间]提醒[我 / 本群 / 群+ID] [提醒内容]：为自己或者指定群设置定时提醒，设置群提醒时需要你是该群的管理员
-	定时提醒：私聊中，查看你所设置的所有定时提醒；群聊中，查看该群的所有定时提醒（需为管理员）
-	取消提醒 [事件ID]：事件ID为"定时提醒"中所展示的
+	（无需{cmd}）[时间]提醒[我 / 本群 / 群+ID] [提醒内容]：为自己或者指定群设置定时提醒，设置群提醒时需要你是该群的管理员
+	{cmd}定时提醒：私聊中，查看你所设置的所有定时提醒；群聊中，查看该群的所有定时提醒（需为管理员）
+	{cmd}取消提醒 [事件ID]：事件ID为"定时提醒"中所展示的
 示例：
 	今天18:30提醒我看前瞻直播
 	120分钟后提醒我已经过去俩钟头啦
@@ -48,7 +48,7 @@ func init() {
 	if proxy == nil {
 		return
 	}
-	proxy.OnFullMatch([]string{"定时提醒", "定时提醒列表", "定时提醒清单"}).SetBlock(true).ThirdPriority().Handle(listNoteHandler)
+	proxy.OnCommands([]string{"定时提醒", "定时提醒列表", "定时提醒清单"}).SetBlock(true).ThirdPriority().Handle(listNoteHandler)
 	proxy.OnCommands([]string{"取消提醒", "取消定时提醒"}).SetBlock(true).ThirdPriority().Handle(cancelNoteHandler)
 	proxy.OnRegex(`^(.+)提醒(我|本群|群\d+)(.*)`, zero.OnlyToMe).SetBlock(true).SetPriority(3).Handle(noteHandler)
 	proxy.AddConfig("max", 6)

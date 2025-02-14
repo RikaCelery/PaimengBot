@@ -11,7 +11,7 @@ var info = manager.PluginInfo{ // [1] 声明插件信息结构变量
 	Name: "复读",
 	Usage: `
 用法：
-	echo [复读内容]：将echo后的内容进行复读
+	{cmd}echo [复读内容]：将echo后的内容进行复读
 `,
 }
 var proxy *manager.PluginProxy // [2] 声明插件代理变量

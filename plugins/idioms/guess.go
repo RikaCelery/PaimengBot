@@ -20,7 +20,7 @@ import (
 var info = manager.PluginInfo{
 	Name: "猜成语",
 	Usage: `用法：
-	猜成语：扔给你一张图片，猜出来是什么成语吧
+	（无需{cmd}）猜成语：扔给你一张图片，猜出来是什么成语吧
 	猜不出来的话，发送"算了"或"不知道"结束游戏
 
 	猜成语排行榜：按成功猜出成语个数排名的用户总排行榜
@@ -108,18 +108,18 @@ func guessIdioms(ctx *zero.Ctx) {
 
 func getIdiomsPicture() (msg message.Segment, key string, err error) {
 	return getIdiomsPictureLocal()
-	//if proxy.GetConfigBool("localFirst") {
+	// if proxy.GetConfigBool("localFirst") {
 	//	msg, key, err = getIdiomsPictureLocal()
 	//	if err == nil {
 	//		return
 	//	}
-	//}
-	//// 尝试API
-	//msg, key, err = getIdiomsPictureByIYK0()
-	//if err != nil {
+	// }
+	// // 尝试API
+	// msg, key, err = getIdiomsPictureByIYK0()
+	// if err != nil {
 	//	return getIdiomsPictureLocal()
-	//}
-	//return
+	// }
+	// return
 }
 
 func getIdiomsPictureLocal() (msg message.Segment, key string, err error) {

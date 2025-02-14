@@ -19,7 +19,9 @@ var info = manager.PluginInfo{
 	Usage: `
 将网络上各种纯小写翻译成人话（老年人跟不上了
 用法：
-	缩写翻译 [全小写缩写]+：将缩写翻译成人话
+	{cmd}缩写翻译 [全小写缩写]+：将缩写翻译成人话
+	（无需{cmd}）什么是[英文小写缩写]
+	（无需{cmd}）[英文小写缩写]是什么意思
 `,
 	SuperUsage: `config-plugin配置项：
 	hhsh.max: 一条简写翻译的最大答案条数`,

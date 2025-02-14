@@ -14,7 +14,7 @@ var info = manager.PluginInfo{
 	Name:     "撤回",
 	Classify: "群功能",
 	Usage: `用法：
-	回复需要撤回的消息"撤回"，即可让Bot撤回该消息`,
+	回复需要撤回的消息"{cmd}撤回"，即可让Bot撤回该消息`,
 	AdminLevel: 5,
 }
 var proxy *manager.PluginProxy
@@ -35,10 +35,10 @@ func withDrawMsg(ctx *zero.Ctx) {
 	}
 	msg := ctx.GetMessage(replyID)
 	// 检查是否为机器人本人消息
-	//if msg.Sender != nil && msg.Sender.ID != 0 && msg.Sender.ID != ctx.Event.SelfID {
+	// if msg.Sender != nil && msg.Sender.ID != 0 && msg.Sender.ID != ctx.Event.SelfID {
 	//	ctx.Send(fmt.Sprintf("%v只能撤回%v自己发出的消息哦", utils.GetBotNickname(), utils.GetBotNickname()))
 	//	return
-	//}
+	// }
 	ctx.DeleteMessage(replyID)
 	log.Infof("撤回消息 %v (id=%v)", utils.JsonString(msg), replyID)
 }

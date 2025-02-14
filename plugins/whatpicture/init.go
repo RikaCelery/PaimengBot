@@ -16,7 +16,7 @@ import (
 var info = manager.PluginInfo{
 	Name: "搜图",
 	Usage: `用法：
-	搜图/搜本子 [图片]: 搜索该图出现的插画、本子等信息`,
+	{cmd}搜图/搜本子 [图片]: 搜索该图出现的插画、本子等信息`,
 	SuperUsage: `请预先配置saucenao的API Key，否则无法使用
 config-plugin配置项：
 	whatpicture.max: 每个用户的每日最大搜索次数

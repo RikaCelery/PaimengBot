@@ -18,7 +18,7 @@ var info = manager.PluginInfo{
 	Name: "点歌",
 	Usage: `点首歌吧
 用法：
-	点歌 [关键词]+：关键词可以有多个，以空格分隔`,
+	{cmd}点歌 [关键词]+：关键词可以有多个，以空格分隔`,
 }
 var proxy *manager.PluginProxy
 

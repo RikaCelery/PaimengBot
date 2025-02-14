@@ -21,7 +21,12 @@ var info = manager.PluginInfo{
 	Name: "字符画",
 	Usage: `把图片变成字符画
 用法：
-	{cmd}字符画[图片]：将一个图片变为字符画图片`,
+	{cmd}字符画[图片] [参数]?：将一个图片变为字符画图片
+	[回复某个消息]{cmd}字符画 [参数]?
+参数:
+	-w 40 字符分辨率（一行多少字符）为40
+	-S Abcde_. 使用的字符集（黑色到白色依次使用里面的字符）
+`,
 	Classify: "图片相关",
 }
 var proxy *manager.PluginProxy

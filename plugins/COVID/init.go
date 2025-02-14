@@ -17,7 +17,8 @@ var info = manager.PluginInfo{
 	Usage: `
 查询指定地区的今日疫情状况，也可以查询全世界的
 用法：
-	新冠疫情 [地区]?
+	{cmd}新冠疫情 [地区]?
+	（无需{cmd}）[地区]疫情
 `,
 	Classify: "实用工具",
 }
