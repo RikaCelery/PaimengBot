@@ -397,3 +397,10 @@ type pluginCallLimitInfo struct {
 	StartTamp int64 `json:"first_call"`
 	CallCount int   `json:"call_count"`
 }
+
+// ---- 修改信息 ----
+
+// SetUsage 设置插件使用说明
+func (p *PluginProxy) SetUsage(usage string) {
+	p.c.Usage = usage
+}

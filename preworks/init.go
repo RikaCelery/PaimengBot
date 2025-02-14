@@ -1,7 +1,6 @@
-package PaimengBot
+package preworks
 
 import (
-	"embed"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -26,6 +25,7 @@ import (
 )
 
 func init() {
+	DoPreWorks()
 	pflag.StringP("server", "s", "ws://127.0.0.1:6700/", "the websocket server address")
 	pflag.StringSliceP("superuser", "u", []string{}, "all superusers' id")
 	pflag.StringP("nickname", "n", "派蒙", "the bot's nickname")
@@ -76,14 +76,18 @@ func DoPreWorks() {
 	}
 	// 检查是否以服务模式启动
 	CheckDaemon()
-}
 
-//go:embed static
-var staticFiles embed.FS
-
-// GetStaticFS 获取静态资源文件对象
-func GetStaticFS() embed.FS {
-	return staticFiles
+	// 初始化数据库
+	dbV := viper.Sub("db")
+	dbC := new(manager.DBConfig)
+	err = dbV.Unmarshal(dbC)
+	if err != nil {
+		log.Fatal("读取数据库配置出错 err: ", err)
+	}
+	err = manager.SetupDatabase(*dbC)
+	if err != nil {
+		log.Fatal("初始化数据库连接失败 err: ", err)
+	}
 }
 
 // 尝试修正当前路径
@@ -184,8 +188,8 @@ func flushMainConfig(configPath string, configFileName string) error {
 		}
 		zero.BotConfig.CommandPrefix = viper.GetString("command_prefix")
 		zero.BotConfig.NickName = []string{viper.GetString("nickname")}
-		_ = setupLogger()
 		manager.ReloadConfigs()
+		_ = setupLogger()
 		log.Infof("reload main config from %v", e.Name)
 	})
 	return nil

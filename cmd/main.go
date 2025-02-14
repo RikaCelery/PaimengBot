@@ -3,6 +3,8 @@ package main
 import (
 	"strconv"
 
+	_ "github.com/RicheyJang/PaimengBot/preworks"
+
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils/consts"
 	log "github.com/sirupsen/logrus"

@@ -4,30 +4,15 @@ import (
 	"image"
 	"io/fs"
 
-	"github.com/RicheyJang/PaimengBot"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
+
+	"github.com/RicheyJang/PaimengBot"
 )
 
 // ---- 初始化相关 ----
 
 // 全局初始化
 func init() {
-	// 初始化命令行参数、主配置、logger
-	PaimengBot.DoPreWorks()
-
-	// 初始化数据库
-	dbV := viper.Sub("db")
-	dbC := new(DBConfig)
-	err := dbV.Unmarshal(dbC)
-	if err != nil {
-		log.Fatal("读取数据库配置出错 err: ", err)
-	}
-	err = SetupDatabase(*dbC)
-	if err != nil {
-		log.Fatal("初始化数据库连接失败 err: ", err)
-	}
 }
 
 // FlushConfig 从文件中刷新所有插件配置
