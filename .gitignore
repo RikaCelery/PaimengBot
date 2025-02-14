@@ -1,7 +1,7 @@
 .idea
 *.yaml
 !.goreleaser.yaml
-*.exe
+main*
 *.db
 *.bat
 *.sh
