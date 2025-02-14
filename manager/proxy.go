@@ -9,24 +9,25 @@ import (
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/consts"
 
+	"gorm.io/gorm"
+
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 	"github.com/syndtr/goleveldb/leveldb"
 	zero "github.com/wdvxdr1123/ZeroBot"
-	"gorm.io/gorm"
 )
 
 // PluginProxy 插件代理，呈现给插件，用于添加事件动作、读写配置、获取插件锁、添加定时任务
 // 插件在注册后，应只与此代理交互，与Manager再无交际
 type PluginProxy struct {
-	key        string                        // 插件Key
-	u          *PluginManager                // 所从属的插件管理器
-	userLock   sync.Map                      // 用户锁
-	callLimits map[string]*pluginCallLimiter // 调用限制映射
-
-	c PluginCondition // 插件状态（被管理器控制）
+	key            string                        // 插件Key
+	u              *PluginManager                // 所从属的插件管理器
+	userLock       sync.Map                      // 用户锁
+	callLimits     map[string]*pluginCallLimiter // 调用限制映射
+	onConfigChange []func()                      // 配置更新的回调函数
+	c              PluginCondition               // 插件状态（被管理器控制）
 }
 
 // ---- 事件动作 ----
@@ -255,6 +256,21 @@ func (p *PluginProxy) GetConfigBool(key string) bool {
 // GetConfigStrings 获取[]string配置
 func (p *PluginProxy) GetConfigStrings(key string) []string {
 	return cast.ToStringSlice(p.GetConfig(key))
+}
+
+func (p *PluginProxy) AddOnConfigChange(f func()) {
+	p.onConfigChange = append(p.onConfigChange, f)
+}
+
+func (p *PluginProxy) ReloadConfig() {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Errorf("<%v>配置文件更新回调失败，err: %v", p.key, err)
+		}
+	}()
+	for _, f := range p.onConfigChange {
+		f()
+	}
 }
 
 // ---- 数据库 ----

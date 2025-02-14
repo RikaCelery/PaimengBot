@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/consts"
 
@@ -149,8 +150,8 @@ func flushMainConfig(configPath string, configFileName string) error {
 	viper.AddConfigPath(configPath)
 	viper.SetConfigFile(configFileName)
 	fullPath := utils.PathJoin(configPath, configFileName)
-	//fileType := filepath.Ext(fullPath)
-	//viper.SetConfigType(fileType)
+	// fileType := filepath.Ext(fullPath)
+	// viper.SetConfigType(fileType)
 	if utils.FileExists(fullPath) { // 配置文件已存在：合并自配置文件后重新写入
 		err := viper.MergeInConfig()
 		if err != nil {
@@ -184,6 +185,7 @@ func flushMainConfig(configPath string, configFileName string) error {
 		zero.BotConfig.CommandPrefix = viper.GetString("command_prefix")
 		zero.BotConfig.NickName = []string{viper.GetString("nickname")}
 		_ = setupLogger()
+		manager.ReloadConfigs()
 		log.Infof("reload main config from %v", e.Name)
 	})
 	return nil

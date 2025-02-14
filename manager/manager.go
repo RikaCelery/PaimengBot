@@ -13,6 +13,7 @@ import (
 	"github.com/RicheyJang/PaimengBot/utils/rules"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/glebarez/sqlite"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
@@ -20,7 +21,6 @@ import (
 	levelopt "github.com/syndtr/goleveldb/leveldb/opt"
 	zero "github.com/wdvxdr1123/ZeroBot"
 
-	"github.com/glebarez/sqlite"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -110,8 +110,8 @@ func (manager *PluginManager) FlushConfig(configPath string, configFileName stri
 	manager.configs.AddConfigPath(configPath)
 	manager.configs.SetConfigFile(configFileName)
 	fullPath := filepath.Join(configPath, configFileName)
-	//fileType := filepath.Ext(fullPath)
-	//manager.configs.SetConfigType(fileType)
+	// fileType := filepath.Ext(fullPath)
+	// manager.configs.SetConfigType(fileType)
 	if utils.FileExists(fullPath) { // 配置文件已存在：合并自配置文件后重新写入
 		err := manager.configs.MergeInConfig()
 		if err != nil {
@@ -406,4 +406,10 @@ func (manager *PluginManager) sortHooks() {
 	sort.SliceStable(manager.postHooks, func(i, j int) bool { // 按优先级排序
 		return manager.postHooks[i].priority < manager.postHooks[j].priority
 	})
+}
+
+func (manager *PluginManager) ReloadConfigs() {
+	for _, proxy := range manager.plugins {
+		proxy.ReloadConfig()
+	}
 }

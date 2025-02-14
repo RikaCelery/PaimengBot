@@ -126,3 +126,7 @@ func DecodeStaticImage(name string) (image.Image, error) {
 	}
 	return im, nil
 }
+
+func ReloadConfigs() {
+	defaultManager.ReloadConfigs()
+}
