@@ -95,10 +95,10 @@ func (p *PluginProxy) addCommands(cmd []string, rules ...zero.Rule) {
 	}
 }
 func (p *PluginProxy) AddSuperCommands(cmd []string) {
-	p.c.NormalCmd = append(p.c.NormalCmd, cmd)
+	p.c.SuperCmd = append(p.c.SuperCmd, cmd)
 }
 func (p *PluginProxy) AddNormalCommands(cmd []string) {
-	p.c.SuperCmd = append(p.c.SuperCmd, cmd)
+	p.c.NormalCmd = append(p.c.NormalCmd, cmd)
 }
 
 // 检查并添加必要的Rule
