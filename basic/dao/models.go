@@ -50,10 +50,10 @@ type PluginWhiteList struct {
 }
 
 type DeerPipeCalender struct {
-	QQ    int64 `gorm:"primaryKey,autoIncrement:false"`
-	Year  int   `gorm:"primaryKey"`
-	Month int   `gorm:"primaryKey"`
-	Day   int   `gorm:"primaryKey"`
+	QQ    int64 `gorm:"primaryKey;autoIncrement:false"`
+	Year  int   `gorm:"primaryKey;autoIncrement:false"`
+	Month int   `gorm:"primaryKey;autoIncrement:false"`
+	Day   int   `gorm:"primaryKey;autoIncrement:false"`
 	Count int
 }
 
