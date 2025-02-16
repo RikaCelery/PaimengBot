@@ -142,7 +142,7 @@ func deerReSignHandle(ctx *zero.Ctx) {
 	date, err := getDeerArg(ctx)
 	if err != nil {
 		log.Errorf("<deer_pipe>getDeerArg err: %v", err)
-		ctx.Send("出错惹")
+		ctx.Send(err.Error())
 		return
 	}
 	calenderThisMonth, err := addCount(proxy.GetDB(), ctx.Event.UserID, date)
