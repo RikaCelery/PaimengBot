@@ -89,10 +89,16 @@ func (p *PluginProxy) addCommands(cmd []string, rules ...zero.Rule) {
 	}
 	// 添加命令记录
 	if !hasSuper {
-		p.c.NormalCmd = append(p.c.NormalCmd, cmd)
+		p.AddNormalCommands(cmd)
 	} else {
-		p.c.SuperCmd = append(p.c.SuperCmd, cmd)
+		p.AddSuperCommands(cmd)
 	}
+}
+func (p *PluginProxy) AddSuperCommands(cmd []string) {
+	p.c.NormalCmd = append(p.c.NormalCmd, cmd)
+}
+func (p *PluginProxy) AddNormalCommands(cmd []string) {
+	p.c.SuperCmd = append(p.c.SuperCmd, cmd)
 }
 
 // 检查并添加必要的Rule
