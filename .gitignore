@@ -2,6 +2,7 @@
 *.yaml
 !.goreleaser.yaml
 main*
+!main.go
 *.db
 *.bat
 *.sh
