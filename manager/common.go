@@ -3,6 +3,7 @@ package manager
 import (
 	"image"
 	"io/fs"
+	"strings"
 
 	"gorm.io/gorm"
 
@@ -67,6 +68,22 @@ func GetAllPluginConditions() []*PluginCondition {
 // GetPluginConditionByKey 按Key获取插件的详细信息
 func GetPluginConditionByKey(key string) *PluginCondition {
 	return defaultManager.GetPluginConditionByKey(key)
+}
+
+// Lookup 按Key获取插件的详细信息
+func Lookup(key string) *PluginCondition {
+	var p *PluginCondition
+	for _, c := range GetAllPluginConditions() {
+		if strings.EqualFold(c.Name, key) {
+			p = c
+			break
+		}
+		if strings.EqualFold(c.Key, key) {
+			p = c
+			break
+		}
+	}
+	return p
 }
 
 // AddPreHook 添加前置hook
