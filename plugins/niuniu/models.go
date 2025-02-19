@@ -1,5 +1,5 @@
 // Package niu 牛牛大作战
-package niu
+package niuniu
 
 import (
 	"errors"
@@ -251,16 +251,12 @@ func (u *userInfo) purchaseItem(n int) (int, error) {
 	)
 	switch n {
 	case 1:
-		money = 300
 		u.WeiGe += 5
 	case 2:
-		money = 300
 		u.Philter += 5
 	case 3:
-		money = 500
 		u.Artifact += 2
 	case 4:
-		money = 500
 		u.ShenJi += 2
 	default:
 		err = errors.New("无效的选择")
@@ -354,6 +350,7 @@ func (db *model) getWordNiuNiu(gid, uid int64) (*userInfo, error) {
 func (db *model) setWordNiuNiu(gid int64, u *userInfo) error {
 	db.Lock()
 	defer db.Unlock()
+	fmt.Println(u)
 	err := db.sql.Insert(strconv.FormatInt(gid, 10), u)
 	if err != nil {
 		err = db.sql.Create(strconv.FormatInt(gid, 10), &userInfo{})

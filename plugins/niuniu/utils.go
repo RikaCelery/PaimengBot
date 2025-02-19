@@ -1,12 +1,12 @@
 // Package niu 牛牛大作战
-package niu
+package niuniu
 
 import (
 	"fmt"
 	"math"
 	"math/rand"
 
-	"github.com/FloatTech/AnimeAPI/wallet"
+	"github.com/RicheyJang/PaimengBot/basic/sc"
 )
 
 func randomChoice(options []string) string {
@@ -23,8 +23,8 @@ func profit(niuniu float64) (money int, t bool, message string) {
 	case niuniu > 15:
 		money = int(niuniu * 10)
 		message = randomChoice([]string{
-			fmt.Sprintf("你的牛牛已经离你而去了,你赚取了%d个%s", money, wallet.GetWalletName()),
-			fmt.Sprintf("啊！你的牛☞已经没啦🤣,为了这点钱就出卖你的牛牛可真不值,你赚取了%d个%s", money, wallet.GetWalletName()),
+			fmt.Sprintf("你的牛牛已经离你而去了,你赚取了%d个%s", money, sc.Unit()),
+			fmt.Sprintf("啊！你的牛☞已经没啦🤣,为了这点钱就出卖你的牛牛可真不值,你赚取了%d个%s", money, sc.Unit()),
 		})
 		t = true
 	case niuniu <= 0 && niuniu >= -15:
@@ -35,8 +35,8 @@ func profit(niuniu float64) (money int, t bool, message string) {
 	case niuniu < -15:
 		money = int(math.Abs(niuniu * 10))
 		message = randomChoice([]string{
-			fmt.Sprintf("此世做了女孩子来世来当男孩子(bushi),你赚取了%d个%s", money, wallet.GetWalletName()),
-			fmt.Sprintf("呜呜呜,不哭不哭当女孩子不委屈的,你赚取了%d个%s", money, wallet.GetWalletName()),
+			fmt.Sprintf("此世做了女孩子来世来当男孩子(bushi),你赚取了%d个%s", money, sc.Unit()),
+			fmt.Sprintf("呜呜呜,不哭不哭当女孩子不委屈的,你赚取了%d个%s", money, sc.Unit()),
 		})
 		t = true
 	}

@@ -9,13 +9,12 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/FloatTech/AnimeAPI/niu"
 	"github.com/FloatTech/rendercard"
 	"github.com/RicheyJang/PaimengBot/utils/consts"
 	zero "github.com/wdvxdr1123/ZeroBot"
 )
 
-func processRankingImg(allUsers niu.BaseInfos, ctx *zero.Ctx, t bool) ([]byte, error) {
+func processRankingImg(allUsers BaseInfos, ctx *zero.Ctx, t bool) ([]byte, error) {
 	s := "牛牛长度"
 	title := "牛牛长度排行"
 	if !t {

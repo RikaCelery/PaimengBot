@@ -1,5 +1,5 @@
 // Package niu 牛牛大作战
-package niu
+package niuniu
 
 import (
 	"errors"
@@ -11,9 +11,8 @@ import (
 	"time"
 
 	sql "github.com/FloatTech/sqlite"
+	"github.com/RicheyJang/PaimengBot/basic/sc"
 	"github.com/RicheyJang/PaimengBot/utils"
-
-	"github.com/FloatTech/AnimeAPI/wallet"
 )
 
 var (
@@ -256,21 +255,21 @@ func Cancel(gid, uid int64) (string, error) {
 
 // Redeem 赎牛牛
 func Redeem(gid, uid int64, lastLength float64) error {
-	money := wallet.GetWalletOf(uid)
+	money := sc.BaseCoinOf(uid)
 	if money < 150 {
 		var builder strings.Builder
-		walletName := wallet.GetWalletName()
+		walletName := sc.Unit()
 		builder.WriteString("赎牛牛需要150")
 		builder.WriteString(walletName)
 		builder.WriteString("，快去赚钱吧，目前仅有:")
-		builder.WriteString(strconv.Itoa(money))
+		builder.WriteString(strconv.FormatFloat(money, 'f', 2, 64))
 		builder.WriteString("个")
 		builder.WriteString(walletName)
 		return errors.New(builder.String())
 	}
 
-	if err := wallet.InsertWalletOf(uid, -150); err != nil {
-		return err
+	if _, ok := sc.AddBaseCoin(uid, -150); !ok {
+		return errors.New("添加金钱失败")
 	}
 
 	niu, err := db.getWordNiuNiu(gid, uid)
@@ -284,26 +283,28 @@ func Redeem(gid, uid int64, lastLength float64) error {
 }
 
 // Store 牛牛商店
-func Store(gid, uid int64, n int) error {
+func Store(gid, uid int64, money float64, n int) error {
 	info, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return err
 	}
 
-	money, err := info.purchaseItem(n)
+	fmt.Println(info)
+	_, err = info.purchaseItem(n)
+	fmt.Println(info)
 	if err != nil {
 		return err
 	}
 
-	if wallet.GetWalletOf(uid) < money {
+	if sc.BaseCoinOf(uid) < money {
 		return ErrNoMoney
 	}
 
-	if err = wallet.InsertWalletOf(uid, -money); err != nil {
-		return err
+	if _, ok := sc.AddBaseCoin(uid, -money); !ok {
+		return ErrNoMoney
 	}
 
-	return db.setWordNiuNiu(uid, info)
+	return db.setWordNiuNiu(gid, info)
 }
 
 // Sell 出售牛牛
@@ -321,9 +322,9 @@ func Sell(gid, uid int64) (string, error) {
 		return "", err
 	}
 
-	err = wallet.InsertWalletOf(uid, money)
-	if err != nil {
-		return message, err
+	_, ok := sc.AddBaseCoin(uid, float64(money))
+	if !ok {
+		return "", errors.New("添加金钱失败")
 	}
 
 	infos, _ := db.getAllNiuNiuAuction(gid)
@@ -352,7 +353,7 @@ func Auction(gid, uid int64, index int) (string, error) {
 	if err != nil {
 		return "", ErrNoNiuNiuINAuction
 	}
-	if err := wallet.InsertWalletOf(uid, -infos[index].Money); err != nil {
+	if _, ok := sc.AddBaseCoin(uid, float64(-infos[index].Money)); !ok {
 		return "", ErrNoMoney
 	}
 
@@ -364,7 +365,7 @@ func Auction(gid, uid int64, index int) (string, error) {
 
 	niu.Length = infos[index].Length
 
-	if infos[index].Money >= 500 {
+	if infos[index].Money >= 30 {
 		niu.WeiGe += 2
 		niu.Philter += 2
 	}
@@ -377,7 +378,7 @@ func Auction(gid, uid int64, index int) (string, error) {
 		return "", err
 	}
 
-	if infos[index].Money >= 500 {
+	if infos[index].Money >= 30 {
 		return fmt.Sprintf("恭喜你购买成功,当前长度为%.2fcm,此次购买将赠送你2个伟哥,2个媚药", niu.Length), nil
 	}
 

@@ -7,6 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
+
 	"github.com/RicheyJang/PaimengBot/basic/dao"
 	"github.com/RicheyJang/PaimengBot/basic/nickname"
 	"github.com/RicheyJang/PaimengBot/manager"
@@ -16,24 +19,22 @@ import (
 	"github.com/spf13/cast"
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
-	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 var info = manager.PluginInfo{
 	Name: "签到与财富",
 	Usage: `来签到吧！
 用法；
-	签到：每日签到！
-	我的好感度：显示{bot}对你的好感度
-	我的财富：显示你目前的资产
-	好感度排行：群聊专用，显示本群{bot}好感度排行榜（前10名）
-	财富排行：群聊专用，显示本群财富排行榜（前10名）`,
+	{cmd}签到：每日签到！
+	{cmd}我的好感度：显示{bot}对你的好感度
+	{cmd}我的财富：显示你目前的资产
+	{cmd}好感度排行：群聊专用，显示本群{bot}好感度排行榜（前10名）
+	{cmd}财富排行：群聊专用，显示本群财富排行榜（前10名）`,
 	SuperUsage: `
-	增加好感度 [QQ号] [好感度]：给指定用户加上指定好感度
-	增加财富 [QQ号] [基础金额]：给指定用户加上指定基础金额
-	设置好感度 [QQ号] [好感度]：摁设置指定用户的好感度
-	设置财富 [QQ号] [基础金额]：摁设置指定用户的基础金额
+	{cmd}增加好感度 [QQ号] [好感度]：给指定用户加上指定好感度
+	{cmd}增加财富 [QQ号] [基础金额]：给指定用户加上指定基础金额
+	{cmd}设置好感度 [QQ号] [好感度]：摁设置指定用户的好感度
+	{cmd}设置财富 [QQ号] [基础金额]：摁设置指定用户的基础金额
 注意，财富分为基础金额和真实金额
 	基础金额为所有配置项中所体现的货币金额，用于方便各类配置
 	真实金额为基础金额乘以所配置的倍率所得，用于展示给用户；签到、我的财富、排行榜中展示的都是真实金额
@@ -55,10 +56,10 @@ func init() {
 	if proxy == nil {
 		return
 	}
-	proxy.OnFullMatch([]string{"签到", "每日签到"}).SetBlock(true).ThirdPriority().Handle(signHandler)
-	proxy.OnFullMatch([]string{"我的好感度"}).SetBlock(true).ThirdPriority().Handle(myFavorHandler)
-	proxy.OnFullMatch([]string{"我的财富", "我的资产"}).SetBlock(true).ThirdPriority().Handle(myWealthHandler)
-	proxy.OnFullMatch([]string{"好感度排行", "财富排行", "好感度排行榜", "财富排行榜"}).SetBlock(true).ThirdPriority().Handle(rankHandler)
+	proxy.OnCommands([]string{"签到", "每日签到"}).SetBlock(true).ThirdPriority().Handle(signHandler)
+	proxy.OnCommands([]string{"我的好感度"}).SetBlock(true).ThirdPriority().Handle(myFavorHandler)
+	proxy.OnCommands([]string{"我的财富", "我的资产"}).SetBlock(true).ThirdPriority().Handle(myWealthHandler)
+	proxy.OnCommands([]string{"好感度排行", "财富排行", "好感度排行榜", "财富排行榜"}).SetBlock(true).ThirdPriority().Handle(rankHandler)
 	proxy.OnCommands([]string{"设置好感度", "设置财富"}, zero.SuperUserPermission).SetBlock(true).ThirdPriority().Handle(setHandler)
 	proxy.OnCommands([]string{"增加好感度", "增加财富"}, zero.SuperUserPermission).SetBlock(true).ThirdPriority().Handle(addHandler)
 	manager.AddPreHook(costHook).SetPriority(10)
@@ -78,7 +79,7 @@ func myFavorHandler(ctx *zero.Ctx) {
 
 func myWealthHandler(ctx *zero.Ctx) {
 	rc := RealCoin(BaseCoinOf(ctx.Event.UserID))
-	ctx.Send(fmt.Sprintf("%v目前拥有%.0f%s",
+	ctx.Send(fmt.Sprintf("%v目前拥有%.2f%s",
 		nickname.GetNickname(ctx.Event.UserID, "你"), rc, Unit()))
 }
 

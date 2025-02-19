@@ -2,15 +2,18 @@
 package niuniu
 
 import (
+	"encoding/json"
 	"fmt"
-	"math/rand"
+	"math"
 	"strconv"
+	"strings"
 	"time"
 
-	"github.com/FloatTech/AnimeAPI/niu"
 	"github.com/RicheyJang/PaimengBot/basic/sc"
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/ctxext"
+	"github.com/RicheyJang/PaimengBot/utils/images"
+	log "github.com/sirupsen/logrus"
 	"github.com/wdvxdr1123/ZeroBot/extension/rate"
 
 	"github.com/RicheyJang/PaimengBot/manager"
@@ -23,6 +26,13 @@ type lastLength struct {
 	TimeLimit time.Time
 	Count     int
 	Length    float64
+}
+type shopItem struct {
+	Name        string `json:"name"`
+	Cost        int    `json:"cost"`
+	Scope       string `json:"scope"`
+	Description string `json:"description"`
+	Count       int    `json:"count"`
 }
 
 var (
@@ -59,10 +69,16 @@ ps : 出售后的牛牛都会进入牛牛拍卖行哦`,
 )
 
 func init() {
+	proxy.AddConfig("shop_item", []string{
+		`{"name":"伟哥", "cost":2, "scope":"打胶", "description":"可以让你打胶每次都增长", "count":5}`,
+		`{"name":"媚药", "cost":2, "scope":"打胶", "description":"可以让你打胶每次都减少","count": 5}`,
+		`{"name":"击剑神器", "cost":10, "scope":"jj", "description":"可以让你每次击剑都立于不败之地", "count":2}`,
+		`{"name":"击剑神稽", "cost":10, "scope":"jj", "description":"可以让你每次击剑都失败", "count":2}`,
+	})
 	proxy.OnCommands([]string{"牛牛拍卖行"}, zero.OnlyToMe, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		gid := ctx.Event.GroupID
 		uid := ctx.Event.UserID
-		auction, err := niu.ShowAuction(gid)
+		auction, err := ShowAuction(gid)
 		if err != nil {
 			ctx.SendChain(message.Text("ERROR:", err))
 			return
@@ -98,7 +114,7 @@ func init() {
 					return
 				}
 				n--
-				msg, err := niu.Auction(gid, uid, n)
+				msg, err := Auction(gid, uid, n)
 				if err != nil {
 					ctx.SendChain(message.Text("ERROR:", err))
 					return
@@ -111,7 +127,7 @@ func init() {
 	proxy.OnCommands([]string{"出售牛牛"}, zero.OnlyToMe, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		gid := ctx.Event.GroupID
 		uid := ctx.Event.UserID
-		sell, err := niu.Sell(gid, uid)
+		sell, err := Sell(gid, uid)
 		if err != nil {
 			ctx.SendChain(message.Text("ERROR:", err))
 			return
@@ -121,7 +137,7 @@ func init() {
 	proxy.OnCommands([]string{"牛牛背包"}, zero.OnlyToMe, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		gid := ctx.Event.GroupID
 		uid := ctx.Event.UserID
-		bag, err := niu.Bag(gid, uid)
+		bag, err := Bag(gid, uid)
 		if err != nil {
 			ctx.SendChain(message.Text("ERROR:", err))
 			return
@@ -132,38 +148,36 @@ func init() {
 		gid := ctx.Event.GroupID
 		uid := ctx.Event.UserID
 
-		if _, err := niu.GetWordNiuNiu(gid, uid); err != nil {
-			ctx.SendChain(message.Text(niu.ErrNoNiuNiu))
+		if _, err := GetWordNiuNiu(gid, uid); err != nil {
+			ctx.SendChain(message.Text(ErrNoNiuNiu))
 			return
 		}
 
-		propMap := map[int]struct {
-			name        string
-			cost        int
-			scope       string
-			description string
-			count       int
-		}{
-			1: {"伟哥", 300, "打胶", "可以让你打胶每次都增长", 5},
-			2: {"媚药", 300, "打胶", "可以让你打胶每次都减少", 5},
-			3: {"击剑神器", 500, "jj", "可以让你每次击剑都立于不败之地", 2},
-			4: {"击剑神稽", 500, "jj", "可以让你每次击剑都失败", 2},
+		propMap := map[int]shopItem{}
+		for i, item := range getShopItems() {
+			propMap[i+1] = item
 		}
-
-		var messages message.Message
-		messages = append(messages, ctxext.FakeSenderForwardNode(ctx, message.Text("牛牛商店当前售卖的物品如下")))
+		sb := &strings.Builder{}
+		sb.WriteString("牛牛商店当前售卖的物品如下\n")
 		for id := range propMap {
 			product := propMap[id]
-			productInfo := fmt.Sprintf("商品%d\n商品名: %s\n商品价格: %dATRI币\n商品作用域: %s\n商品描述: %s\n使用次数:%d",
-				id, product.name, product.cost, product.scope, product.description, product.count)
-			messages = append(messages, ctxext.FakeSenderForwardNode(ctx, message.Text(productInfo)))
+			productInfo := fmt.Sprintf("商品[%d]\n商品名: %s\n商品价格: %.2f%s\n商品作用域: %s\n商品描述: %s\n使用次数:%d",
+				id, product.Name, float64(product.Cost)*sc.Rate(), sc.Unit(), product.Scope, product.Description, product.Cost)
+			sb.WriteString(productInfo + "\n")
 		}
-		if id := ctx.Send(messages).ID(); id == 0 {
-			ctx.Send(message.Text("发送商店失败"))
+		sb.WriteString("\n输入对应序号进行购买商品")
+		w, h := images.MeasureStringDefault(sb.String(), 24, 1.3)
+		img := images.NewImageCtx(int(w+20), int(h+20))
+		img.SetRGB(1, 1, 1)
+		img.Clear()
+		_ = img.PasteStringDefault(sb.String(), 24, 1.3, 10, 10, w)
+		msg, err := img.GenMessageAuto()
+		if err != nil {
+			ctx.Send(message.Text("发送商店失败", err.Error()))
+			utils.SetNotStatistic(ctx)
 			return
 		}
-
-		ctx.SendChain(message.Text("输入对应序号进行购买商品"))
+		ctx.Send(msg)
 		recv, cancel := zero.NewFutureEvent("message", 999, false, zero.CheckUser(uid), zero.CheckGroup(gid), zero.RegexRule(`^(\d+)$`)).Repeat()
 		defer cancel()
 		timer := time.NewTimer(120 * time.Second)
@@ -178,11 +192,13 @@ func init() {
 				answer = r.Event.Message.String()
 				n, err := strconv.Atoi(answer)
 				if err != nil {
-					ctx.SendChain(message.Text("ERROR: ", err))
 					return
 				}
-
-				if err = niu.Store(gid, uid, n); err != nil {
+				item, ok := propMap[n]
+				if !ok {
+					ctx.SendChain(message.Text("商品不存在!"))
+				}
+				if err = Store(gid, uid, float64(item.Cost), n); err != nil {
 					ctx.SendChain(message.Text("ERROR: ", err))
 					return
 				}
@@ -229,7 +245,7 @@ func init() {
 					return
 				}
 
-				if err := niu.Redeem(gid, uid, last.Length); err == nil {
+				if err := Redeem(gid, uid, last.Length); err == nil {
 					ctx.SendChain(message.Text("ERROR:", err))
 					return
 				}
@@ -243,7 +259,7 @@ func init() {
 	})
 	proxy.OnCommands([]string{"牛子长度排行"}, zero.OnlyToMe, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		gid := ctx.Event.GroupID
-		infos, err := niu.GetRankingInfo(gid, true)
+		infos, err := GetRankingInfo(gid, true)
 		if err != nil {
 			ctx.SendChain(message.Text("ERROR: ", err))
 			return
@@ -257,7 +273,7 @@ func init() {
 	})
 	proxy.OnCommands([]string{"牛子深度排行"}, zero.OnlyToMe, zero.OnlyToMe, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		gid := ctx.Event.GroupID
-		infos, err := niu.GetRankingInfo(gid, false)
+		infos, err := GetRankingInfo(gid, false)
 		if err != nil {
 			ctx.SendChain(message.Text("ERROR: ", err))
 			return
@@ -272,7 +288,7 @@ func init() {
 	proxy.OnCommands([]string{"查看我的牛牛"}, zero.OnlyToMe, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		uid := ctx.Event.UserID
 		gid := ctx.Event.GroupID
-		view, err := niu.View(gid, uid, ctx.CardOrNickName(uid))
+		view, err := View(gid, uid, ctx.CardOrNickName(uid))
 		if err != nil {
 			ctx.SendChain(message.Text("ERROR: ", err))
 			return
@@ -290,7 +306,7 @@ func init() {
 		uid := ctx.Event.UserID
 		fiancee := ctx.State["regex_matched"].([]string)
 
-		msg, err := niu.HitGlue(gid, uid, fiancee[1])
+		msg, err := HitGlue(gid, uid, fiancee[1])
 		if err != nil {
 			ctx.SendChain(message.Text("ERROR: ", err))
 			dajiaoLimiter.Delete(fmt.Sprintf("%d_%d", ctx.Event.GroupID, ctx.Event.UserID))
@@ -301,7 +317,7 @@ func init() {
 	proxy.OnCommands([]string{"注册牛牛"}, zero.OnlyToMe, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		gid := ctx.Event.GroupID
 		uid := ctx.Event.UserID
-		msg, err := niu.Register(gid, uid)
+		msg, err := Register(gid, uid)
 		if err != nil {
 			ctx.SendChain(message.Text("ERROR: ", err))
 			return
@@ -324,7 +340,7 @@ func init() {
 		}
 		uid := ctx.Event.UserID
 		gid := ctx.Event.GroupID
-		msg, length, err := niu.JJ(gid, uid, adduser, patternParsed[0].Text()[1])
+		msg, length, err := JJ(gid, uid, adduser, patternParsed[0].Text()[1])
 		if err != nil {
 			ctx.SendChain(message.Text("ERROR: ", err))
 			jjLimiter.Delete(fmt.Sprintf("%d_%d", ctx.Event.GroupID, ctx.Event.UserID))
@@ -391,7 +407,7 @@ func init() {
 			}
 		}
 		register.Store(key, data)
-		msg, err := niu.Cancel(gid, uid)
+		msg, err := Cancel(gid, uid)
 		if err != nil {
 			ctx.SendChain(message.Text("ERROR: ", err))
 			return
@@ -404,6 +420,34 @@ func init() {
 	proxy.SetCallLimiter("jj", time.Hour*1, 2).BindTimesConfig("jj_per_hour")
 }
 
-func randomChoice(options []string) string {
-	return options[rand.Intn(len(options))]
+func getShopItems() []shopItem {
+	var jsons = proxy.GetConfigStrings("shop_item")
+	var items []shopItem
+	for _, jstr := range jsons {
+		var item shopItem
+		err := json.Unmarshal([]byte(jstr), &item)
+		if err != nil {
+			log.Warnf("<niuniu>shop item json unmarshal error: %v", err)
+			continue
+		}
+		items = append(items, item)
+	}
+	return items
+}
+
+func getCutoff(ctx *zero.Ctx, cost float64) float64 {
+	fav := math.Log2(sc.FavorOf(ctx.Event.UserID))
+	if fav <= 0 {
+		return 0
+	} else if fav < 1 { // [1,2)
+		return 0.01 * cost
+	} else if fav < 2 { // [2,4)
+		return 0.04 * cost
+	} else if fav < 3 { // [4,8)
+		return 0.10 * cost
+	} else if fav < 5 { // [4,8)
+		return 0.20 * cost
+	} else {
+		return 0.35 * cost
+	}
 }

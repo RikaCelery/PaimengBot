@@ -3,10 +3,11 @@ package sc
 import (
 	"math"
 
+	"gorm.io/gorm"
+
 	"github.com/RicheyJang/PaimengBot/basic/dao"
 	log "github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
-	"gorm.io/gorm"
 )
 
 const ReturnCostTag = "return_cost"
@@ -24,6 +25,11 @@ func RealCoin(base float64) float64 {
 // Unit 获取货币单位
 func Unit() string {
 	return proxy.GetConfigString("coin.unit")
+}
+
+// Rate 获取货币倍率
+func Rate() float64 {
+	return proxy.GetConfigFloat64("coin.rate")
 }
 
 // BaseCoinOf 获取指定用户的基础货币数

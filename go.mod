@@ -3,9 +3,8 @@ module github.com/RicheyJang/PaimengBot
 go 1.20
 
 require (
-	github.com/FloatTech/AnimeAPI v1.7.1-0.20250217140215-4856397458c9
-	github.com/FloatTech/floatbox v0.0.0-20241106130736-5aea0a935024
 	github.com/FloatTech/rendercard v0.2.0
+	github.com/FloatTech/sqlite v1.7.1
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/RomiChan/syncx v0.0.0-20240418144900-b7402ffdebc7
 	github.com/chromedp/chromedp v0.9.2
@@ -34,11 +33,9 @@ require (
 )
 
 require (
+	github.com/FloatTech/floatbox v0.0.0-20241106130736-5aea0a935024 // indirect
 	github.com/FloatTech/gg v1.1.3 // indirect
-	github.com/FloatTech/imgfactory v0.2.2-0.20230315152233-49741fc994f9 // indirect
-	github.com/FloatTech/sqlite v1.7.1 // indirect
 	github.com/FloatTech/ttl v0.0.0-20240716161252-965925764562 // indirect
-	github.com/FloatTech/zbpctrl v1.7.0 // indirect
 	github.com/RomiChan/websocket v1.4.3-0.20220227141055-9b2c6168c9c5 // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/andybalholm/cascadia v1.3.1 // indirect
@@ -46,14 +43,7 @@ require (
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4 // indirect
-	github.com/fumiama/cron v1.3.0 // indirect
-	github.com/fumiama/go-base16384 v1.7.0 // indirect
-	github.com/fumiama/go-registry v0.2.7 // indirect
-	github.com/fumiama/go-simple-protobuf v0.2.0 // indirect
-	github.com/fumiama/gofastTEA v0.0.10 // indirect
 	github.com/fumiama/imgsz v0.0.2 // indirect
-	github.com/fumiama/terasu v0.0.0-20241027183601-987ab91031ce // indirect
 	github.com/glebarez/go-sqlite v1.14.7 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
@@ -84,7 +74,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
-	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
