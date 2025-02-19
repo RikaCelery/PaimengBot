@@ -12,9 +12,6 @@ import (
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/driver"
 
-	// 可选插件，若要启用，去除注释即可
-	_ "github.com/RicheyJang/PaimengBot/plugins/HiOSU"
-
 	// 基本插件，建议不要删除，可能会造成依赖问题
 	_ "github.com/RicheyJang/PaimengBot/basic/auth"
 	_ "github.com/RicheyJang/PaimengBot/basic/ban"
@@ -24,12 +21,15 @@ import (
 	_ "github.com/RicheyJang/PaimengBot/basic/limiter"
 	_ "github.com/RicheyJang/PaimengBot/basic/nickname"
 	_ "github.com/RicheyJang/PaimengBot/basic/sc"
+
 	// 新添加的插件
 	_ "github.com/RicheyJang/PaimengBot/plugins/deer_pipe"
 	_ "github.com/RicheyJang/PaimengBot/plugins/dice"
 	_ "github.com/RicheyJang/PaimengBot/plugins/image_2_ascii"
+	_ "github.com/RicheyJang/PaimengBot/plugins/niuniu"
 
 	// 普通插件
+	_ "github.com/RicheyJang/PaimengBot/plugins/HiOSU"
 	// _ "github.com/RicheyJang/PaimengBot/plugins/COVID"  //
 	_ "github.com/RicheyJang/PaimengBot/plugins/admin"
 	// _ "github.com/RicheyJang/PaimengBot/plugins/bilibili" //disable
@@ -60,6 +60,8 @@ import (
 	// _ "github.com/RicheyJang/PaimengBot/plugins/whatpicture" //disable
 	_ "github.com/RicheyJang/PaimengBot/plugins/withdraw"
 	// _ "github.com/RicheyJang/PaimengBot/plugins/geng" // 已失效
+
+	_ "github.com/RicheyJang/PaimengBot/plugins/slash"
 )
 
 func main() {
