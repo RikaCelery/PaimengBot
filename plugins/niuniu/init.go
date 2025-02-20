@@ -2,17 +2,13 @@
 package niuniu
 
 import (
-	"encoding/json"
 	"fmt"
-	"math"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/RicheyJang/PaimengBot/basic/sc"
 	"github.com/RicheyJang/PaimengBot/utils"
-	"github.com/RicheyJang/PaimengBot/utils/images"
-	log "github.com/sirupsen/logrus"
 	"github.com/wdvxdr1123/ZeroBot/extension/rate"
 
 	"github.com/RicheyJang/PaimengBot/manager"
@@ -21,18 +17,12 @@ import (
 	"github.com/wdvxdr1123/ZeroBot/message"
 )
 
-type lastLength struct {
-	TimeLimit time.Time
-	Count     int
-	Length    float64
-}
-type shopItem struct {
-	Name        string `json:"name"`
-	Cost        int    `json:"cost"`
-	Scope       string `json:"scope"`
-	Description string `json:"description"`
-	Count       int    `json:"count"`
-}
+const (
+	configCostPerUnregister = "cost_per_unregister"
+	configDajiaoLimit       = "dajiao_per_hour"
+	configJJLimit           = "jj_per_hour"
+	configProfit            = "profit"
+)
 
 var (
 	info = manager.PluginInfo{
@@ -55,6 +45,14 @@ var (
 	{cmd}牛子长度排行
 	{cmd}牛子深度排行
 ps : 出售后的牛牛都会进入牛牛拍卖行哦`,
+		SuperUsage: `
+config-plugin配置项：
+	niuniu.profit：卖牛牛每厘米获得的真实金钱
+	niuniu.redeem_cost：赎牛牛所需真实金钱
+	niuniu.unregister_rate：注销牛牛的真实金钱倍率（次数*倍率）
+	niuniu.dajiao_per_hour：注销牛牛的真实金钱倍率（次数*倍率）
+	niuniu.jj_per_hour：注销牛牛的真实金钱倍率（次数*倍率）
+`,
 		Classify:    "小游戏",
 		IsPassive:   false,
 		IsSuperOnly: false,
@@ -122,7 +120,7 @@ func init() {
 	proxy.OnCommands([]string{"出售牛牛"}, zero.OnlyToMe, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		gid := ctx.Event.GroupID
 		uid := ctx.Event.UserID
-		sell, err := Sell(gid, uid)
+		sell, err := Sell(gid, uid, proxy.GetConfigFloat64(configProfit))
 		if err != nil {
 			ctx.SendChain(message.Text("ERROR:", err))
 			return
@@ -290,7 +288,7 @@ func init() {
 	})
 	proxy.OnRegex(`^(?:.*使用(.*))??打胶$`, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		if !proxy.CheckCallLimit("dajiao", ctx.Event.UserID) {
-			ctx.Send(fmt.Sprintf("每小时只能打%d次～，歇一会儿吧～", proxy.GetConfigInt64("dajiao_per_hour")))
+			ctx.Send(fmt.Sprintf("每小时只能打%d次～，歇一会儿吧～", proxy.GetConfigInt64(configDajiaoLimit)))
 			utils.SetNotStatistic(ctx)
 			return
 		}
@@ -320,7 +318,7 @@ func init() {
 	proxy.OnMessage(zero.NewPattern(nil).Text(`^(?:.*使用(.*))??jj`).At().AsRule(),
 		zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		if !proxy.CheckCallLimit("jj", ctx.Event.UserID) {
-			ctx.Send(fmt.Sprintf("每小时只能击剑%d次～，歇一会儿吧～", proxy.GetConfigInt64("jj_per_hour")))
+			ctx.Send(fmt.Sprintf("每小时只能击剑%d次～，歇一会儿吧～", proxy.GetConfigInt64(configJJLimit)))
 			utils.SetNotStatistic(ctx)
 			return
 		}
@@ -367,12 +365,14 @@ func init() {
 
 		jjCount.Store(j, &c)
 		if c.Count > 2 {
-			ctx.SendChain(message.Text(randomChoice([]string{
-				fmt.Sprintf("你们太厉害了，对方已经被你们打了%d次了，你们可以继续找他🤺", c.Count),
-				"你们不要再找ta🤺啦！"},
-			)))
+			if c.Count <= 4 { // 不要一直发
+				ctx.SendChain(message.Text(randomChoice([]string{
+					fmt.Sprintf("你们太厉害了，对方已经被你们打了%d次了，你们可以继续找他🤺", c.Count),
+					"你们不要再找ta🤺啦！"},
+				)))
+			}
 
-			if c.Count >= 4 {
+			if c.Count >= 4 && c.Count <= 6 { // 不要一直发
 				id := ctx.SendPrivateMessage(adduser,
 					message.Text(fmt.Sprintf("你在%d群里已经被厥冒烟了，快去群里赎回你原本的牛牛!\n发送:`赎牛牛`即可！", gid)))
 				if id == 0 {
@@ -393,9 +393,9 @@ func init() {
 				Count:     1,
 			}
 		default:
-			if _, ok := sc.AddBaseCoin(uid, float64(-data.Count*50)); !ok {
-				ctx.SendChain(message.Text("你的钱不够你注销牛牛了，这次注销需要", data.Count*50, sc.Unit()))
-				sc.SetNeedReturnCost(ctx)
+			cost := float64(data.Count) * proxy.GetConfigFloat64(configCostPerUnregister)
+			if _, ok := sc.AddBaseCoin(uid, cost); !ok {
+				ctx.SendChain(message.Text("你的钱不够你注销牛牛了，这次注销需要", strconv.FormatFloat(cost*sc.Rate(), 'f', 2, 64), sc.Unit()))
 				return
 			}
 		}
@@ -407,48 +407,10 @@ func init() {
 		}
 		ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(msg))
 	})
-	proxy.AddConfig("dajiao_per_hour", 2)
-	proxy.SetCallLimiter("dajiao", time.Hour*1, 2).BindTimesConfig("dajiao_per_hour")
-	proxy.AddConfig("jj_per_hour", 2)
-	proxy.SetCallLimiter("jj", time.Hour*1, 2).BindTimesConfig("jj_per_hour")
-}
-func imageCard(str string) (message.Segment, error) {
-	w, h := images.MeasureStringDefault(str, 24, 1.3)
-	img := images.NewImageCtx(int(w+20), int(h+20))
-	img.SetRGB(1, 1, 1)
-	img.Clear()
-	_ = img.PasteStringDefault(str, 24, 1.3, 10, 10, w)
-	return img.GenMessageAuto()
-
-}
-func getShopItems() []shopItem {
-	var jsons = proxy.GetConfigStrings("shop_item")
-	var items []shopItem
-	for _, jstr := range jsons {
-		var item shopItem
-		err := json.Unmarshal([]byte(jstr), &item)
-		if err != nil {
-			log.Warnf("<niuniu>shop item json unmarshal error: %v", err)
-			continue
-		}
-		items = append(items, item)
-	}
-	return items
-}
-
-func getCutoff(ctx *zero.Ctx, cost float64) float64 {
-	fav := math.Log2(sc.FavorOf(ctx.Event.UserID))
-	if fav <= 0 {
-		return 0
-	} else if fav < 1 { // [1,2)
-		return 0.01 * cost
-	} else if fav < 2 { // [2,4)
-		return 0.04 * cost
-	} else if fav < 3 { // [4,8)
-		return 0.10 * cost
-	} else if fav < 5 { // [4,8)
-		return 0.20 * cost
-	} else {
-		return 0.35 * cost
-	}
+	proxy.AddConfig(configProfit, 5)
+	proxy.AddConfig(configCostPerUnregister, 10)
+	proxy.AddConfig(configDajiaoLimit, 2)
+	proxy.SetCallLimiter("dajiao", time.Hour*1, 2).BindTimesConfig(configDajiaoLimit)
+	proxy.AddConfig(configJJLimit, 2)
+	proxy.SetCallLimiter("jj", time.Hour*1, 2).BindTimesConfig(configJJLimit)
 }

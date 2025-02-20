@@ -2,38 +2,38 @@
 package niuniu
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"math/rand"
 
 	"github.com/RicheyJang/PaimengBot/basic/sc"
+	"github.com/RicheyJang/PaimengBot/utils/images"
+	log "github.com/sirupsen/logrus"
+	zero "github.com/wdvxdr1123/ZeroBot"
+	"github.com/wdvxdr1123/ZeroBot/message"
 )
 
 func randomChoice(options []string) string {
 	return options[rand.Intn(len(options))]
 }
 
-func profit(niuniu float64) (money float64, t bool, message string) {
+func profit(niuniu float64, rate float64) (money float64, t bool, message string) {
 	switch {
-	case 0 < niuniu && niuniu <= 15:
+	case math.Abs(niuniu) <= 15:
 		message = randomChoice([]string{
 			"你的牛牛太小啦",
 			"这么小的牛牛就要肩负起这么大的责任吗？快去打胶吧！",
 		})
 	case niuniu > 15:
-		money = (niuniu * 10)
+		money = niuniu * rate
 		message = randomChoice([]string{
 			fmt.Sprintf("你的牛牛已经离你而去了,你赚取了%d个%s", money, sc.Unit()),
 			fmt.Sprintf("啊！你的牛☞已经没啦🤣,为了这点钱就出卖你的牛牛可真不值,你赚取了%d个%s", money, sc.Unit()),
 		})
 		t = true
-	case niuniu <= 0 && niuniu >= -15:
-		message = randomChoice([]string{
-			"你的牛牛太小啦",
-			"这么小的牛牛就要肩负起这么大的责任吗？快去找别人玩吧！",
-		})
 	case niuniu < -15:
-		money = (math.Abs(niuniu * 10))
+		money = -niuniu * rate
 		message = randomChoice([]string{
 			fmt.Sprintf("此世做了女孩子来世来当男孩子(bushi),你赚取了%d个%s", money, sc.Unit()),
 			fmt.Sprintf("呜呜呜,不哭不哭当女孩子不委屈的,你赚取了%d个%s", money, sc.Unit()),
@@ -237,5 +237,47 @@ func hitGlue(l float64) float64 {
 		return rand.Float64() * (math.Log10(l) * 2)
 	default:
 		return rand.Float64()
+	}
+}
+
+func imageCard(str string) (message.Segment, error) {
+	w, h := images.MeasureStringDefault(str, 24, 1.3)
+	img := images.NewImageCtx(int(w+20), int(h+20))
+	img.SetRGB(1, 1, 1)
+	img.Clear()
+	_ = img.PasteStringDefault(str, 24, 1.3, 10, 10, w)
+	return img.GenMessageAuto()
+
+}
+
+func getShopItems() []shopItem {
+	var jsons = proxy.GetConfigStrings("shop_item")
+	var items []shopItem
+	for _, jstr := range jsons {
+		var item shopItem
+		err := json.Unmarshal([]byte(jstr), &item)
+		if err != nil {
+			log.Warnf("<niuniu>shop item json unmarshal error: %v", err)
+			continue
+		}
+		items = append(items, item)
+	}
+	return items
+}
+
+func getCutoff(ctx *zero.Ctx, cost float64) float64 {
+	fav := math.Log2(sc.FavorOf(ctx.Event.UserID))
+	if fav <= 0 {
+		return 0
+	} else if fav < 1 { // [1,2)
+		return 0.01 * cost
+	} else if fav < 2 { // [2,4)
+		return 0.04 * cost
+	} else if fav < 3 { // [4,8)
+		return 0.10 * cost
+	} else if fav < 5 { // [4,8)
+		return 0.20 * cost
+	} else {
+		return 0.35 * cost
 	}
 }

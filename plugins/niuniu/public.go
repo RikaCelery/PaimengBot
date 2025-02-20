@@ -256,7 +256,8 @@ func Cancel(gid, uid int64) (string, error) {
 // Redeem 赎牛牛
 func Redeem(gid, uid int64, lastLength float64) error {
 	money := sc.BaseCoinOf(uid)
-	if money < 150 {
+	i := proxy.GetConfigFloat64("redeem_cost")
+	if money < i {
 		var builder strings.Builder
 		walletName := sc.Unit()
 		builder.WriteString("赎牛牛需要150")
@@ -268,7 +269,7 @@ func Redeem(gid, uid int64, lastLength float64) error {
 		return errors.New(builder.String())
 	}
 
-	if _, ok := sc.AddBaseCoin(uid, -150); !ok {
+	if _, ok := sc.AddBaseCoin(uid, -i); !ok {
 		return errors.New("添加金钱失败")
 	}
 
@@ -308,12 +309,12 @@ func Store(gid, uid int64, money float64, n int) error {
 }
 
 // Sell 出售牛牛
-func Sell(gid, uid int64) (string, error) {
+func Sell(gid, uid int64, rate float64) (string, error) {
 	niu, err := db.getWordNiuNiu(gid, uid)
 	if err != nil {
 		return "", ErrNoNiuNiu
 	}
-	money, t, message := profit(niu.Length)
+	money, t, message := profit(niu.Length, rate)
 	if !t {
 		return "", errors.New(message)
 	}

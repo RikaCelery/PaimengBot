@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"sync"
+	"time"
 
 	sql "github.com/FloatTech/sqlite"
 )
@@ -19,6 +20,19 @@ var (
 	query       = "WHERE UID = ?"
 )
 
+type lastLength struct {
+	TimeLimit time.Time
+	Count     int
+	Length    float64
+}
+
+type shopItem struct {
+	Name        string `json:"name"`
+	Cost        int    `json:"cost"`
+	Scope       string `json:"scope"`
+	Description string `json:"description"`
+	Count       int    `json:"count"`
+}
 type users []*userInfo
 
 type model struct {
