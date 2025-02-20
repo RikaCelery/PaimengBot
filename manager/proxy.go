@@ -3,6 +3,8 @@ package manager
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"path"
 	"sync"
 	"time"
 
@@ -289,6 +291,37 @@ func (p *PluginProxy) GetDB() *gorm.DB {
 // GetLevelDB 获取LevelDB：一个K-V数据库
 func (p *PluginProxy) GetLevelDB() *leveldb.DB {
 	return p.u.GetLevelDB()
+}
+
+func (p *PluginProxy) ReadData(paths ...string) ([]byte, error) {
+	fullPath := path.Join("data", p.key, path.Join(paths...))
+	parent := path.Dir(fullPath)
+	if !utils.DirExists(parent) {
+		_, err := utils.MakeDir(parent)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if !utils.FileExists(fullPath) {
+		create, err := os.Create(fullPath)
+		if err != nil {
+			return nil, err
+		}
+		_ = create.Close()
+	}
+	return os.ReadFile(fullPath)
+}
+
+func (p *PluginProxy) WriteData(data []byte, paths ...string) error {
+	fullPath := path.Join("data", p.key, path.Join(paths...))
+	parent := path.Dir(fullPath)
+	if !utils.DirExists(parent) {
+		_, err := utils.MakeDir(parent)
+		if err != nil {
+			return err
+		}
+	}
+	return os.WriteFile(fullPath, data, os.ModePerm)
 }
 
 // ---- 插件锁 ----

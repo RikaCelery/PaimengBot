@@ -142,6 +142,16 @@ func (img *ImageCtx) SaveTempDefault() (string, error) {
 	return img.SaveTemp("tempimg")
 }
 
+func (img *ImageCtx) GenPNG() ([]byte, error) {
+	resultBuff := bytes.NewBuffer(nil) // 结果缓冲区
+	// 新建Base64编码器（Base64结果写入结果缓冲区resultBuff）
+	// 将图片PNG格式写入Base64编码器
+	err := png.Encode(resultBuff, img.Image())
+	if err != nil {
+		return nil, err
+	}
+	return resultBuff.Bytes(), nil
+}
 func (img *ImageCtx) GenMessageBase64() (message.Segment, error) {
 	resultBuff := bytes.NewBuffer(nil) // 结果缓冲区
 	// 新建Base64编码器（Base64结果写入结果缓冲区resultBuff）
