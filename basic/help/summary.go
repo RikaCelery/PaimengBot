@@ -11,6 +11,7 @@ import (
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/images"
+	zero "github.com/wdvxdr1123/ZeroBot"
 
 	"github.com/fogleman/gg"
 	"github.com/wdvxdr1123/ZeroBot/message"
@@ -84,11 +85,11 @@ func formSummaryHelpMsg(isSuper, isPrimary bool, priority int, userID int64, gro
 		}
 	}
 	headTips := "所有功能列表  （划红线的为被禁用功能）\n" +
-		"若想查看某一项功能的详细用法, 请输入：帮助 功能名\n" +
-		"大多数功能在群聊中使用时，请加上\"%[1]v\"前缀，例如：%[1]v帮助、%[1]v关闭复读\n"
-	headTips = fmt.Sprintf(headTips, utils.GetBotNickname())
+		"若想查看某一项功能的详细用法, 请输入：%[2]v帮助 功能名\n" +
+		"如果没反应，请加上\"%[1]v\"或者\"%[2]v\"前缀，例如：%[1]v%[2]v帮助、%[1]v%[2]v关闭 复读\n"
+	headTips = fmt.Sprintf(headTips, utils.GetBotNickname(), zero.BotConfig.CommandPrefix)
 	if isSuper && isPrimary {
-		headTips += "\n绿字标识的代表包含超级用户专属内容\n某些插件名前方括号内的数字代表最低使用权限等级，参见：帮助 权限鉴权"
+		headTips += fmt.Sprintf("\n绿字标识的代表包含超级用户专属内容\n某些插件名前方括号内的数字代表最低使用权限等级，参见：%s帮助 权限鉴权", zero.BotConfig.CommandPrefix)
 	}
 	// 生成子图片
 	blocks := sortAllBlocks(helps)

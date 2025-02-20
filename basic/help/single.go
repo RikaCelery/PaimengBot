@@ -27,53 +27,55 @@ func formSingleHelpMsg(cmd string, isSuper, isPrimary bool, priority int, userID
 			keys[plugin.Key] = struct{}{}
 		}
 	}
-	var selected *manager.PluginCondition
+	var plugin *manager.PluginCondition
 	for _, plugin := range plugins { // 优先找插件名
 		if strings.EqualFold(plugin.Name, cmd) && checkPluginCouldShow(plugin, isSuper, isPrimary, priority, keys) {
-			selected = plugin
+			plugin = plugin
 			break
 		}
 	}
 	for _, plugin := range plugins { // 尝试通过插件key
 		if strings.EqualFold(plugin.Key, cmd) && checkPluginCouldShow(plugin, isSuper, isPrimary, priority, keys) {
-			selected = plugin
+			plugin = plugin
 			break
 		}
 	}
-	if selected == nil { // 尝试通过命令
+	if plugin == nil { // 尝试通过命令
 		for _, plugin := range plugins {
 			if isCmdContains(plugin, cmd, isSuper) && checkPluginCouldShow(plugin, isSuper, isPrimary, priority, keys) {
-				selected = plugin
+				plugin = plugin
 				break
 			}
 		}
 	}
-	if selected == nil {
+	if plugin == nil {
 		return message.Text("没有找到这个功能哦，或在群聊中无法查看功能详情")
 	}
 	// 插件状态检查
-	if _, ok := keys[selected.Key]; ok {
+	if _, ok := keys[plugin.Key]; ok {
 		return message.Text("功能被禁用中")
 	}
-	if groupID != 0 && !ban.CheckPluginWhiteList(selected, groupID) || groupID == 0 && !ban.CheckPluginWhiteList(selected, -userID) {
+	if groupID != 0 && !ban.CheckPluginWhiteList(plugin, groupID) || groupID == 0 && !ban.CheckPluginWhiteList(plugin, -userID) {
 		return message.Text("当前群不在功能白名单中")
 	}
 	// 生成图片 名称|普通用法|超级用户用法
-	name := selected.Name
-	if selected.AdminLevel > 0 { // 权限等级
-		name = fmt.Sprintf("[%d] %s", selected.AdminLevel, name)
+	name := plugin.Name
+	if plugin.AdminLevel > 0 { // 权限等级
+		name = fmt.Sprintf("[%d] %s", plugin.AdminLevel, name)
 	}
-	classify := selected.Classify
+	classify := plugin.Classify
 	if len(classify) > 0 { // 分类
 		classify = "（类别：" + classify + "）"
 	}
 	if isSuper && isPrimary { // Key
-		classify = "（插件Key：" + selected.Key + "）"
+		classify = "（插件Key：" + plugin.Key + "）"
 	}
-	normalUsage := strings.ReplaceAll(selected.Usage, "{cmd}", zero.BotConfig.CommandPrefix)
-	superUsage := strings.ReplaceAll(selected.SuperUsage, "{cmd}", zero.BotConfig.CommandPrefix)
-	usages := name + classify + "\n" + normalUsage
-	if isSuper && len(selected.SuperUsage) > 0 {
+	normalUsage := strings.ReplaceAll(plugin.Usage, "{cmd}", zero.BotConfig.CommandPrefix)
+	superUsage := strings.ReplaceAll(plugin.SuperUsage, "{cmd}", zero.BotConfig.CommandPrefix)
+	normalUsage = strings.TrimSpace(normalUsage)
+	superUsage = strings.TrimSpace(superUsage)
+	usages := name + classify + "\n" + fmt.Sprintf("开关：%[1]v关闭 %[2]v / %[1]v开启 %[2]v", zero.BotConfig.CommandPrefix, plugin.Name) + "\n" + normalUsage
+	if isSuper && len(plugin.SuperUsage) > 0 {
 		usages += "\n超级用户额外用法：\n" + superUsage
 	}
 
