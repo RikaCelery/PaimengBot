@@ -46,7 +46,7 @@ type AuctionInfo struct {
 	ID     int     `db:"id"`
 	UserID int64   `db:"user_id"`
 	Length float64 `db:"length"`
-	Money  int     `db:"money"`
+	Money  float64 `db:"money"`
 }
 
 // BaseInfo ...

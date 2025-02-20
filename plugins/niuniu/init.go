@@ -11,7 +11,6 @@ import (
 
 	"github.com/RicheyJang/PaimengBot/basic/sc"
 	"github.com/RicheyJang/PaimengBot/utils"
-	"github.com/RicheyJang/PaimengBot/utils/ctxext"
 	"github.com/RicheyJang/PaimengBot/utils/images"
 	log "github.com/sirupsen/logrus"
 	"github.com/wdvxdr1123/ZeroBot/extension/rate"
@@ -83,19 +82,15 @@ func init() {
 			ctx.SendChain(message.Text("ERROR:", err))
 			return
 		}
-
-		var messages message.Message
-		messages = append(messages, ctxext.FakeSenderForwardNode(ctx, message.Text("牛牛拍卖行有以下牛牛")))
+		var sb = &strings.Builder{}
+		sb.WriteString("牛牛拍卖行有以下牛:\n请输入对应序号进行购买\n\n")
 		for _, info := range auction {
-			msg := fmt.Sprintf("商品序号: %d\n牛牛原所属: %d\n牛牛价格: %d%s\n牛牛大小: %.2fcm",
-				info.ID+1, info.UserID, info.Money, sc.Unit(), info.Length)
-			messages = append(messages, ctxext.FakeSenderForwardNode(ctx, message.Text(msg)))
+			msg := fmt.Sprintf("商品序号: [%d]\n牛牛原所属: %d\n牛牛价格: %.0f%s\n牛牛大小: %.2fcm",
+				info.ID+1, info.UserID, info.Money*sc.Rate(), sc.Unit(), info.Length)
+			sb.WriteString(msg + "\n\n")
 		}
-		if id := ctx.Send(messages).ID(); id == 0 {
-			ctx.Send(message.Text("发送拍卖行失败"))
-			return
-		}
-		ctx.SendChain(message.Reply(ctx.Event.Message), message.Text("请输入对应序号进行购买"))
+		segment, _ := imageCard(sb.String())
+		ctx.SendChain(message.Reply(ctx.Event.MessageID), segment)
 		recv, cancel := zero.NewFutureEvent("message", 999, false, zero.CheckUser(uid), zero.CheckGroup(gid), zero.RegexRule(`^(\d+)$`)).Repeat()
 		defer cancel()
 		timer := time.NewTimer(120 * time.Second)
@@ -170,12 +165,7 @@ func init() {
 			sb.WriteString(productInfo + "\n\n")
 		}
 		sb.WriteString("\n输入对应序号进行购买商品")
-		w, h := images.MeasureStringDefault(sb.String(), 24, 1.3)
-		img := images.NewImageCtx(int(w+20), int(h+20))
-		img.SetRGB(1, 1, 1)
-		img.Clear()
-		_ = img.PasteStringDefault(sb.String(), 24, 1.3, 10, 10, w)
-		msg, err := img.GenMessageAuto()
+		msg, err := imageCard(sb.String())
 		if err != nil {
 			ctx.Send(message.Text("发送商店失败", err.Error()))
 			utils.SetNotStatistic(ctx)
@@ -274,7 +264,7 @@ func init() {
 		}
 		ctx.SendChain(message.ImageBytes(img))
 	})
-	proxy.OnCommands([]string{"牛子深度排行"}, zero.OnlyToMe, zero.OnlyToMe, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
+	proxy.OnCommands([]string{"牛子深度排行"}, zero.OnlyToMe, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		gid := ctx.Event.GroupID
 		infos, err := GetRankingInfo(gid, false)
 		if err != nil {
@@ -422,7 +412,15 @@ func init() {
 	proxy.AddConfig("jj_per_hour", 2)
 	proxy.SetCallLimiter("jj", time.Hour*1, 2).BindTimesConfig("jj_per_hour")
 }
+func imageCard(str string) (message.Segment, error) {
+	w, h := images.MeasureStringDefault(str, 24, 1.3)
+	img := images.NewImageCtx(int(w+20), int(h+20))
+	img.SetRGB(1, 1, 1)
+	img.Clear()
+	_ = img.PasteStringDefault(str, 24, 1.3, 10, 10, w)
+	return img.GenMessageAuto()
 
+}
 func getShopItems() []shopItem {
 	var jsons = proxy.GetConfigStrings("shop_item")
 	var items []shopItem

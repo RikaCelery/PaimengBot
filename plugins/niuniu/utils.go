@@ -13,7 +13,7 @@ func randomChoice(options []string) string {
 	return options[rand.Intn(len(options))]
 }
 
-func profit(niuniu float64) (money int, t bool, message string) {
+func profit(niuniu float64) (money float64, t bool, message string) {
 	switch {
 	case 0 < niuniu && niuniu <= 15:
 		message = randomChoice([]string{
@@ -21,7 +21,7 @@ func profit(niuniu float64) (money int, t bool, message string) {
 			"这么小的牛牛就要肩负起这么大的责任吗？快去打胶吧！",
 		})
 	case niuniu > 15:
-		money = int(niuniu * 10)
+		money = (niuniu * 10)
 		message = randomChoice([]string{
 			fmt.Sprintf("你的牛牛已经离你而去了,你赚取了%d个%s", money, sc.Unit()),
 			fmt.Sprintf("啊！你的牛☞已经没啦🤣,为了这点钱就出卖你的牛牛可真不值,你赚取了%d个%s", money, sc.Unit()),
@@ -33,7 +33,7 @@ func profit(niuniu float64) (money int, t bool, message string) {
 			"这么小的牛牛就要肩负起这么大的责任吗？快去找别人玩吧！",
 		})
 	case niuniu < -15:
-		money = int(math.Abs(niuniu * 10))
+		money = (math.Abs(niuniu * 10))
 		message = randomChoice([]string{
 			fmt.Sprintf("此世做了女孩子来世来当男孩子(bushi),你赚取了%d个%s", money, sc.Unit()),
 			fmt.Sprintf("呜呜呜,不哭不哭当女孩子不委屈的,你赚取了%d个%s", money, sc.Unit()),
