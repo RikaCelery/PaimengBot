@@ -3,6 +3,7 @@ package sc
 import (
 	"fmt"
 	"math/rand"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -161,7 +162,29 @@ func signHandler(ctx *zero.Ctx) {
 	}
 	// 绘图 发送
 	if !skipSend {
-		ctx.Send(si.genMessage())
+		genMessage, imageCtx := si.genMessage()
+		ctx.Send(genMessage)
+		if imageCtx == nil {
+			return
+		}
+		png, err := imageCtx.GenPNG()
+		if err != nil {
+			log.Warnln("<sc> signHandler genMessage error: %v", err)
+		}
+		err = proxy.WriteData(png, "tmp", fmt.Sprintf("%d.jpg", ctx.Event.UserID))
+		if err != nil {
+			log.Warnln("<sc> signHandler save signin png error: %v", err)
+			return
+		}
+	} else {
+		if !utils.FileExists(path.Join("tmp", fmt.Sprintf("%d.jpg", ctx.Event.UserID))) {
+			return
+		}
+		data, err := proxy.ReadData("tmp", fmt.Sprintf("%d.jpg", ctx.Event.UserID))
+		if err != nil {
+			return
+		}
+		ctx.Send(message.ImageBytes(data))
 	}
 }
 
