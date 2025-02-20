@@ -6,14 +6,17 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/FloatTech/imgfactory"
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/consts"
 	log "github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
+	"github.com/wdvxdr1123/ZeroBot/message"
 )
 
 var proxy *manager.PluginProxy
@@ -48,7 +51,7 @@ func init() {
 	if proxy == nil {
 		return
 	}
-	proxy.OnCommands([]string{"自检", "check", "状态"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(selfCheckHandler)
+	proxy.OnCommands([]string{"自检", "check", "状态"}, zero.SuperUserPermission).SetBlock(true).SecondPriority().Handle(selfCheckHandler)
 	proxy.OnCommands([]string{"清理临时数据"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(cleanTemp)
 	proxy.OnCommands([]string{"检查更新"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(updateHandler)
 	proxy.OnCommands([]string{"关机"}, zero.OnlyPrivate).SetBlock(true).SecondPriority().Handle(shutdownHandler)
@@ -83,10 +86,32 @@ func selfCheckHandler(ctx *zero.Ctx) {
 	}
 	defer proxy.UnlockUser(0)
 
-	msg := formResponse(CheckEnvironment(),
-		CheckSelf(utils.IsSuperUser(ctx.Event.UserID) && ctx.Event.SubType == "friend"),
-		CheckOnebot(false))
-	ctx.SendChain(msg)
+	// botrunstatus := ctx.CallAction("get_status", zero.Params{}).Data
+	// botverisoninfo := ctx.GetVersionInfo()
+	sb := &strings.Builder{}
+	sb.WriteString("在线")
+	sb.WriteString(" | 群")
+	sb.WriteString(strconv.Itoa(len(ctx.GetGroupList().Array())))
+	sb.WriteString(" | 好友")
+	sb.WriteString(strconv.Itoa(len(ctx.GetFriendList().Array())))
+
+	img, err := drawstatus(ctx.Event.SelfID, utils.GetBotNickname(), sb.String())
+	if err != nil {
+		ctx.SendChain(message.Text("ERROR: ", err))
+		return
+	}
+	sendimg, err := imgfactory.ToBytes(img)
+	if err != nil {
+		ctx.SendChain(message.Text("ERROR: ", err))
+		return
+	}
+	if id := ctx.SendChain(message.ImageBytes(sendimg)); id.ID() == 0 {
+		ctx.SendChain(message.Text("ERROR: 可能被风控了"))
+	}
+	// msg := formResponse(CheckEnvironment(),
+	// 	CheckSelf(utils.IsSuperUser(ctx.Event.UserID) && ctx.Event.SubType == "friend"),
+	// 	CheckOnebot(false))
+	// ctx.SendChain(msg)
 }
 
 // 关机

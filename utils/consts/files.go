@@ -1,5 +1,6 @@
 package consts
 
+const FontGlowSansTTFPath = "./ttf/GlowSansSC-Normal-ExtraBold.ttf"
 const DefaultTTFPath = "./ttf/zh-cn.ttf"
 const DefaultMonoTTFPath = "./ttf/JetBrainsMono.ttf"
 

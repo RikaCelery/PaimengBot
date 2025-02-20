@@ -323,6 +323,17 @@ func (p *PluginProxy) WriteData(data []byte, paths ...string) error {
 	}
 	return os.WriteFile(fullPath, data, os.ModePerm)
 }
+func (p *PluginProxy) ResolveFile(paths ...string) string {
+	fullPath := path.Join("data", p.key, path.Join(paths...))
+	parent := path.Dir(fullPath)
+	if !utils.DirExists(parent) {
+		_, err := utils.MakeDir(parent)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return fullPath
+}
 
 // ---- 插件锁 ----
 
