@@ -64,7 +64,7 @@ func init() {
 		getPatternInfo := ctx.State["rua"].(string)
 		ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(ctx.CardOrNickName(ctx.Event.UserID)+getPatternInfo+"了自己~"))
 	})
-	engine.OnMessage(zero.NewPattern(nil).Reply().Text(`^/(\S{1,5})$`).AsRule()).SetPriority(9999).SetBlock(true).Handle(func(ctx *zero.Ctx) {
+	engine.OnMessage(zero.NewPattern(nil).Reply().Text(`^/(\S{1,5}.{,10})$`).AsRule()).SetPriority(9999).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		model := extension.PatternModel{}
 		_ = ctx.Parse(&model)
 		getPatternUserMessageID := model.Matched[0].Reply()
@@ -75,8 +75,8 @@ func init() {
 		}).Data.String()
 		sender := gjson.Get(rsp, "sender.user_id").Int()
 		if len(getSplit) == 2 {
-			ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(ctx.CardOrNickName(ctx.Event.UserID)+" "+getSplit[0]+"了 "+ctx.CardOrNickName(sender)+getSplit[1]))
+			ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(ctx.CardOrNickName(ctx.Event.UserID)+" "+getSplit[0]+" 了 "+ctx.CardOrNickName(sender)+getSplit[1]))
 		}
-		ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(ctx.CardOrNickName(ctx.Event.UserID)+" "+getPatternInfo+"了 "+ctx.CardOrNickName(sender)))
+		ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(ctx.CardOrNickName(ctx.Event.UserID)+" "+getPatternInfo+" 了 "+ctx.CardOrNickName(sender)))
 	})
 }
