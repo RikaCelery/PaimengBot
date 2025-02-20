@@ -28,22 +28,22 @@ func formSingleHelpMsg(cmd string, isSuper, isPrimary bool, priority int, userID
 		}
 	}
 	var plugin *manager.PluginCondition
-	for _, plugin := range plugins { // 优先找插件名
-		if strings.EqualFold(plugin.Name, cmd) && checkPluginCouldShow(plugin, isSuper, isPrimary, priority, keys) {
-			plugin = plugin
+	for _, p := range plugins { // 优先找插件名
+		if strings.EqualFold(p.Name, cmd) && checkPluginCouldShow(p, isSuper, isPrimary, priority, keys) {
+			plugin = p
 			break
 		}
 	}
-	for _, plugin := range plugins { // 尝试通过插件key
-		if strings.EqualFold(plugin.Key, cmd) && checkPluginCouldShow(plugin, isSuper, isPrimary, priority, keys) {
-			plugin = plugin
+	for _, p := range plugins { // 尝试通过插件key
+		if strings.EqualFold(p.Key, cmd) && checkPluginCouldShow(p, isSuper, isPrimary, priority, keys) {
+			plugin = p
 			break
 		}
 	}
 	if plugin == nil { // 尝试通过命令
-		for _, plugin := range plugins {
-			if isCmdContains(plugin, cmd, isSuper) && checkPluginCouldShow(plugin, isSuper, isPrimary, priority, keys) {
-				plugin = plugin
+		for _, p := range plugins {
+			if isCmdContains(p, cmd, isSuper) && checkPluginCouldShow(p, isSuper, isPrimary, priority, keys) {
+				plugin = p
 				break
 			}
 		}
