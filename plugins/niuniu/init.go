@@ -286,7 +286,7 @@ func init() {
 		}
 		ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(view))
 	})
-	proxy.OnRegex(`^(?:.*使用(.*))??打胶$`, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
+	proxy.OnRegex(`^(?:.*使?用(.*))??打胶$`, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		if !proxy.CheckCallLimit("dajiao", ctx.Event.UserID) {
 			ctx.Send(fmt.Sprintf("每小时只能打%d次～，歇一会儿吧～", proxy.GetConfigInt64(configDajiaoLimit)))
 			utils.SetNotStatistic(ctx)
@@ -315,7 +315,7 @@ func init() {
 		}
 		ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(msg))
 	})
-	proxy.OnMessage(zero.NewPattern(nil).Text(`^(?:.*使用(.*))??jj`).At().AsRule(),
+	proxy.OnMessage(zero.NewPattern(nil).Text(`^(?:.*使?用(.*))??jj`).At().AsRule(),
 		zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		if !proxy.CheckCallLimit("jj", ctx.Event.UserID) {
 			ctx.Send(fmt.Sprintf("每小时只能击剑%d次～，歇一会儿吧～", proxy.GetConfigInt64(configJJLimit)))
@@ -407,6 +407,7 @@ func init() {
 		}
 		ctx.SendChain(message.Reply(ctx.Event.MessageID), message.Text(msg))
 	})
+	proxy.AddNormalCommands("打胶", "jj")
 	proxy.AddConfig(configProfit, 5)
 	proxy.AddConfig(configCostPerUnregister, 10)
 	proxy.AddConfig(configDajiaoLimit, 2)
