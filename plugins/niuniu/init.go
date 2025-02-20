@@ -147,6 +147,10 @@ func init() {
 	proxy.OnCommands([]string{"牛牛商店"}, zero.OnlyToMe, zero.OnlyGroup).SetBlock(true).Handle(func(ctx *zero.Ctx) {
 		gid := ctx.Event.GroupID
 		uid := ctx.Event.UserID
+		if proxy.LockUser(uid) {
+			return
+		}
+		defer proxy.UnlockUser(uid)
 
 		if _, err := GetWordNiuNiu(gid, uid); err != nil {
 			ctx.SendChain(message.Text(ErrNoNiuNiu))
@@ -163,7 +167,7 @@ func init() {
 			product := propMap[id]
 			productInfo := fmt.Sprintf("商品[%d]\n商品名: %s\n商品价格: %.2f%s\n商品作用域: %s\n商品描述: %s\n使用次数:%d",
 				id, product.Name, float64(product.Cost)*sc.Rate(), sc.Unit(), product.Scope, product.Description, product.Cost)
-			sb.WriteString(productInfo + "\n")
+			sb.WriteString(productInfo + "\n\n")
 		}
 		sb.WriteString("\n输入对应序号进行购买商品")
 		w, h := images.MeasureStringDefault(sb.String(), 24, 1.3)
@@ -202,7 +206,6 @@ func init() {
 					ctx.SendChain(message.Text("ERROR: ", err))
 					return
 				}
-
 				ctx.SendChain(message.Text("购买成功!"))
 				return
 			}
