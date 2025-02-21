@@ -29,6 +29,7 @@ config-plugin配置项：
 	limiter.tip: CD中时是(true)否(false)提示调用者剩余CD时长`,
 	IsPassive:   true,
 	IsSuperOnly: true,
+	Classify:    "内置功能",
 }
 var plMap sync.Map
 

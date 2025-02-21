@@ -51,6 +51,7 @@ var info = manager.PluginInfo{
 config-plugin配置项：
 	ban.tip: 调用某项被禁用的功能时，是(true)否(false)提示"该功能已被禁用"，但不会提示个人封禁`,
 	AdminLevel: 1,
+	Classify:   "内置功能",
 }
 
 func init() {

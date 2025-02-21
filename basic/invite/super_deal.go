@@ -29,6 +29,7 @@ var info = manager.PluginInfo{
 	删除好友 [对方QQ号]
 `,
 	IsSuperOnly: true,
+	Classify:    "内置功能",
 }
 
 func init() {

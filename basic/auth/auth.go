@@ -40,7 +40,7 @@ config-plugin配置项：
 	auth.ownerlevel: 群主默认权限等级
 	auth.superlevel: 超级用户默认权限等级
 `,
-	Classify:    "群功能",
+	Classify:    "内置功能",
 	IsSuperOnly: true,
 }
 

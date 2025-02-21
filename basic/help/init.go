@@ -22,6 +22,7 @@ var info = manager.PluginInfo{
 	SuperUsage: `超级用户专用插件只有在私聊中"帮助"时才会被展示
 config-plugin配置项：
 	help.showban：普通用户被禁用的功能是否在帮助中有所展示`,
+	Classify: "内置功能",
 }
 
 const showBanPluginKey = "showban"

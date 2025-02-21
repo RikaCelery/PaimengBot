@@ -29,6 +29,7 @@ config-plugin配置项：
 	event.autoagree: 是(true)否(false)自动同意所有好友请求`,
 	IsPassive:   true,
 	IsSuperOnly: true,
+	Classify:    "内置功能",
 }
 
 func init() {
