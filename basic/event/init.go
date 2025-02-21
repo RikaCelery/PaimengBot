@@ -3,6 +3,7 @@ package event
 import (
 	"fmt"
 	"math/rand"
+	"sync"
 	"time"
 
 	"gorm.io/gorm/clause"
@@ -120,7 +121,23 @@ func handleInvite(ctx *zero.Ctx) {
 	}
 }
 
+var requestLock = make(map[int64]bool, 0)
+var mapLock = &sync.Mutex{}
+
 func handleFriendRequest(ctx *zero.Ctx) {
+	mapLock.Lock()
+	_, ok := requestLock[ctx.Event.UserID]
+	mapLock.Unlock()
+	if ok {
+		return
+	} else {
+		requestLock[ctx.Event.UserID] = true
+		defer func() {
+			mapLock.Lock()
+			delete(requestLock, ctx.Event.UserID)
+			mapLock.Unlock()
+		}()
+	}
 	// 处理拉黑用户的加好友请求：自动拒绝
 	var pbUser dao.UserSetting
 	if rows := proxy.GetDB().Take(&pbUser, ctx.Event.UserID).RowsAffected; rows > 0 && pbUser.IsPullBlack {
