@@ -5,7 +5,9 @@ import (
 	"errors"
 	"image"
 	"image/color"
+	"io"
 	"math"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
@@ -24,7 +26,7 @@ import (
 	"github.com/FloatTech/gg"
 	"github.com/FloatTech/imgfactory"
 	"github.com/RicheyJang/PaimengBot/manager"
-	"github.com/RicheyJang/PaimengBot/utils/client"
+	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/consts"
 	"github.com/disintegration/imaging"
 	"github.com/shirou/gopsutil/v3/cpu"
@@ -74,23 +76,39 @@ func drawstatus(uid int64, botname string, botrunstatus string) (sendimg image.I
 
 	dldata := (*[]byte)(atomic.LoadPointer((*unsafe.Pointer)(unsafe.Pointer(&bgdata))))
 	if dldata == (*[]byte)(nil) || uintptr(time.Since(boottime).Hours()/24) >= atomic.LoadUintptr(&bgcount) {
-		// url := short_url.FindShortURLOrgByLocal(backgroundURL)
-
 		file := proxy.ResolveFile("bg.png")
-		err = client.DownloadToFile(file, backgroundURL, 3)
-		if err != nil {
-			log.Warnln("获取背景失败: ", err)
-			return
+		if !utils.FileExists(file) {
+			resp, err := http.Get(backgroundURL)
+			if err != nil {
+				log.Warnln("下载获取背景失败: ", err)
+				return nil, err
+			}
+			defer resp.Body.Close()
+			var data []byte
+			data, err = io.ReadAll(resp.Body)
+			if err != nil {
+				log.Warnln("下载图片失败", err)
+				return nil, err
+			}
+			err = proxy.WriteData(data, "bg.png")
+			if err != nil {
+				log.Warnln("保存图片信息失败", err)
+				return nil, err
+			}
+			atomic.AddUintptr(&bgcount, 1)
+			atomic.StorePointer((*unsafe.Pointer)(unsafe.Pointer(&bgdata)), unsafe.Pointer(&data))
+			dldata = &data
+		} else {
+			var data []byte
+			data, err = proxy.ReadData("bg.png")
+			if err != nil {
+				log.Warnln("读取图片信息失败", err)
+				return nil, err
+			}
+			atomic.AddUintptr(&bgcount, 1)
+			atomic.StorePointer((*unsafe.Pointer)(unsafe.Pointer(&bgdata)), unsafe.Pointer(&data))
+			dldata = &data
 		}
-		var data []byte
-		data, err = proxy.ReadData("bg.png")
-		if err != nil {
-			log.Warnln("读取背景失败: ", err)
-			return
-		}
-		atomic.AddUintptr(&bgcount, 1)
-		atomic.StorePointer((*unsafe.Pointer)(unsafe.Pointer(&bgdata)), unsafe.Pointer(&data))
-		dldata = &data
 	}
 	data := *dldata
 	fontbyte, err := os.ReadFile(consts.FontGlowSansTTFPath)
@@ -464,7 +482,7 @@ func botruntime() (string, error) {
 		return "", err
 	}
 	t := &strings.Builder{}
-	t.WriteString("ZeroBot-Plugin 已运行 ")
+	t.WriteString("PaimengBot 已运行 ")
 	t.WriteString(strconv.FormatInt((time.Now().Unix()-boottime.Unix())/86400, 10))
 	t.WriteString(" 天 ")
 	t.WriteString(time.Unix(time.Now().Unix()-boottime.Unix(), 0).UTC().Format("15:04:05"))
