@@ -236,7 +236,7 @@ func init() {
 					return
 				}
 
-				if err := Redeem(gid, uid, last.Length); err == nil {
+				if err := Redeem(gid, uid, last.Length); err != nil {
 					ctx.SendChain(message.Text("ERROR:", err))
 					return
 				}
