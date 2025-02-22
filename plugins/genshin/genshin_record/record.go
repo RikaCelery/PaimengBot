@@ -27,7 +27,7 @@ var info = manager.PluginInfo{
 	Name: "原神战绩",
 	Usage: `需要预先绑定uid，参见：帮助 米游社管理
 用法：
-	原神战绩：即可查询原神战绩`,
+	{cmd}原神战绩：即可查询原神战绩`,
 	Classify: "原神相关",
 }
 var proxy *manager.PluginProxy

@@ -70,7 +70,7 @@ var (
 	helpTemplate = `
 	混合两个表情，表情最好是emoji表情，qq表情没有完全适配
 用法：
-	（无需{cmd}）[emoji表情1][emoji表情2]: 合成两个emoji表情，每30分钟 最多触发 %d 次
+	（无需{cmd}）[emoji表情1][emoji表情2]: 合成两个emoji表情，每30分钟 每个群 最多触发 %d 次
 	{cmd}[emoji表情1][emoji表情2]: 合成两个emoji表情，每20秒 每个人 最多触发 %d 次
 	{cmd}[emoji表情]：获取该表情的动图版本，每20秒 每个人 最多触发 %d 次
 注：

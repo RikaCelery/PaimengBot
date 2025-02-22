@@ -16,12 +16,15 @@ var info = manager.PluginInfo{
 	Name: "好康的",
 	Usage: `用法：
 	{cmd}美图/涩图 [Tag]* [数量num]?：num(默认1张)张随机Pixiv美图，来自经过筛选的图库
+	（无需{cmd}）来Y张XXXX的涩图：来指定tag指定份涩图，Y不写默认1
+	（无需{cmd}）来Y份涩图：Y不写默认为1
 示例：
 	美图 胡桃 2：丢给你两张精选胡桃的美(se)图~
-	（无需{cmd}）来两张胡桃的涩图：等同于上一条
 另外，高级用法询问管理员哦~[dog]`,
 	SuperUsage: `特别用法：(在私聊中)
 	{cmd}色图r [Tag]* [数量num]?：你懂得
+	（无需{cmd}）来Y张XXXX的涩图r：你懂得
+	（无需{cmd}）来Y份涩图r：你懂得
 config-plugin配置项：
 	pixiv.timeout： 下载图片超时时长，至少为1s；越长下载成功率越高、等待时间越长
 	pixiv.proxy： Pixiv反代网站，默认为i.pixiv.re，令外可选i.pixiv.cat

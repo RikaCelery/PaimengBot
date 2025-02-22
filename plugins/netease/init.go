@@ -21,7 +21,7 @@ func init() {
 	if proxy == nil {
 		return
 	}
-	proxy.OnFullMatch([]string{"网易云评论"}).SetBlock(true).SecondPriority().Handle(getComment)
+	proxy.OnCommands([]string{"网易云评论"}).SetBlock(true).SecondPriority().Handle(getComment)
 }
 
 const repingURL = "https://api.vvhan.com/api/reping"

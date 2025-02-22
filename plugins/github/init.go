@@ -18,7 +18,7 @@ var info = manager.PluginInfo{
 	Usage: `查询某个Github仓库的相关信息
 用法：
 	（无需{cmd}）github [仓库名称]
-例子：
+示例：
 	github RicheyJang/PaimengBot`,
 	SuperUsage: `config-plugin配置项：
 	github.maxresult：一次性最多返回多少个仓库信息`,

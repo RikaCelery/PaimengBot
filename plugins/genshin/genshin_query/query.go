@@ -13,8 +13,10 @@ var info = manager.PluginInfo{
 	Name: "原神便签查询",
 	Usage: `需要预先绑定cookie和uid，参见：帮助 米游社管理
 用法：
-	原神体力：即可查询绑定的原神角色当前树脂、宝钱、派遣等信息
-	原神便签：同上`,
+	{cmd}原神体力：即可查询绑定的原神角色当前树脂、宝钱、派遣等信息
+	{cmd}原神树脂：同上
+	{cmd}原神便签：同上
+	`,
 	SuperUsage: `config-plugin配置项：
 	genshin_query.left: 体力恢复完成时间展示格式
 		true则显示剩余时间，false则显示时间点`,

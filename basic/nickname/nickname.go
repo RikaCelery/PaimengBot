@@ -19,7 +19,7 @@ var info = manager.PluginInfo{
 	Name: "昵称",
 	Usage: `
 用法：
-	以后叫我XXX：将你的昵称设置为XXX
+	(无需{cmd})以后叫我XXX：将你的昵称设置为XXX
 `,
 	SuperUsage: `config-plugin配置项：
 	nickname.blackname: 黑名单词列表，禁止用户昵称包含这些词

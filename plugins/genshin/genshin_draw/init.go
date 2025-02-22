@@ -17,9 +17,9 @@ const GenshinPoolPicDir = GenshinDrawPoolDir + "/pic"
 var info = manager.PluginInfo{
 	Name: "模拟原神抽卡",
 	Usage: `用法：
-	原神[卡池名]一发：来一发！
-	原神[卡池名]十连：来个十连！
-	原神当前卡池：查看当前原神卡池列表
+	(无需{cmd})原神[卡池名]一发：来一发！
+	(无需{cmd})原神[卡池名]十连：来个十连！
+	{cmd}原神当前卡池：查看当前原神卡池列表
 	注：[卡池名]请以"原神当前卡池"中的为准哦
 示例：
 	原神十连：十连抽常驻池
@@ -27,7 +27,7 @@ var info = manager.PluginInfo{
 	原神角色十连：十连抽UP角色池（若仅存在1个UP角色池）
 	原神角色1十连：十连抽第1个UP角色池（若存在两个或以上UP角色池）`,
 	SuperUsage: `更新指令：
-	原神抽卡更新：强制更新图片素材以及卡池信息
+	{cmd}原神抽卡更新：强制更新图片素材以及卡池信息
 	另外每天2点10分会自动更新
 config-plugin配置项：
 	genshin_draw.skip.normal4: 角色、武器池中所不包含的4星角色列表`,

@@ -15,8 +15,8 @@ import (
 var Info = manager.PluginInfo{
 	Name: "米游社管理",
 	Usage: `如何绑定米游社cookie和原神uid：
-	原神绑定cookie [你的cookie]：cookie是重要信息，请务必在私聊中使用
-	原神绑定uid [你的uid]
+	{cmd}原神绑定cookie [你的cookie]：cookie是重要信息，请务必在私聊中使用
+	{cmd}原神绑定uid [你的uid]
 如何解绑：
 	使用上述命令，不填参数([你的cookie]和[你的uid])即可`,
 	Classify: "原神相关",

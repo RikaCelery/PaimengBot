@@ -18,7 +18,8 @@ import (
 
 var info = manager.PluginInfo{
 	Name: "pixiv排行榜",
-	Usage: `用法：
+	Usage: `提示：会很吵，合理使用，不要发太多哦，否则可能被管理员禁用哦
+用法：
 	{cmd}pixiv排行榜 [类型]? [数量]? [日期]?：获取指定日期指定数量指定类型的Pixiv排行榜图片
 可选类型（左侧数字）：
 	1. 日排行
@@ -34,10 +35,10 @@ var info = manager.PluginInfo{
 	10. R18男性向日排行
 	11. R18女性向日排行
 示例：
-	pixiv排行榜：默认当日排行5张
-	pixiv排行榜 4：男性向当日排行5张
-	pixiv排行榜 4 20：男性向当日排行20张
-	pixiv排行榜 4 20 2022-01-28：男性向2022年1月28日排行10张`,
+	{cmd}pixiv排行榜：默认当日排行5张
+	{cmd}pixiv排行榜 4：男性向当日排行5张
+	{cmd}pixiv排行榜 4 20：男性向当日排行20张
+	{cmd}pixiv排行榜 4 20 2022-01-28：男性向2022年1月28日排行10张`,
 	SuperUsage: `
 备注：config-plugin配置项沿用pixiv插件`,
 	Classify: "好康的",

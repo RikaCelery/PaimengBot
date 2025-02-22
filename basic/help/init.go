@@ -16,8 +16,8 @@ var info = manager.PluginInfo{
 	Name: "帮助",
 	Usage: `
 用法：
-	帮助：展示已有的所有功能
-	帮助[插件名或命令]：展示具体某个功能的详细帮助
+	{cmd}帮助/help/功能：展示已有的所有功能
+	{cmd}帮助/help/功能 [插件名或命令]：展示具体某个功能的详细帮助
 `,
 	SuperUsage: `超级用户专用插件只有在私聊中"帮助"时才会被展示
 config-plugin配置项：
