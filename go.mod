@@ -15,6 +15,7 @@ require (
 	github.com/disintegration/imaging v1.6.2
 	github.com/fogleman/gg v1.3.0
 	github.com/fsnotify/fsnotify v1.5.1
+	github.com/fumiama/unibase2n v0.0.0-20240530074540-ec743fd5a6d6
 	github.com/glebarez/sqlite v1.3.5
 	github.com/go-ego/gse v0.80.3
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
@@ -41,6 +42,8 @@ require (
 	modernc.org/sortutil v1.2.1
 )
 
+require github.com/fumiama/gofastTEA v0.0.10 // indirect
+
 require (
 	github.com/FloatTech/ttl v0.0.0-20240716161252-965925764562 // indirect
 	github.com/RomiChan/websocket v1.4.3-0.20220227141055-9b2c6168c9c5 // indirect
@@ -50,6 +53,7 @@ require (
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/ericpauley/go-quantize v0.0.0-20200331213906-ae555eb2afa4 // indirect
+	github.com/fumiama/go-base16384 v1.7.0
 	github.com/fumiama/imgsz v0.0.2 // indirect
 	github.com/fumiama/terasu v0.0.0-20241027183601-987ab91031ce // indirect
 	github.com/glebarez/go-sqlite v1.14.7 // indirect
