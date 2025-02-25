@@ -78,9 +78,9 @@ func PluginName(ctx *zero.Ctx, question string) message.Message {
 	plugins := manager.GetAllPluginConditions()
 	for _, plugin := range plugins {
 		if question == plugin.Name {
-			str := fmt.Sprintf("这是%v的一个功能名哟，想知道这个功能怎么使用的话，请说：\n帮助 %v", utils.GetBotNickname(), question)
+			str := fmt.Sprintf("这是%v的一个功能名哟，想知道这个功能怎么使用的话，请说：\n%s帮助 %v", utils.GetBotNickname(), zero.BotConfig.CommandPrefix, question)
 			if !utils.IsMessagePrimary(ctx) {
-				str = fmt.Sprintf("这是%v的一个功能名哟，想知道这个功能怎么使用的话，请说：\n%[1]v帮助 %v", utils.GetBotNickname(), question)
+				str = fmt.Sprintf("这是%v的一个功能名哟，想知道这个功能怎么使用的话，请说：\n@机器人%[1]v%[2]s帮助 %[3]v 或者 %[1]v%[2]s帮助 %[3]v", utils.GetBotNickname(), zero.BotConfig.CommandPrefix, question)
 			}
 			return message.Message{message.Text(str)}
 		}

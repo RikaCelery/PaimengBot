@@ -16,11 +16,13 @@ const GenshinPoolPicDir = GenshinDrawPoolDir + "/pic"
 
 var info = manager.PluginInfo{
 	Name: "模拟原神抽卡",
-	Usage: `用法：
+	Usage: `
+用法：
 	(无需{cmd})原神[卡池名]一发：来一发！
 	(无需{cmd})原神[卡池名]十连：来个十连！
 	{cmd}原神当前卡池：查看当前原神卡池列表
-	注：[卡池名]请以"原神当前卡池"中的为准哦
+备注：
+	[卡池名]请以"原神当前卡池"中的为准哦
 示例：
 	原神十连：十连抽常驻池
 	原神武器十连：十连抽UP武器池（若存在）

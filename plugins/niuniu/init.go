@@ -374,9 +374,9 @@ func init() {
 
 			if c.Count >= 4 && c.Count <= 6 { // 不要一直发
 				id := ctx.SendPrivateMessage(adduser,
-					message.Text(fmt.Sprintf("你在%d群里已经被厥冒烟了，快去群里赎回你原本的牛牛!\n发送:`赎牛牛`即可！", gid)))
+					message.Text(fmt.Sprintf("你在%d群里已经被厥冒烟了，快去群里赎回你原本的牛牛!\n发送:`%s赎牛牛`即可！", gid, zero.BotConfig.CommandPrefix)))
 				if id == 0 {
-					ctx.SendChain(message.At(adduser), message.Text("快发送`赎牛牛`来赎回你原本的牛牛!"))
+					ctx.SendChain(message.At(adduser), message.Text(fmt.Sprintf("快发送`%v赎牛牛`来赎回你原本的牛牛!", zero.BotConfig.CommandPrefix)))
 				}
 			}
 		}

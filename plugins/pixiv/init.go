@@ -19,7 +19,8 @@ var info = manager.PluginInfo{
 	（无需{cmd}）来Y张XXXX的涩图：来指定tag指定份涩图，Y不写默认1
 	（无需{cmd}）来Y份涩图：Y不写默认为1
 示例：
-	美图 胡桃 2：丢给你两张精选胡桃的美(se)图~
+	{cmd}美图 胡桃 2：丢给你两张精选胡桃的美(se)图~
+	（无需{cmd}）来份涩图
 另外，高级用法询问管理员哦~[dog]`,
 	SuperUsage: `特别用法：(在私聊中)
 	{cmd}色图r [Tag]* [数量num]?：你懂得
