@@ -2,7 +2,6 @@ package autowithdraw
 
 import (
 	"github.com/RicheyJang/PaimengBot/manager"
-	"github.com/sirupsen/logrus"
 
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
@@ -32,10 +31,6 @@ func withDrawMsg(ctx *zero.Ctx) {
 		return
 	}
 	for _, msg := range zero.GetTriggeredMessages(message.NewMessageIDFromInteger(id)) {
-		if ctx.GetThisGroupMemberInfo(ctx.Event.SelfID, false).Get("role").Str == "member" {
-			logrus.Warn("<autowithdraw>机器人不是群主/管理员，无法撤回消息")
-			return
-		}
 		if ctx.Event.GroupID != -ctx.Event.UserID {
 			ctx.DeleteMessage(msg)
 		}
