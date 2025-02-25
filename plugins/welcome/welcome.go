@@ -47,11 +47,11 @@ func init() {
 func setGroupWelcome(ctx *zero.Ctx) {
 	var welmsg message.Message
 	first := ctx.State["args"].(string)
-	first = strings.TrimSpace(first,) // Trim!
+	first = strings.TrimSpace(first) // Trim!
 	welmsg = message.ParseMessageFromString(first)
 	for i := range welmsg {
 		if welmsg[i].Type == "image" { // 将收到的图片URL存至本地
-			welmsg[i] = recvImage2Local(ctx.Event.GroupID, int64(i),  welmsg[i])
+			welmsg[i] = recvImage2Local(ctx.Event.GroupID, int64(i), welmsg[i])
 		}
 	}
 	if len(welmsg.String()) == 0 { // 欢迎消息最终为空
@@ -94,16 +94,16 @@ func handleIncrease(ctx *zero.Ctx) {
 		return
 	}
 	// 将欢迎消息中的图片（本地）转换为可发送格式
-	msg := message.ParseMessageFromString(groupS.Welcome)
-	var sendMsg message.Message
+	msg := message.ParseMessage([]byte(groupS.Welcome))
+	var sendMsg message.Message = message.Message{message.At(ctx.Event.UserID)}
 	for _, seg := range msg {
 		if seg.Type == "image" {
 			seg = localImage2Send(seg)
 		}
 		sendMsg = append(sendMsg, seg)
 	}
+	ctx.SendChain(sendMsg...)
 	// 发送
-	ctx.SendGroupMessage(ctx.Event.GroupID, message.At(ctx.Event.UserID).String()+sendMsg.String())
 }
 
 // 收到的图片消息，存储至本地消息
