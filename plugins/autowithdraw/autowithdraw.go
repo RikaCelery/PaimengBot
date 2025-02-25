@@ -1,6 +1,9 @@
 package autowithdraw
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/RicheyJang/PaimengBot/manager"
 
 	zero "github.com/wdvxdr1123/ZeroBot"
@@ -32,6 +35,7 @@ func withDrawMsg(ctx *zero.Ctx) {
 	}
 	for _, msg := range zero.GetTriggeredMessages(message.NewMessageIDFromInteger(id)) {
 		if ctx.Event.GroupID != -ctx.Event.UserID {
+			time.Sleep(time.Duration(rand.Intn(2000)+500) * time.Millisecond)
 			ctx.DeleteMessage(msg)
 		}
 	}
