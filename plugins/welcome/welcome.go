@@ -46,31 +46,15 @@ func init() {
 
 func setGroupWelcome(ctx *zero.Ctx) {
 	var welmsg message.Message
-	// 消除首段消息前的Bot昵称
-	first := ctx.Event.Message[0].Data["text"]
-	first = strings.TrimLeft(first, " \t") // Trim!
-	for _, nickname := range utils.GetBotConfig().NickName {
-		if strings.HasPrefix(first, nickname) {
-			first = first[len(nickname):]
-			break
+	first := ctx.State["args"].(string)
+	first = strings.TrimSpace(first,) // Trim!
+	welmsg = message.ParseMessageFromString(first)
+	for i := range welmsg {
+		if welmsg[i].Type == "image" { // 将收到的图片URL存至本地
+			welmsg[i] = recvImage2Local(ctx.Event.GroupID, int64(i),  welmsg[i])
 		}
 	}
-	// 消除首段消息前的命令
-	first = strings.Replace(first, utils.GetCommand(ctx), "", 1)
-	first = strings.Trim(first, " \t") // Trim!
-	// 拼接消息
-	if len(first) > 0 {
-		welmsg = append(welmsg, message.Text(first))
-	}
-	if len(ctx.Event.Message) > 1 {
-		for i, msg := range ctx.Event.Message[1:] {
-			if msg.Type == "image" { // 将收到的图片URL存至本地
-				msg = recvImage2Local(ctx.Event.GroupID, int64(i), msg)
-			}
-			welmsg = append(welmsg, msg)
-		}
-	}
-	if len(welmsg) == 0 { // 欢迎消息最终为空
+	if len(welmsg.String()) == 0 { // 欢迎消息最终为空
 		ctx.Send("欢迎词呢？")
 		return
 	}
@@ -110,7 +94,7 @@ func handleIncrease(ctx *zero.Ctx) {
 		return
 	}
 	// 将欢迎消息中的图片（本地）转换为可发送格式
-	msg := message.ParseMessage([]byte(groupS.Welcome))
+	msg := message.ParseMessageFromString(groupS.Welcome)
 	var sendMsg message.Message
 	for _, seg := range msg {
 		if seg.Type == "image" {
