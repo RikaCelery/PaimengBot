@@ -23,10 +23,12 @@ import (
 	_ "github.com/RicheyJang/PaimengBot/basic/sc"
 
 	// 新添加的插件
+	_ "github.com/RicheyJang/PaimengBot/plugins/autowithdraw"
 	_ "github.com/RicheyJang/PaimengBot/plugins/deer_pipe"
 	_ "github.com/RicheyJang/PaimengBot/plugins/dice"
 	_ "github.com/RicheyJang/PaimengBot/plugins/image_2_ascii"
 	_ "github.com/RicheyJang/PaimengBot/plugins/niuniu"
+	_ "github.com/RicheyJang/PaimengBot/plugins/wordcloud"
 
 	// 普通插件
 	_ "github.com/RicheyJang/PaimengBot/plugins/HiOSU"
@@ -38,12 +40,14 @@ import (
 	_ "github.com/RicheyJang/PaimengBot/plugins/contact"
 	_ "github.com/RicheyJang/PaimengBot/plugins/echo"
 	_ "github.com/RicheyJang/PaimengBot/plugins/emoji_mix"
+
 	// _ "github.com/RicheyJang/PaimengBot/plugins/genshin" //disable
 	// _ "github.com/RicheyJang/PaimengBot/plugins/github" //disable
 	// _ "github.com/RicheyJang/PaimengBot/plugins/hhsh"  //disable
 	_ "github.com/RicheyJang/PaimengBot/plugins/idioms" // 半失效
 	_ "github.com/RicheyJang/PaimengBot/plugins/inspection"
 	_ "github.com/RicheyJang/PaimengBot/plugins/keyword"
+
 	// _ "github.com/RicheyJang/PaimengBot/plugins/music" //disable
 	_ "github.com/RicheyJang/PaimengBot/plugins/netease"
 	_ "github.com/RicheyJang/PaimengBot/plugins/note"
@@ -57,6 +61,7 @@ import (
 	_ "github.com/RicheyJang/PaimengBot/plugins/weather"
 	_ "github.com/RicheyJang/PaimengBot/plugins/welcome"
 	_ "github.com/RicheyJang/PaimengBot/plugins/whatanime"
+
 	// _ "github.com/RicheyJang/PaimengBot/plugins/whatpicture" //disable
 	_ "github.com/RicheyJang/PaimengBot/plugins/withdraw"
 	// _ "github.com/RicheyJang/PaimengBot/plugins/geng" // 已失效
