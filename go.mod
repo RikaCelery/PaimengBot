@@ -11,13 +11,16 @@ require (
 	github.com/PuerkitoBio/goquery v1.8.0
 	github.com/RomiChan/syncx v0.0.0-20240418144900-b7402ffdebc7
 	github.com/chromedp/chromedp v0.9.2
+	github.com/corona10/goimagehash v1.1.0
 	github.com/disintegration/imaging v1.6.2
 	github.com/fogleman/gg v1.3.0
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/glebarez/sqlite v1.3.5
+	github.com/go-ego/gse v0.80.3
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
+	github.com/psykhi/wordclouds v0.0.0-20231014190151-b9dd58fabbef
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/satori/go.uuid v1.2.0
 	github.com/shirou/gopsutil/v3 v3.21.10
@@ -89,6 +92,7 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.9 // indirect
 	github.com/tklauser/numcpus v0.3.0 // indirect
+	github.com/vcaesar/cedar v0.20.2 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
