@@ -102,9 +102,9 @@ func (img *ImageCtx) UseDefaultFont(size float64) error {
 	return img.SetFont(GetDefaultFont(), size)
 }
 
-// UseDefaultFont 使用默认字体并设置字体大小
+// UseFont 使用字体并设置字体大小
 func (img *ImageCtx) UseFont(path string, size float64) error {
-	font, err := ParseFont(consts.DefaultTTFPath)
+	font, err := ParseFont(path)
 	if err != nil {
 		return err
 	}
