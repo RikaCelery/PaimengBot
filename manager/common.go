@@ -49,6 +49,7 @@ type PluginInfo struct {
 	Name        string // Need 插件名称
 	Usage       string // Need 插件用法描述
 	SuperUsage  string // Option 插件超级用户用法描述
+	Brief       string // Option 插件一句话介绍
 	Classify    string // Option 插件分类，为空时代表默认分类
 	IsPassive   bool   // Option 是否为被动插件：在帮助中被标识为被动功能；
 	IsSuperOnly bool   // Option 是否为超级用户专属插件：消息性事件会自动加上SuperOnly检查；在帮助中只有超级用户私聊可见；
