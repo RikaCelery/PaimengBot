@@ -25,18 +25,23 @@ func init() {
 	}
 	proxy.OnNotice(func(ctx *zero.Ctx) bool {
 		return ctx.Event.NoticeType == "group_recall" || ctx.Event.NoticeType == "friend_recall"
+	}, func(ctx *zero.Ctx) bool {
+		id, ok := ctx.Event.MessageID.(int64)
+		if !ok {
+			return false
+		}
+		triggered := zero.GetTriggeredMessages(message.NewMessageIDFromInteger(id))
+		if len(triggered) == 0 {
+			return false
+		}
+		ctx.State["triggered"] = triggered
+		return true
 	}).SetBlock(false).Handle(withDrawMsg)
 }
 
 func withDrawMsg(ctx *zero.Ctx) {
-	id, ok := ctx.Event.MessageID.(int64)
-	if !ok {
-		return
-	}
-	for _, msg := range zero.GetTriggeredMessages(message.NewMessageIDFromInteger(id)) {
-		if ctx.Event.GroupID != -ctx.Event.UserID {
-			time.Sleep(time.Duration(rand.Intn(2000)+500) * time.Millisecond)
-			ctx.DeleteMessage(msg)
-		}
+	for _, msg := range ctx.State["triggered"].([]message.ID) {
+		time.Sleep(time.Duration(rand.Intn(2000)+500) * time.Millisecond)
+		ctx.DeleteMessage(msg)
 	}
 }

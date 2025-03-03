@@ -25,11 +25,12 @@ import (
 	// 新添加的插件
 	_ "github.com/RicheyJang/PaimengBot/plugins/aiwife"
 	_ "github.com/RicheyJang/PaimengBot/plugins/autowithdraw"
+	_ "github.com/RicheyJang/PaimengBot/plugins/base64"
 	_ "github.com/RicheyJang/PaimengBot/plugins/deer_pipe"
 	_ "github.com/RicheyJang/PaimengBot/plugins/dice"
 	_ "github.com/RicheyJang/PaimengBot/plugins/image_2_ascii"
 	_ "github.com/RicheyJang/PaimengBot/plugins/niuniu"
-	_ "github.com/RicheyJang/PaimengBot/plugins/base64"
+	_ "github.com/RicheyJang/PaimengBot/plugins/whatslink"
 	_ "github.com/RicheyJang/PaimengBot/plugins/wordcloud"
 
 	// 普通插件
