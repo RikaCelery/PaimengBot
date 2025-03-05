@@ -5,8 +5,8 @@ import (
 	"image"
 	"image/color"
 	"io"
-	"io/ioutil"
 	"math"
+	"os"
 	"strings"
 
 	"github.com/RicheyJang/PaimengBot/utils"
@@ -41,7 +41,7 @@ func AdjustOpacity(m image.Image, percentage float64) image.Image {
 
 // ParseFont 解析字体文件，生成truetype.Font结构
 func ParseFont(path string) (*truetype.Font, error) {
-	fontBytes, err := ioutil.ReadFile(path)
+	fontBytes, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func GetDefaultFont() *truetype.Font {
 	if defaultFont == nil {
 		font, err := ParseFont(consts.DefaultTTFPath) // 加载默认字体文件
 		if err != nil {                               // 加载失败，从默认字体目录中尝试遍历
-			rd, _ := ioutil.ReadDir(consts.DefaultTTFDir)
+			rd, _ := os.ReadDir(consts.DefaultTTFDir)
 			for _, file := range rd {
 				if file.IsDir() {
 					continue

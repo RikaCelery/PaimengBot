@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/base64"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -44,7 +43,7 @@ func PathSize(path string) uint64 {
 // 获取文件夹占用空间大小（效率较低）
 func getDirSizeSlow(dirPath string) uint64 {
 	dirSize := uint64(0)
-	files, e := ioutil.ReadDir(dirPath)
+	files, e := os.ReadDir(dirPath)
 	if e != nil {
 		return 0
 	}
@@ -52,7 +51,8 @@ func getDirSizeSlow(dirPath string) uint64 {
 		if f.IsDir() {
 			dirSize += getDirSizeSlow(dirPath + "/" + f.Name())
 		} else {
-			dirSize += uint64(f.Size())
+			info, _ := f.Info()
+			dirSize += uint64(info.Size())
 		}
 	}
 	return dirSize

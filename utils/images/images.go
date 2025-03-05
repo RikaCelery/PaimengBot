@@ -250,18 +250,18 @@ func (img *ImageCtx) InnerShadowRounded(c string, x, y int, w, h, r, size float6
 	img.DrawImage(innerShadow.Image(), x, y)
 }
 
-func (img *ImageCtx) InnerRoundedShadow4(c string,x, y int, w, h ,size, lt, rt, lb, rb  float64) {
+func (img *ImageCtx) InnerRoundedShadow4(c string, x, y int, w, h, size, lt, rt, lb, rb float64) {
 	extend := 40.0
 	innerStroke := NewImageCtx(int(w+extend), int(h+extend))
 	innerStroke.SetColorAuto(c)
-	innerStroke.DrawRoundedRectangle4(extend/2, extend/2, w, h,  lt, rt, lb, rb )
+	innerStroke.DrawRoundedRectangle4(extend/2, extend/2, w, h, lt, rt, lb, rb)
 	innerStroke.Clip()
 	innerStroke.InvertMask()
 	innerStroke.DrawRectangle(0, 0, w+extend, h+extend)
 	innerStroke.Fill()
 	blurred := imaging.Blur(innerStroke.Image(), size)
 	innerShadow := NewImageCtx(int(w), int(h))
-	innerShadow.DrawRoundedRectangle4(0, 0, w, h,  lt, rt, lb, rb )
+	innerShadow.DrawRoundedRectangle4(0, 0, w, h, lt, rt, lb, rb)
 	innerShadow.Clip()
 	innerShadow.DrawImage(blurred, int(-extend/2), int(-extend/2))
 	img.DrawImage(innerShadow.Image(), x, y)

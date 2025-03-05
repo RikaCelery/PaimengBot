@@ -29,9 +29,8 @@ func (c *HttpClient) DownloadToFile(filename, url string) error {
 	return err
 }
 
-
 // DownloadToFile 下载文件，并返回其绝对路径
-func (c *HttpClient) DownloadToFileHash(filename, url string) (string,error) {
+func (c *HttpClient) DownloadToFileHash(filename, url string) (string, error) {
 	f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {
 		return "", err

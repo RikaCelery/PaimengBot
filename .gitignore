@@ -3,6 +3,7 @@
 .DS_Store
 *.yaml
 !.goreleaser.yaml
+!trunk.yaml
 !main.go
 main.exe
 main
