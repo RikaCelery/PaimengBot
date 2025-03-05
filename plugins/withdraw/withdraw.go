@@ -3,7 +3,6 @@ package withdraw
 import (
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils"
-	"github.com/RicheyJang/PaimengBot/utils/rules"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
@@ -24,7 +23,8 @@ func init() {
 	if proxy == nil {
 		return
 	}
-	proxy.OnMessage(zero.OnlyGroup, rules.ReplyAndCommands("撤回", "快撤回")).SetBlock(true).SecondPriority().Handle(withDrawMsg)
+	proxy.OnMessage(zero.OnlyGroup, zero.NewPattern(nil).Reply().Text("快?撤回").AsRule()).SetBlock(true).SecondPriority().Handle(withDrawMsg)
+	proxy.OnMessage(zero.OnlyGroup, zero.NewPattern(nil).Reply().Command("快?撤回").AsRule()).SetBlock(true).SecondPriority().Handle(withDrawMsg)
 }
 
 func withDrawMsg(ctx *zero.Ctx) {
