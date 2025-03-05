@@ -64,11 +64,17 @@ func formSummaryHelpMsg(isSuper, isPrimary bool, priority int, userID int64, gro
 		if plugin.IsPassive && len(plugin.Classify) != 0 && plugin.Classify != passiveClassify {
 			item.name += "（被动）" // 被动且已有其它分类
 		}
+		if plugin.IsHidden {
+			item.name += "（隐藏）"
+		}
 		if plugin.AdminLevel != 0 { // 具有权限要求
 			item.name = fmt.Sprintf("[%d] ", plugin.AdminLevel) + item.name
 		}
 		if (len(plugin.SuperCmd) > 0 || plugin.IsSuperOnly) && (isSuper && isPrimary) {
 			item.color = "green" // 含超级用户指令且私聊
+		}
+		if plugin.IsHidden {
+			item.color = "orange" // 隐藏指令
 		}
 		// 分类
 		classify := plugin.Classify

@@ -20,6 +20,7 @@ import (
 	_ "github.com/RicheyJang/PaimengBot/basic/invite"
 	_ "github.com/RicheyJang/PaimengBot/basic/limiter"
 	_ "github.com/RicheyJang/PaimengBot/basic/nickname"
+	_ "github.com/RicheyJang/PaimengBot/basic/onmute"
 	_ "github.com/RicheyJang/PaimengBot/basic/sc"
 
 	// 新添加的插件

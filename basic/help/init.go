@@ -59,6 +59,9 @@ func checkPluginCouldShow(plugin *manager.PluginCondition, isSuper, isPrimary bo
 	if plugin.IsSuperOnly && !(isSuper && isPrimary) { // 超级用户专属
 		return false
 	}
+	if plugin.IsHidden && !isSuper { // 隐藏插件
+		return false
+	}
 	if plugin.AdminLevel > 0 && (priority == 0 || priority > plugin.AdminLevel) { // 管理员权限
 		return false
 	}

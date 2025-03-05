@@ -111,7 +111,7 @@ func removePluginWhite(ctx *zero.Ctx) {
 		PluginKey: plugin.Key,
 	}
 	if err := proxy.GetDB().Find(&list).Error; err != nil {
-		log.Errorln("<ban> query error",err)
+		log.Errorln("<ban> query error", err)
 		ctx.Send("数据库错误" + err.Error())
 		return
 	}
@@ -160,7 +160,7 @@ func addPluginWhite(ctx *zero.Ctx) {
 		PluginKey: plugin.Key,
 	}
 	if err := proxy.GetDB().FirstOrCreate(&list).Error; err != nil {
-		log.Errorln("<ban> query error",err)
+		log.Errorln("<ban> query error", err)
 		ctx.Send("数据库错误" + err.Error())
 		return
 	}
@@ -273,6 +273,9 @@ func dealUserAllPluginStatus(ctx *zero.Ctx, status bool, userID int64, period ti
 }
 
 func isImportant(plugin *manager.PluginCondition) bool {
+	if plugin.IsHidden {
+		return true
+	}
 	keys := []string{
 		"auth",
 		"ban",
