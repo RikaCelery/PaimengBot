@@ -1,6 +1,8 @@
 package HiOSU
 
-import "github.com/RicheyJang/PaimengBot/manager"
+import (
+	"github.com/RicheyJang/PaimengBot/manager"
+)
 
 var info = manager.PluginInfo{
 	Name: "OSU查询",
@@ -22,9 +24,25 @@ func init() {
 	if proxy == nil {
 		return
 	}
-	proxy.OnCommands([]string{"OSU账号绑定", "osu账号绑定"}).SetBlock(true).Handle(BindOSUidHandler)  // 绑定账号
-	proxy.OnCommands([]string{"OSU账号查看", "osu账号查看"}).SetBlock(true).Handle(ReferOSUidHandler) // 账号查看
-	proxy.OnCommands([]string{"OSU信息", "osu信息"}).SetBlock(true).Handle(MineInfoHandler)       // 查看自己的账号信息
-	proxy.OnCommands([]string{"OSU最近成绩", "osu最近成绩"}).SetBlock(true).Handle(RecentPlayHandler) // 查看自己的账号信息
+	proxy.OnCommands([]string{"OSU账号绑定", "osu账号绑定", "osu绑定账号"}).SetBlock(true).Handle(BindOSUidHandler) // 绑定账号
+	proxy.OnCommands([]string{"OSU账号查看", "osu账号查看"}).SetBlock(true).Handle(ReferOSUidHandler)           // 账号查看
+	proxy.OnCommands([]string{"OSU信息", "osu信息"}).SetBlock(true).Handle(MineInfoHandler)                 // 查看自己的账号信息
+	proxy.OnCommands([]string{"OSU最近成绩", "osu最近成绩"}).SetBlock(true).Handle(RecentPlayHandler)           // 查看自己的账号信息
 	proxy.AddConfig("key", "")
+	proxy.AddConfig("appid", 0)
+	proxy.AddConfig("secret", "")
+	// value, err := proxy.GetLevelDB().Get([]byte("osu_token"), nil)
+	// if err != nil {
+	// 	refreshToken(proxy.GetConfigInt64("appid"), proxy.GetConfigString("secret"))
+	// } else {
+	// 	get, _ := proxy.GetLevelDB().Get([]byte("osu_expire"), nil)
+	// 	stamp, _ := strconv.ParseInt(string(get), 10, 64)
+	// 	t := time.UnixMilli(stamp)
+	// 	if t.Before(time.Now()) {
+	// 		refreshToken(proxy.GetConfigInt64("appid"), proxy.GetConfigString("secret"))
+	// 	} else {
+	// 		cache.Expire = t
+	// 		cache.Token = string(value)
+	// 	}
+	// }
 }

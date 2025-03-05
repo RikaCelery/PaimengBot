@@ -11,6 +11,7 @@ import (
 
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/consts"
+	"github.com/disintegration/imaging"
 	"github.com/wdvxdr1123/ZeroBot/message"
 
 	"github.com/fogleman/gg"
@@ -191,4 +192,88 @@ func (img *ImageCtx) GenMessageAuto() (message.Segment, error) {
 		return img.GenMessageBase64()
 	}
 	return message.Image("file:///" + file), nil
+}
+
+// 扩展绘画方法
+
+func (img *ImageCtx) DrawRoundedRectangle4(x, y, w, h, lt, rt, lb, rb float64) {
+	img.NewSubPath()
+	img.MoveTo(x+lt, y)
+	// 上面
+	img.LineTo(x+w-lt-rt, y)
+	// 右上角
+	img.DrawArc(x+w-lt, y+rt, rt, gg.Radians(270), gg.Radians(360))
+	// 右面
+	img.LineTo(x+w, y+h-rb)
+	// 右下角
+	img.DrawArc(x+w-rb, y+h-rb, rb, gg.Radians(0), gg.Radians(90))
+	// 下面
+	img.LineTo(x+lb, y+h)
+	// 左下角
+	img.DrawArc(x+lb, y+h-lb, lb, gg.Radians(90), gg.Radians(180))
+	// 左面
+	img.LineTo(x, y+lt)
+	img.DrawArc(x+lt, y+lt, lt, gg.Radians(180), gg.Radians(270))
+	img.ClosePath()
+}
+
+func (img *ImageCtx) InnerShadow(c string, x, y int, w, h, size float64) {
+	extend := 40.0
+	innerStroke := NewImageCtx(int(w+extend), int(h+extend))
+	innerStroke.SetColorAuto(c)
+	innerStroke.DrawRectangle(extend/2, extend/2, w, h)
+	innerStroke.Clip()
+	innerStroke.InvertMask()
+	innerStroke.DrawRectangle(0, 0, w+extend, h+extend)
+	innerStroke.Fill()
+	blurred := imaging.Blur(innerStroke.Image(), size)
+	innerShadow := NewImageCtx(int(w), int(h))
+	innerShadow.DrawRectangle(0, 0, w, h)
+	innerShadow.Clip()
+	innerShadow.DrawImage(blurred, int(-extend/2), int(-extend/2))
+	img.DrawImage(innerShadow.Image(), x, y)
+}
+func (img *ImageCtx) InnerShadowRounded(c string, x, y int, w, h, r, size float64) {
+	extend := 40.0
+	innerStroke := NewImageCtx(int(w+extend), int(h+extend))
+	innerStroke.SetColorAuto(c)
+	innerStroke.DrawRoundedRectangle(extend/2, extend/2, w, h, r)
+	innerStroke.Clip()
+	innerStroke.InvertMask()
+	innerStroke.DrawRectangle(0, 0, w+extend, h+extend)
+	innerStroke.Fill()
+	blurred := imaging.Blur(innerStroke.Image(), size)
+	innerShadow := NewImageCtx(int(w), int(h))
+	innerShadow.DrawRoundedRectangle(0, 0, w, h, r)
+	innerShadow.Clip()
+	innerShadow.DrawImage(blurred, int(-extend/2), int(-extend/2))
+	img.DrawImage(innerShadow.Image(), x, y)
+}
+
+func (img *ImageCtx) InnerRoundedShadow4(c string,x, y int, w, h ,size, lt, rt, lb, rb  float64) {
+	extend := 40.0
+	innerStroke := NewImageCtx(int(w+extend), int(h+extend))
+	innerStroke.SetColorAuto(c)
+	innerStroke.DrawRoundedRectangle4(extend/2, extend/2, w, h,  lt, rt, lb, rb )
+	innerStroke.Clip()
+	innerStroke.InvertMask()
+	innerStroke.DrawRectangle(0, 0, w+extend, h+extend)
+	innerStroke.Fill()
+	blurred := imaging.Blur(innerStroke.Image(), size)
+	innerShadow := NewImageCtx(int(w), int(h))
+	innerShadow.DrawRoundedRectangle4(0, 0, w, h,  lt, rt, lb, rb )
+	innerShadow.Clip()
+	innerShadow.DrawImage(blurred, int(-extend/2), int(-extend/2))
+	img.DrawImage(innerShadow.Image(), x, y)
+}
+
+func (img *ImageCtx) ShadowRounded(c string, x, y int, w, h, r, size, shirnk, offX, offY float64) {
+	extend := 40.0
+	innerStroke := NewImageCtx(int(w+extend), int(h+extend))
+	innerStroke.SetColorAuto(c)
+	innerStroke.DrawRoundedRectangle(extend/2+shirnk, extend/2+shirnk, w-shirnk*2, h-shirnk*2, r)
+	innerStroke.Fill()
+	blurred := imaging.Blur(innerStroke.Image(), size)
+	img.DrawImage(blurred, x-int(extend/2-offX-shirnk/2), y-int(extend/2-offY-shirnk/2))
+
 }

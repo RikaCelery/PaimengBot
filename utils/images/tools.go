@@ -29,9 +29,9 @@ func AdjustOpacity(m image.Image, percentage float64) image.Image {
 			colorRgb := m.At(i, j)
 			r, g, b, a := colorRgb.RGBA()
 			opacity := uint16(float64(a) * percentage)
-			//颜色模型转换，至关重要！
+			// 颜色模型转换，至关重要！
 			v := newRgba.ColorModel().Convert(color.NRGBA64{R: uint16(r), G: uint16(g), B: uint16(b), A: opacity})
-			//Alpha = 0: Full transparent
+			// Alpha = 0: Full transparent
 			rr, _g, bb, aa := v.RGBA()
 			newRgba.SetRGBA64(i, j, color.RGBA64{R: uint16(rr), G: uint16(_g), B: uint16(bb), A: uint16(aa)})
 		}
@@ -82,6 +82,13 @@ func GetDefaultFont() *truetype.Font {
 func MeasureStringDefault(str string, fontSize, lineSpace float64) (float64, float64) {
 	img := NewImageCtx(1, 1)
 	_ = img.UseDefaultFont(fontSize)
+	return img.MeasureMultilineString(str, lineSpace)
+}
+
+// MeasureStringFont 测量str在给定字体和大小下的长宽
+func MeasureStringFont(font string, str string, fontSize, lineSpace float64) (float64, float64) {
+	img := NewImageCtx(1, 1)
+	_ = img.UseFont(font, fontSize)
 	return img.MeasureMultilineString(str, lineSpace)
 }
 
