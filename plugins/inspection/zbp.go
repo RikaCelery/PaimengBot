@@ -76,8 +76,7 @@ func drawstatus(uid int64, botname string, botrunstatus string) (sendimg image.I
 
 	dldata := (*[]byte)(atomic.LoadPointer((*unsafe.Pointer)(unsafe.Pointer(&bgdata))))
 	if dldata == (*[]byte)(nil) || uintptr(time.Since(boottime).Hours()/24) >= atomic.LoadUintptr(&bgcount) {
-		file := proxy.ResolveFile("bg.png")
-		if !utils.FileExists(file) {
+		i, err := func() (*[]byte, error) {
 			resp, err := http.Get(backgroundURL)
 			if err != nil {
 				log.Warnln("下载获取背景失败: ", err)
@@ -97,17 +96,25 @@ func drawstatus(uid int64, botname string, botrunstatus string) (sendimg image.I
 			}
 			atomic.AddUintptr(&bgcount, 1)
 			atomic.StorePointer((*unsafe.Pointer)(unsafe.Pointer(&bgdata)), unsafe.Pointer(&data))
-			dldata = &data
-		} else {
+			return &data, nil
+		}()
+		if err == nil {
+			dldata = i
+		}
+		if dldata == nil && utils.FileExists(proxy.ResolveFile("bg.png")) {
 			var data []byte
 			data, err = proxy.ReadData("bg.png")
-			if err != nil {
+			if err == nil {
+				atomic.AddUintptr(&bgcount, 1)
+				atomic.StorePointer((*unsafe.Pointer)(unsafe.Pointer(&bgdata)), unsafe.Pointer(&data))
+				dldata = &data
+			} else {
 				log.Warnln("读取图片信息失败", err)
 				return nil, err
 			}
-			atomic.AddUintptr(&bgcount, 1)
-			atomic.StorePointer((*unsafe.Pointer)(unsafe.Pointer(&bgdata)), unsafe.Pointer(&data))
-			dldata = &data
+		}
+		if dldata == nil {
+			return nil, errors.New("failed to download image")
 		}
 	}
 	data := *dldata
@@ -625,12 +632,10 @@ func moreinfo() (stateinfo []*status, err error) {
 	cpuinfo, err := cpu.Info()
 	if err != nil {
 		log.Warnln("获取CPU信息失败")
-		// return
+		err = nil
 	} else {
-		strings.TrimSpace(cpuinfo[0].ModelName)
+		cpustr = strings.TrimSpace(cpuinfo[0].ModelName)
 	}
-	err = nil
-
 	count := len(manager.GetAllPluginConditions())
 	stateinfo = []*status{
 		{name: "OS", text: []string{hostinfo.Platform}},
