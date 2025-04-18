@@ -22,11 +22,11 @@ import (
 
 	_ "golang.org/x/image/webp"
 
-	"github.com/FloatTech/floatbox/web"
 	"github.com/FloatTech/gg"
 	"github.com/FloatTech/imgfactory"
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils"
+	"github.com/RicheyJang/PaimengBot/utils/client"
 	"github.com/RicheyJang/PaimengBot/utils/consts"
 	"github.com/disintegration/imaging"
 	"github.com/shirou/gopsutil/v3/cpu"
@@ -127,8 +127,13 @@ func drawstatus(uid int64, botname string, botrunstatus string) (sendimg image.I
 	if err != nil {
 		return
 	}
-
-	data, err = web.GetData("https://q4.qlogo.cn/g?b=qq&nk=" + strconv.FormatInt(uid, 10) + "&s=640")
+	c := client.NewHttpClient(nil)
+	resp, err := c.Get("https://q4.qlogo.cn/g?b=qq&nk=" + strconv.FormatInt(uid, 10) + "&s=640")
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+	data, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}

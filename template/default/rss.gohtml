@@ -1,0 +1,126 @@
+<html lang="zh">
+<body>
+<div class="wrapper">
+    <h1 class="post-title">{{.Title}}</h1>
+    <div class="post-meta">
+        <div class="favicon">
+            <img src="{{.Favicon}}" alt="{{.FeedTitle}}"/>
+        </div>
+
+        <div class="sub-title">{{.FeedTitle}}</div>
+        <div class="sub-title author">{{.Author}}</div>
+
+        <div class="item-date">{{.Date}}</div>
+    </div>
+
+    <div class="contents">
+        {{.Content}}
+{{/*        <p><img decoding="async" class="aligncenter"*/}}
+{{/*                src="https://img.reimu.net/uploads/2024/08/66b75eb6df6f8.gif"*/}}
+{{/*                width="823" height="463" referrerpolicy="no-referrer"><br>*/}}
+{{/*            <strong><span style="color: #339966;">不是3D看不起，而是2D更有…好吧，这个作者两样都有</span>。<span*/}}
+{{/*                        style="color: #ff6600;">Kizumashiro</span>，又称<span*/}}
+{{/*                        style="color: #ff6600;">Kizu</span>。就在<span style="color: #3366ff;">Rinhee</span>已经开摆一年多都没啥长进时。Kizu坚持数年如一日一般勤勤恳恳保持高水平作品更新。出3D有质感不廉价，出2D细节还原拉满。作为一名不输给Rinhee的同人作者知名度却不及人家的零头，甚至就连隔壁画饼一年的<span*/}}
+{{/*                        style="color: #ff00ff;">ViciNeko</span>都有上万人赞助，而他赞助人数只有一百来人。对此<span*/}}
+{{/*                        style="color: #ff0000;">米粒儿</span>忍不住说道“喝了点B酒，我这辈子都在开车，我就问一句，凭什么…”</strong><br>*/}}
+{{/*        </p>*/}}
+    </div>
+</div>
+</body>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Color+Emoji&family=Noto+Sans+Math&family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+JP:wght@200..900&family=Noto+Serif+KR:wght@200..900&family=Noto+Serif+SC:wght@200..900&family=Yuji+Mai&display=swap');
+    body {
+        height: fit-content;
+        padding: 0;
+        margin: 0;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        font-family: "Noto Sans SC", "Noto Sans JP", "Noto Sans KR", "Noto Sans Math", "Noto Color Emoji", sans-serif;
+    }
+    .wrapper {
+        padding: 1rem;
+    }
+
+    .wrapper .post-title {
+        font-family: "Fira Sans", "helvetica neue", arial, sans-serif;
+        color: #1a1a1a;
+        margin: 0 0 0.2em 0;
+        line-height: 45px;
+    }
+
+    .post-meta {
+        font-family: "Fira Sans", "helvetica neue", arial, sans-serif;
+        font-weight: 400;
+        display: flex;
+        align-items: center;
+        position: relative;
+        font-size: 14px;
+        line-height: 14px;
+        margin-bottom: 1rem;
+    }
+
+    .post-meta .sub-title {
+        font-family: inherit;
+        color: #707070;
+        margin-right: 10px;
+        white-space-collapse: collapse;
+        text-overflow: ellipsis;
+        text-wrap: nowrap;
+    }
+
+    .post-meta .author {
+        position: relative;
+    }
+
+    .post-meta .author::before {
+        position: absolute;
+        content: "-";
+        left: -7px;
+    }
+
+    .post-meta .item-date {
+        position: relative;
+        font-family: inherit;
+        color: #707070;
+    }
+
+    .post-meta .item-date::before {
+        position: absolute;
+        content: "";
+        width: 2px;
+        height: 2px;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        left: -6px;
+        background-color: #ccc;
+    }
+
+    .post-meta .favicon {
+        margin-right: 10px;
+    }
+
+    .post-meta .favicon img {
+        width: 16px;
+        height: 16px;
+    }
+
+    .contents {
+        font-weight: normal;
+        line-height: 1.5;
+        font-size: 14px;
+        color: #262626;
+    }
+
+    .contents img {
+        height: auto;
+        width: 100%;
+        margin-bottom: 0.5em;
+    }
+</style>
+</html>

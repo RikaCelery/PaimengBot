@@ -82,3 +82,12 @@ func SendFakeForwardToGroup(ctx *zero.Ctx, msgs ...message.Segment) NoCtxSendMsg
 		}).Get("message_id").Int()
 	}
 }
+
+func Reaction(ctx *zero.Ctx, code string, add bool) {
+	ctx.CallAction("set_group_reaction", zero.Params{
+		"group_id":   ctx.Event.GroupID,
+		"message_id": ctx.Event.MessageID,
+		"code":       code,
+		"is_add":     add,
+	})
+}

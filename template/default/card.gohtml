@@ -1,0 +1,65 @@
+<html>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<style id="font-tokens">
+    :root {
+        --font-bold: 500;
+        --font_size_1: 8px;
+        --font_size_2: 10px;
+        --font_size_3: 12px;
+        --font_size_4: 14px;
+        --font_size_5: 16px;
+        --avatar_size_1: 20px;
+        --avatar_size_2: 32px;
+        --avatar_size_3: 40px;
+        --font_size_main_1: 10px;
+        --font_size_main_2: 12px;
+        --line_height_1: 12px;
+        --line_height_2: 14px;
+        --line_height_3: 16px;
+        --line_height_4: 20px;
+        --line_height_5: 22px;
+        --line_height_main_1: 16px;
+        --line_height_main_2: 18px;
+    }
+</style>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Color+Emoji&family=Noto+Sans+Math&family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+JP:wght@200..900&family=Noto+Serif+KR:wght@200..900&family=Noto+Serif+SC:wght@200..900&family=Yuji+Mai&display=swap');
+    * {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+    }
+
+    html {
+        font-family: "Noto Sans SC", "Noto Sans JP", "Noto Sans KR", "Noto Sans Math", "Noto Color Emoji", sans-serif;
+    }
+    body {
+        background: linear-gradient(to left bottom, #e66465, #e5c391);
+        width: fit-content;
+        height: fit-content;
+        padding: 0;
+        margin: 0;
+    }
+    .card{
+        flex-grow: 1;
+        padding: 1em;
+        border-radius: 10px;
+        background: linear-gradient(to left bottom, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.38));
+    }
+    .wrapper {
+        display: flex;
+        width: fit-content;
+        height: fit-content;
+        padding: 10px;
+    }
+</style>
+<body style="">
+<div class="wrapper">
+    <div class="card">
+        {{.text |replace "\n" "<br>" | escape}}
+    </div>
+</div>
+</body>
+</html>

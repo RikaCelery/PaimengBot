@@ -282,6 +282,7 @@ func isImportant(plugin *manager.PluginCondition) bool {
 		"event",
 		"help",
 		"invite",
+		"autowithdraw",
 		"limiter",
 	}
 	for _, key := range keys {

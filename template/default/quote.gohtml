@@ -1,0 +1,252 @@
+<html lang="zh">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<body>
+  <div class="wrapper">
+    <div class="avatar">
+      <img class="" src="{{.Avatar}}"
+      ></img>
+    </div>
+    <div class="right-shadow">
+    </div>
+    <div class="right">
+      <div class="avatar-fade">
+        <img class=""  src="{{.Avatar}}"
+        ></img>
+      </div>
+      <div class="message float-text"  style="font-size: 50px;">
+        {{.Message|escape}}
+      </div>
+      <div class="user-name float-text" >——{{.UserName|escape}}</div>
+      {{if .Date}}
+      <div class="time float-text" >{{.Date}}</div>
+      {{end}}
+    </div>
+  </div>
+</body>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Color+Emoji&family=Noto+Sans+Math&family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+JP:wght@200..900&family=Noto+Serif+KR:wght@200..900&family=Noto+Serif+SC:wght@200..900&family=Yuji+Mai&display=swap');
+    * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+    html {
+        font-family: "Noto Sans SC", "Noto Sans JP", "Noto Sans KR", "Noto Sans Math", "Noto Color Emoji", sans-serif;
+    }
+  body {
+    background-color: black;
+    --light: #a7a7a711;
+    --rot: 14deg;
+    padding: 0;
+    margin: 0;
+  }
+
+  .wrapper {
+    width: 1280px;
+    height: 640px;
+    background-color: #1a1a1a;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .avatar {
+    width: 640px;
+    height: 640px;
+    /* border-radius: 20%; */
+    box-shadow: inset #d70505 0 0 10px 10px;
+
+  }
+
+  .avatar-fade {
+    width: 640px;
+    height: 640px;
+    top: 0;
+    left: -180px;
+    scale: 1.3;
+    transform-origin: left bottom;
+    z-index: 19;
+    rotate: var(--rot);
+    opacity: .2;
+    position: absolute;
+    overflow: hidden;
+
+  }
+
+  .avatar-fade img {
+    width: 640px;
+    height: 640px;
+    position: absolute;
+    filter: brightness(.5) contrast(1.4) blur(0px);
+    left: -0px;
+    rotate: calc(- var(--rot));
+    transform-origin: left bottom;
+
+  }
+
+  .avatar img,
+  .avatar-fade img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .right {
+    margin: 0 20px
+  }
+
+  .right,
+  .right-shadow {
+    width: calc(640px - 20px * 2);
+    height: 640px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    left: 640px;
+    top: 0;
+    position: absolute;
+    color: white;
+
+  }
+
+  .float-text {
+    text-align: center;
+    z-index: 20;
+  }
+
+  .right::after {
+    content: '';
+    position: absolute;
+    left: 50px;
+    z-index: 1;
+    width: 500px;
+    height: 200%;
+    box-shadow: #0000007c -10px 0 80px 0px;
+    background-color: var(--light);
+    rotate: var(--rot);
+    transform-origin: left;
+  }
+
+  .right::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    z-index: 1;
+    width: 630px;
+    height: 200%;
+    box-shadow: #0000007c -10px 0 80px 0px;
+    background-color: var(--light);
+    rotate: var(--rot);
+    transform-origin: left;
+  }
+
+  .right-shadow::before {
+    content: '';
+    position: absolute;
+    left: -62px;
+    z-index: 1;
+    width: 500%;
+    height: 200%;
+    box-shadow: #1a1a1a 0 0 86px 96px;
+    background-color: #1a1a1a;
+    rotate: var(--rot);
+    transform-origin: left;
+  }
+
+  .right-shadow::after {
+    content: '';
+    position: absolute;
+    left: -80px;
+    z-index: 1;
+    width: 500%;
+    height: 200%;
+    box-shadow: #0000007c -10px 0 80px 0px;
+    background-color: var(--light);
+    rotate: var(--rot);
+    transform-origin: left;
+  }
+
+  .user-name {
+    font-style: italic;
+    font-size: 30px;
+    margin-top: 30px;
+    margin-left: 50px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    word-spacing: 2px;
+    color: #999;
+  }
+
+  .right .message {
+    font-weight: 600;
+    word-break: break-all;
+    text-shadow: 3px 3px 14px black;
+    line-height: 1.3em;
+  }
+
+  .right .time {
+    position: absolute;
+    right: 0;
+    bottom: 20px;
+
+    font-style: italic;
+    font-size: 20px;
+    margin-top: 30px;
+    margin-left: 50px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-decoration: underline;
+    color: #999;
+  }
+</style>
+<style>
+  .qmsg {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    row-gap: 10px;
+  }
+
+  .quote {
+    --width: 5px;
+    background-color: #cdcdcd1c;
+    color: #cdcdcd;
+    font-style: italic;
+    text-shadow: none;
+    width: fit-content;
+    /* width: 90%; */
+    text-align: start;
+    position: relative;
+    padding: .2em .2em .3em calc(var(--width)*3 + 10px);
+    border-radius: 5px;
+    line-height: 1em;
+    font-size: 1em;
+    margin-left: -10px;
+    margin-bottom: .2em;
+  }
+
+  .quote::after {
+    content: '';
+    position: absolute;
+    background-color: #84e1e490;
+    height:90%;
+    width: var(--width);
+    left: calc(0px + var(--width));
+    top: 5%;
+    border-radius: 5px;
+  }
+</style>
+<script>
+  window.onload = () => {
+    var message = document.querySelector(".message");
+    while (message.offsetTop < 40) {
+      message.style.fontSize = parseInt(message.style.fontSize.substring(0, message.style.fontSize.indexOf('px'))) - 1 + "px";
+
+    }
+  }
+</script>
+
+
+</html>

@@ -14,6 +14,7 @@ import (
 
 	// 基本插件，建议不要删除，可能会造成依赖问题
 	_ "github.com/RicheyJang/PaimengBot/basic/auth"
+	_ "github.com/RicheyJang/PaimengBot/basic/autowithdraw"
 	_ "github.com/RicheyJang/PaimengBot/basic/ban"
 	_ "github.com/RicheyJang/PaimengBot/basic/event"
 	_ "github.com/RicheyJang/PaimengBot/basic/help"
@@ -25,13 +26,17 @@ import (
 
 	// 新添加的插件
 	_ "github.com/RicheyJang/PaimengBot/plugins/aiwife"
-	_ "github.com/RicheyJang/PaimengBot/plugins/autowithdraw"
 	_ "github.com/RicheyJang/PaimengBot/plugins/base64"
+	_ "github.com/RicheyJang/PaimengBot/plugins/browser"
 	_ "github.com/RicheyJang/PaimengBot/plugins/deer_pipe"
 	_ "github.com/RicheyJang/PaimengBot/plugins/dice"
 	_ "github.com/RicheyJang/PaimengBot/plugins/image_2_ascii"
 	_ "github.com/RicheyJang/PaimengBot/plugins/niuniu"
+	_ "github.com/RicheyJang/PaimengBot/plugins/previewer"
+	_ "github.com/RicheyJang/PaimengBot/plugins/qqwife"
+	_ "github.com/RicheyJang/PaimengBot/plugins/quote"
 	_ "github.com/RicheyJang/PaimengBot/plugins/whatslink"
+	_ "github.com/RicheyJang/PaimengBot/plugins/wife"
 	_ "github.com/RicheyJang/PaimengBot/plugins/wordcloud"
 
 	// 普通插件

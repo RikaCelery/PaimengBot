@@ -10,6 +10,7 @@ import (
 
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/consts"
+	"github.com/tidwall/gjson"
 
 	"gorm.io/gorm"
 
@@ -293,6 +294,17 @@ func (p *PluginProxy) GetLevelDB() *leveldb.DB {
 	return p.u.GetLevelDB()
 }
 
+func (p *PluginProxy) DataFolder() string {
+	fullPath := path.Join("data", p.key)
+	if !utils.DirExists(fullPath) {
+		create, err := os.Create(fullPath)
+		if err != nil {
+			panic(err)
+		}
+		_ = create.Close()
+	}
+	return fullPath + "/"
+}
 func (p *PluginProxy) ReadData(paths ...string) ([]byte, error) {
 	fullPath := path.Join("data", p.key, path.Join(paths...))
 	parent := path.Dir(fullPath)
@@ -310,6 +322,29 @@ func (p *PluginProxy) ReadData(paths ...string) ([]byte, error) {
 		_ = create.Close()
 	}
 	return os.ReadFile(fullPath)
+}
+func (p *PluginProxy) ReadJson(paths ...string) (gjson.Result, error) {
+	fullPath := path.Join("data", p.key, path.Join(paths...))
+	parent := path.Dir(fullPath)
+	if !utils.DirExists(parent) {
+		_, err := utils.MakeDir(parent)
+		if err != nil {
+			return gjson.Result{}, err
+		}
+	}
+	if !utils.FileExists(fullPath) {
+		create, err := os.Create(fullPath)
+		if err != nil {
+			return gjson.Result{}, err
+		}
+		_ = create.Close()
+	}
+	file, err := os.ReadFile(fullPath)
+	if err != nil {
+		return gjson.Result{}, err
+	}
+	j := gjson.ParseBytes(file)
+	return j, nil
 }
 
 func (p *PluginProxy) WriteData(data []byte, paths ...string) error {

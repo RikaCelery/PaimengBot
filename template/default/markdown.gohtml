@@ -1,0 +1,99 @@
+<html>
+<header>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.0/dist/katex.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@wcj/markdown-to-html/dist/marked.css">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <script src="https://unpkg.com/@wcj/markdown-to-html/dist/markdown.min.js"></script>
+</header>
+<style id="font-tokens">
+    h1,h2,h3,h4,h5,h6{
+        margin-bottom: .5em;
+    }
+    p{
+        margin: .75em 0;
+    }
+</style>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Color+Emoji&family=Noto+Sans+Math&family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+JP:wght@200..900&family=Noto+Serif+KR:wght@200..900&family=Noto+Serif+SC:wght@200..900&family=Yuji+Mai&display=swap');
+
+    * {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+    }
+
+    html {
+        font-family: "Noto Sans SC", "Noto Sans JP", "Noto Sans KR", "Noto Sans Math", "Noto Color Emoji", sans-serif;
+    }
+
+    math {
+        font-family: MJXZERO, MJXTEX, "Noto Sans Math";
+    }
+
+    code {
+        font-family: "JetBrains Mono", monospace!important;
+        font-variant-ligatures: none!important;
+        display: inline-block!important;
+    }
+
+    body {
+        background: linear-gradient(to left bottom, #e66465, #e5c391);
+        width: fit-content;
+        height: fit-content;
+        padding: 0;
+        margin: 0;
+    }
+
+
+    .card {
+        flex-grow: 1;
+        padding: 1em;
+        border-radius: 10px;
+        background: linear-gradient(to left bottom, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.38));
+    }
+
+    .wrapper {
+        display: flex;
+        width: fit-content;
+        height: fit-content;
+        padding: 10px;
+    }
+
+    .inline-code ,code{
+        font-weight: 500;
+        font-size: 1rem;
+        background-color: rgba(0, 0, 0, 0.08);
+        border-radius: .2rem;
+        padding: .2rem;
+    }
+</style>
+<body style="">
+<div class="wrapper">
+    <div class="card">
+        <div class="markdown-body"></div>
+    </div>
+</div>
+<script>
+    const str = {{.text}};
+    const div = document.querySelector('.card .markdown-body');
+    div.innerHTML = markdown.default(str)
+    window.MathJax = {
+        tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        svg: {
+            fontCache: 'global'
+        }
+    };
+    // MathJax.typesetPromise().then(() => {
+    //     // modify the DOM here
+    //     MathJax.typesetPromise();
+    // }).catch((err) => console.log(err.message));
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>

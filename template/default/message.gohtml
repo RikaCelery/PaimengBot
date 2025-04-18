@@ -1,0 +1,445 @@
+<html>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+<style id="font-tokens">
+    :root {
+        --font-bold: 500;
+        --font_size_1: 8px;
+        --font_size_2: 10px;
+        --font_size_3: 12px;
+        --font_size_4: 14px;
+        --font_size_5: 16px;
+        --avatar_size_1: 20px;
+        --avatar_size_2: 32px;
+        --avatar_size_3: 40px;
+        --font_size_main_1: 10px;
+        --font_size_main_2: 12px;
+        --line_height_1: 12px;
+        --line_height_2: 14px;
+        --line_height_3: 16px;
+        --line_height_4: 20px;
+        --line_height_5: 22px;
+        --line_height_main_1: 16px;
+        --line_height_main_2: 18px;
+    }
+</style>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Color+Emoji&family=Noto+Sans+Math&family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+JP:wght@200..900&family=Noto+Serif+KR:wght@200..900&family=Noto+Serif+SC:wght@200..900&family=Yuji+Mai&display=swap');
+    * {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+    }
+    html {
+        font-family: "Noto Sans SC", "Noto Sans JP", "Noto Sans KR", "Noto Sans Math", "Noto Color Emoji", sans-serif;
+    }
+
+    body {
+        background: linear-gradient(to left bottom, #e66465, #e5c391);
+        width: fit-content;
+        height: fit-content;
+        padding: 0;
+        margin: 0;
+    }
+
+    :root {
+        --bqqnt-base-text-color: 0, 0, 0;
+    }
+
+    .avatar-span {
+        height: 32px;
+        width: 32px;
+        position: absolute;
+        bottom: 8px;
+        left: 10px;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+
+    .avatar {
+        background-position: center;
+        background-size: cover;
+        width: 32px;
+        height: 32px;
+        background-repeat: no-repeat;
+    }
+
+    .messages-container {
+        position: relative;
+        display: grid;
+        grid-auto-rows: min-content;
+        grid-template-areas: "checkbox avatar . nickname nickname nickname" "checkbox avatar . content status ." "checkbox avatar . tips . .";
+        grid-template-columns:
+          auto var(--avatar_size_2) 8px auto calc(var(--avatar_size_2) + 8px)
+          1fr;
+        justify-content: start;
+        transition-duration: 0.3s;
+        padding: 4px 10px;
+    }
+
+    .messages-container .user-name {
+        align-items: center;
+        /*color: var(--on_bg_text);*/
+        display: flex;
+        grid-row-start: nickname;
+        grid-column-start: nickname;
+        grid-row-end: nickname;
+        grid-column-end: nickname;
+        min-height: 18px;
+        position: relative;
+        user-select: none;
+        font-size: var(--font_size_2);
+        line-height: var(--line_height_2);
+        color: color(srgb 0 0.116139 0.153846 / 0.52);
+
+        width: min-content;
+        /*color: color-mix(*/
+        /*        in srgb,*/
+        /*        var(--md-sys-color-primary-container),*/
+        /*        rgba(var(--bqqnt-base-text-color), 0.4) 80%*/
+        /*);*/
+        padding: 0 0 3px 1px;
+    }
+
+    .msg-content-container * {
+        max-width: 100%;
+    }
+
+    .messages-content__wrapper {
+        background-color: rgba(255, 255, 255, 0.3);
+        box-shadow: rgba(16, 35, 47, 0.149) 2px 2px 6px 0;
+        border-radius: 3px 15px 15px 3px;
+        padding: 5px 15px 8px 5px;
+        width: 100%;
+        min-width: 100px;
+        grid-area: content;
+    }
+
+    .text-ellipsis {
+        max-width: 100%;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        text-overflow: ellipsis;
+        white-space-collapse: collapse;
+        text-wrap: nowrap;
+        unicode-bidi: isolate;
+    }
+
+    .user-name .q-tag {
+        background: transparent;
+    }
+
+    .messages-container .user-name .group-member-label {
+        margin-left: 4px;
+        font-size: min(var(--font_size_1), 14px);
+        line-height: min(var(--line_height_1), 20px);
+    }
+
+    .quote .user-name,
+    .quote .user-name .group-member-label,
+    .quote .text-normal {
+        color: #ffffffce;
+        font-size: var(--font_size_2);
+    }
+
+    .msg-content-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .messages-content__wrapper {
+        font-size: var(--font_size_main_2);
+        line-height: max(var(--line_height_main_2), 22px);
+        overflow-x: hidden;
+        overflow-y: hidden;
+        position: relative;
+        max-width: 400px;
+    }
+
+    .quote__wrapper {
+        padding: 5px 5px 5px 10px;
+        position: relative;
+        box-shadow: inset 2px 0 0 0px rgba(0, 0, 0, 0.221);
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    .quote {
+        border-radius: 3px 10px 10px 3px;
+        overflow: hidden;
+        width: fit-content;
+    }
+
+    .pic-element {
+        border-radius: 4px;
+        width: fit-content;
+        height: fit-content;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        margin: 4px 0px;
+    }
+
+    .image-content {
+        height: 100%;
+        image-rendering: high-quality;
+        object-fit: cover;
+        object-position: center top;
+        text-indent: 100%;
+        width: auto;
+        max-height: 300px;
+        min-height: 30px;
+    }
+
+    .wrapper {
+        width: fit-content;
+        height: fit-content;
+    }
+</style>
+<body style="">
+<div class="wrapper">
+    <!-- <div class="messages">
+              <div class="messages-container">
+                <span class="avatar-span"
+                  ><div
+                    class="avatar messages-container__avatar"
+                    style="
+                      background-image: url('http://q4.qlogo.cn/g?b=qq&nk=478084636&s=640');
+                    "
+                  ></div
+                ></span>
+                <div class="messages-content__wrapper">
+                  <div
+                    class="msg-content-container container--others mix-messages__container"
+                    style="--img-max-width: 324px"
+                  >
+                    <div class="user-name no-copy text-ellipsis">
+                      <span class="text-ellipsis">心平气和</span>
+                      <div class="q-tag q-tag--blue group-member-label">
+                        <span class="title">管理员</span>
+                      </div>
+                    </div>
+                    <div class="quote">
+                      <div class="quote__wrapper">
+                        <div class="user-name no-copy text-ellipsis">
+                          <span class="text-ellipsis">心平气和</span>
+                        </div>
+                        <span class="text-normal"
+                          >不知道就先学英语数学吧</span
+                        >
+                      </div>
+                    </div>
+                    <div class="image pic-element">
+                      <img
+                        class="image-content"
+                        src="http://localhost:8000/Users/rikahil/Library/Containers/com.tencent.qq/Data/Library/Application%20Support/QQ/nt_qq_d7210ba829276e4388bf62de00617b25/nt_data/Pic/2024-08/Thumb/fe39168a7b15463c712af1f806e107a6_0.png"
+                      />
+                    </div>
+                    <div class="image pic-element">
+                      <img
+                        class="image-content"
+                        src="http://localhost:8000/Users/rikahil/Library/Containers/com.tencent.qq/Data/Library/Application%20Support/QQ/nt_qq_d7210ba829276e4388bf62de00617b25/nt_data/Pic/2024-08/Thumb/33d5c7a21ef78af93ea9af80ea7e9087_0.png"
+                      />
+                    </div>
+                    <div class="image pic-element">
+                      <img
+                        class="image-content"
+                        src="http://localhost:8000/Users/rikahil/Library/Containers/com.tencent.qq/Data/Library/Application%20Support/QQ/nt_qq_d7210ba829276e4388bf62de00617b25/nt_data/Pic/2024-08/Ori/45a1da975927363bb590cec2182b1112.png"
+                      />
+                    </div>
+                    <span class="text-normal"
+                      >不知道就aaaasduhfihihsaifhdiuhfiushaaaaaaaa先学英语数学吧</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div> -->
+</div>
+</body>
+<script>
+    document.querySelector(".wrapper").clientWidth;
+    window.innerWidth;
+
+    function xmlescape(str) {
+        if (!str || str.trim().length == 0) return "";
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&apos;")
+            .replace(/\n/g, "<br>")
+            .replace(/\r/g, "")
+            .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
+            .replace(/ /g, "&nbsp;");
+    }
+
+    function cleanUnicodeControlsAndEscape(str) {
+        if (!str || str.trim().length == 0) return "";
+        return str
+            .replace(
+                /[\u0000-\u001F\u007F-\u009F\u200E\u200F\u202A-\u202E\uFEFF]/g,
+                ""
+            )
+            .replace(/\n/g, "") //clean \n
+            .replace(/\r/g, "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;")
+            .replace(/ /g, "&nbsp;");
+    }
+
+    function createMsgEL(msg, hideInfo) {
+        let quoteEL = "";
+        if (msg.quote)
+            quoteEL = `
+                      <div class="quote">
+                        <div class="quote__wrapper">
+                          <div class="user-name no-copy text-ellipsis">
+                            <span class="text-ellipsis">${cleanUnicodeControlsAndEscape(
+                msg.quote.name
+            )}</span>
+                          </div>
+                      ${msg.quote.messages.map((m) => {
+                switch (m.type) {
+                    case "text":
+                        return `<span class="text-normal">${xmlescape(
+                            m.data
+                        )}</span>`;
+                        break;
+                    case "image":
+                        return `
+                      <div class="image pic-element">
+                        <img
+                          class="image-content"
+                          src="${m.data}"
+                        />
+                      </div>`;
+                    default:
+                        return `<span class="text-normal">${xmlescape(
+                            JSON.stringify(m)
+                        )}</span>`
+                }
+            }).join("")}
+                        </div>
+                      </div>
+                      `;
+        const msgEL = document.createElement("div");
+        msgEL.className = "messages";
+        msgEL.innerHTML = `
+                <div class="messages-container">
+                  <span class="avatar-span"
+                    style="${hideInfo ? "display:none;" : ""}"
+                    ><div
+                      class="avatar messages-container__avatar"
+                      style="
+                        background-image: url('http://q4.qlogo.cn/g?b=qq&nk=${
+            msg.qid
+        }&s=640');
+                      "
+                    ></div
+                  ></span>
+                  <div class="messages-content__wrapper">
+                    <div
+                      class="msg-content-container container--others mix-messages__container"
+                      style="--img-max-width: 324px;"
+                    >
+                      <div class="user-name no-copy text-ellipsis"
+                      style="${hideInfo ? "" : ""}">
+                        <span class="text-ellipsis">${xmlescape(
+            msg.name
+        )}</span>
+                        <div class="q-tag q-tag--blue group-member-label">
+                          <span class="title">${xmlescape(msg.label)}</span>
+                        </div>
+                      </div>
+                      ${quoteEL}
+                      ${msg.messages
+            .map((m) => {
+                console.log(m);
+                switch (m.type) {
+                    case "text":
+                        return `<span class="text-normal">${xmlescape(
+                            m.data
+                        )}</span>`;
+                        break;
+                    case "image":
+                        return `
+                      <div class="image pic-element">
+                        <img
+                          class="image-content"
+                          src="${m.data}"
+                        />
+                      </div>`;
+                    default:
+                        return `<span class="text-normal">${xmlescape(
+                            JSON.stringify(m)
+                        )}</span>`
+                }
+            })
+            .join("")}
+                    </div>
+                  </div>
+                </div>
+      `;
+        return msgEL;
+    }
+
+    var mllist = document.querySelector(".wrapper");
+    var username = "Gertrud Kiwifruit";
+    var msgs = JSON.parse({{.}});
+    var msgs1 = [
+        {
+            name: "我是马卡龙，枪马网卡耳朵龙",
+            label: "admin",
+            time: 1724212701,
+            qid: 1003576370,
+            quote: null,
+            messages: [{type: "text", data: "？"}],
+        },
+        {
+            name: "[似了]rika?? ?? ???",
+            time: 1724212701,
+            qid: 2590369447,
+            quote: null,
+            messages: [
+                {
+                    type: "image",
+                    data: "http://gchat.qpic.cn/gchatpic_new/2590369447/607726866-4169007363-B9A8DD50EF292E417BA884C7E406E847/0?term=255&is_origin=1",
+                },
+                {
+                    type: "image",
+                    data: "https://multimedia.nt.qq.com.cn/download?appid=1407&fileid=CgoyNTkwMzY5NDQ3EhQvvExJO5rg0hE6j1s2eBSpBmSLnBizugEg_woovfOF8ZeFiANQgL2jAQ&rkey=CAQSKAB6JWENi5LMmc0_msJPdnQI_NH32qkjsOC4idS5g530gcFe1yaWhI4",
+                },
+            ],
+        },
+        {
+            name: "??",
+            label: "admin",
+            time: 1724212701,
+            qid: 1436898372,
+            quote: null,
+            messages: [{type: "text", data: "UI写的还挺好看"}],
+        },
+    ];
+    msgs.forEach((msg, idx) => {
+        const msgEL = createMsgEL(msg, (msgs[idx + 1] || {}).qid == msg.qid);
+        mllist.appendChild(msgEL);
+    });
+    Promise.all(
+        Array.from(document.images)
+            .filter((img) => !img.complete)
+            .map(
+                (img) =>
+                    new Promise((resolve) => {
+                        img.onload = img.onerror = resolve;
+                    })
+            )
+    ).then(() => {
+        setInterval(() => {
+            console.log("images finished loading");
+            console.log("done");
+        }, 500);
+    });
+</script>
+</html>
