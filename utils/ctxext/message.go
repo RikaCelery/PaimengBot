@@ -83,6 +83,16 @@ func SendFakeForwardToGroup(ctx *zero.Ctx, msgs ...message.Segment) NoCtxSendMsg
 	}
 }
 
+func ReactionLoadingAdd(ctx *zero.Ctx) {
+	Reaction(ctx, "424", true)
+}
+func ReactionOkAdd(ctx *zero.Ctx) {
+	Reaction(ctx, "424", true)
+}
+func ReactionLoadingRemove(ctx *zero.Ctx) {
+	Reaction(ctx, "424", false)
+}
+
 func Reaction(ctx *zero.Ctx, code string, add bool) {
 	ctx.CallAction("set_group_reaction", zero.Params{
 		"group_id":   ctx.Event.GroupID,

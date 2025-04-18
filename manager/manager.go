@@ -390,6 +390,14 @@ func (manager *PluginManager) addConfig(prefix string, key string, defaultValue 
 	manager.configs.SetDefault(key, defaultValue)
 }
 
+// 添加配置并设置值
+func (manager *PluginManager) setConfig(prefix string, key string, value interface{}) {
+	if len(prefix) > 0 {
+		key = fmt.Sprintf("%s.%s", prefix, key)
+	}
+	manager.configs.Set(key, value)
+}
+
 // 获取配置
 func (manager *PluginManager) getConfig(prefix string, key string) interface{} {
 	if len(prefix) > 0 {

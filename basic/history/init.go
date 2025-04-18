@@ -37,7 +37,7 @@ func init() {
 	db = &_db
 	db.Open(time.Hour)
 	en = zero.New()
-	en.OnMessage(zero.OnlyGroup).Handle(func(ctx *zero.Ctx) {
+	en.OnMessage(zero.OnlyGroup).SetPriority(99999).Handle(func(ctx *zero.Ctx) {
 		defer func() {
 			if err := recover(); err != nil {
 				logrus.Errorln(err)
@@ -99,12 +99,14 @@ func hashImageFromUrl(url string) (phash, hmd5, format string, err error) {
 	phash = fmt.Sprintf("%016x", h.GetHash())
 	return
 }
-func preprocess(msg message.Message) message.Message {
+func preprocess(msg message.Message) (ret message.Message) {
+
 	for i := range msg {
 		switch msg[i].Type {
 		case "text":
 		case "at":
 		case "video":
+
 			url := msg[i].Data["url"]
 			file_size := msg[i].Data["file_size"]
 			file := msg[i].Data["file"]

@@ -35,6 +35,7 @@ import (
 	_ "github.com/RicheyJang/PaimengBot/plugins/previewer"
 	_ "github.com/RicheyJang/PaimengBot/plugins/qqwife"
 	_ "github.com/RicheyJang/PaimengBot/plugins/quote"
+	_ "github.com/RicheyJang/PaimengBot/plugins/saucenao"
 	_ "github.com/RicheyJang/PaimengBot/plugins/whatslink"
 	_ "github.com/RicheyJang/PaimengBot/plugins/wife"
 	_ "github.com/RicheyJang/PaimengBot/plugins/wordcloud"

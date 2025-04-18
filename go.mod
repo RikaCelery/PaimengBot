@@ -21,6 +21,7 @@ require (
 	github.com/glebarez/sqlite v1.3.5
 	github.com/go-ego/gse v0.80.3
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
+	github.com/jozsefsallai/gophersauce v1.0.1
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
 	github.com/mattn/go-runewidth v0.0.16
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
@@ -47,7 +48,10 @@ require (
 	modernc.org/sortutil v1.2.1
 )
 
-require go.uber.org/multierr v1.11.0 // indirect
+require (
+	github.com/gabriel-vasile/mimetype v1.0.4 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
+)
 
 require (
 	github.com/FloatTech/ttl v0.0.0-20240716161252-965925764562 // indirect
@@ -118,7 +122,7 @@ require (
 	modernc.org/sqlite v1.33.1 // indirect
 )
 
-replace github.com/wdvxdr1123/ZeroBot => github.com/RikaCelery/ZeroBot v0.0.0-20250313062706-f47ff6695860
+replace github.com/wdvxdr1123/ZeroBot => github.com/RikaCelery/ZeroBot v0.0.0-20250418153841-2bb0d31991c3
 
 replace modernc.org/sqlite => github.com/fumiama/sqlite3 v1.29.10-simp
 

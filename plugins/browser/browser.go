@@ -119,12 +119,8 @@ func init() {
 		model := ctx.State["flag"].(cmd)
 		c := http.Client{}
 		// 按钮
-		ctx.CallAction("set_group_reaction", zero.Params{
-			"group_id":   ctx.Event.GroupID,
-			"message_id": ctx.Event.MessageID,
-			"code":       "424",
-			"is_add":     true,
-		})
+		ctxext.ReactionLoadingAdd(ctx)
+		defer ctxext.ReactionLoadingRemove(ctx)
 		for _, u := range model.URL {
 			option := url.Values{}
 			option.Set("url", u)
@@ -147,7 +143,5 @@ func init() {
 			}
 			ctx.Send(message.ImageBytes(img))
 		}
-		// 按钮
-		ctxext.Reaction(ctx, "424", false)
 	})
 }

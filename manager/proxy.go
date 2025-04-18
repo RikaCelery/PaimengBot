@@ -222,6 +222,11 @@ func (p *PluginProxy) AddConfig(key string, defaultValue interface{}) {
 	p.u.addConfig(p.key, key, defaultValue)
 }
 
+// AddConfig 添加配置
+func (p *PluginProxy) SetConfig(key string, value interface{}) {
+	p.u.setConfig(p.key, key, value)
+}
+
 // GetConfig 获取配置
 func (p *PluginProxy) GetConfig(key string) interface{} {
 	return p.u.getConfig(p.key, key)
