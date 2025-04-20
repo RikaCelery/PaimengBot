@@ -10,12 +10,18 @@ import (
 	"strings"
 
 	"github.com/RicheyJang/PaimengBot/manager"
+	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/ctxext"
 	"github.com/alexflint/go-arg"
+	"github.com/playwright-community/playwright-go"
 	log "github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/extension/shell"
 	"github.com/wdvxdr1123/ZeroBot/message"
+)
+
+const (
+	configBackend = "backend_url"
 )
 
 func init() {
@@ -33,7 +39,7 @@ func init() {
 		Quality int      `arg:"-q" help:"截图质量，最高100" default:"70"`
 		URL     []string `arg:"positional"`
 	}
-
+	engine.AddConfig(configBackend, "http://localhost:5544")
 	engine.OnCommands([]string{"截图", "截屏"}, func(ctx *zero.Ctx) bool {
 		var screenShotCmd = cmd{}
 		browserArgsParser, err := arg.NewParser(arg.Config{Program: zero.BotConfig.CommandPrefix + "截图", IgnoreEnv: true}, &screenShotCmd)
@@ -67,30 +73,30 @@ func init() {
 				return false
 			}
 			for _, host := range json.Get(fmt.Sprintf("blacklist.all")).Array() {
-				if parse.Host == host.String() {
+				if strings.HasPrefix(parse.Host, host.String()) {
 					ctx.Send("不允许截图该网址")
 					goto notok
 				}
 			}
 			for _, host := range json.Get(fmt.Sprintf("blacklist.group.%d", ctx.Event.GroupID)).Array() {
-				if parse.Host == host.String() {
+				if strings.HasPrefix(parse.Host, host.String()) {
 					ctx.Send("不允许截图该网址")
 					goto notok
 				}
 			}
 			for _, host := range json.Get(fmt.Sprintf("blacklist.user.%d", ctx.Event.UserID)).Array() {
-				if parse.Host == host.String() {
+				if strings.HasPrefix(parse.Host, host.String()) {
 					ctx.Send("不允许截图该网址")
 					goto notok
 				}
 			}
 			for _, host := range json.Get(fmt.Sprintf("whitelist.group.%d", ctx.Event.GroupID)).Array() {
-				if parse.Host == host.String() {
+				if strings.HasPrefix(parse.Host, host.String()) {
 					goto ok
 				}
 			}
 			for _, host := range json.Get(fmt.Sprintf("whitelist.all")).Array() {
-				if parse.Host == host.String() {
+				if strings.HasPrefix(parse.Host, host.String()) {
 					goto ok
 				}
 			}
@@ -121,6 +127,34 @@ func init() {
 		// 按钮
 		ctxext.ReactionLoadingAdd(ctx)
 		defer ctxext.ReactionLoadingRemove(ctx)
+		if _, err := c.Get(engine.GetConfigString(configBackend)); err != nil {
+			// 使用内置的playwright
+			option := utils.ScreenShotPageOption{
+				Width: model.Width,
+				DPI:   model.DPI,
+				PwOption: playwright.PageScreenshotOptions{
+					FullPage:   utils.DefaultPageOptions.FullPage,
+					Type:       utils.DefaultPageOptions.Type,
+					Quality:    playwright.Int(model.Quality),
+					Timeout:    utils.DefaultPageOptions.Timeout,
+					Animations: playwright.ScreenshotAnimationsAllow,
+					Scale:      utils.DefaultPageOptions.Scale,
+					Style:      utils.DefaultPageOptions.Style,
+				},
+			}
+			if model.Height != 0 {
+				option.Height = model.Height
+				option.PwOption.FullPage = playwright.Bool(false)
+			}
+			for _, u := range model.URL {
+				img, err := utils.ScreenShotPageURL(u, option)
+				if err != nil {
+					ctx.Send(fmt.Sprintf("ERROR: %v", err))
+					return
+				}
+				ctx.Send(message.ImageBytes(img))
+			}
+		}
 		for _, u := range model.URL {
 			option := url.Values{}
 			option.Set("url", u)
@@ -128,7 +162,7 @@ func init() {
 			option.Set("height", strconv.Itoa(model.Height))
 			option.Set("factor", strconv.FormatFloat(model.DPI, 'f', 2, 64))
 			option.Set("quality", strconv.Itoa(model.Quality))
-			parse, _ := url.Parse("http://localhost:5544/preview")
+			parse, _ := url.Parse(engine.GetConfigString(configBackend) + "/preview")
 			parse.RawQuery = option.Encode()
 			response, err := c.Get(parse.String())
 			if err != nil {
