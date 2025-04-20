@@ -14,7 +14,7 @@ import (
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/client"
-	log "github.com/sirupsen/logrus"
+	"github.com/RicheyJang/PaimengBot/utils/ctxext"
 	zero "github.com/wdvxdr1123/ZeroBot"
 )
 
@@ -48,61 +48,91 @@ func MineInfoHandler(ctx *zero.Ctx) {
 		return
 	}
 	// 获取用户要查询的模式
-	model := strings.TrimSpace(utils.GetArgs(ctx))
-	if model != "1" && model != "2" && model != "3" {
-		model = "0"
-	}
-	// Model := GetModel(model)
-	var user ApiUser
-	var scores []Score
+	mode := getMode(strings.TrimSpace(strings.ToLower(utils.GetArgs(ctx))))
 	c := client.NewHttpClient(&client.HttpOptions{
 		TryTime: 3,
 	})
+
+	ctxext.ReactionLoadingAdd(ctx)
+	defer ctxext.ReactionLoadingRemove(ctx)
 	token := refreshToken(appid, secret)
-	req, _ := http.NewRequest("GET", fmt.Sprintf("https://osu.ppy.sh/api/v2/users/%s/scores/best", OSUid), nil)
-	// req.URL.RawQuery = "mode=" + Model
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-	response, err := c.Do(req)
+	bestScore, err := callApi[[]Score](fmt.Sprintf("https://osu.ppy.sh/api/v2/users/%s/scores/best%s", OSUid, "?mode="+mode), token, c)
 	if err != nil {
-		log.Errorf("GetBest err: %v", err)
+		log.Errorln("get best", err)
 		ctx.Send("失败了...")
 		return
 	}
-	defer response.Body.Close()
-	all, _ := io.ReadAll(response.Body)
-	if err := json.NewDecoder(bytes.NewReader(all)).Decode(&scores); err != nil {
-		log.Errorf("GetBest err: %v %v", err, string(all))
-		ctx.Send("失败了...")
-		return
-	}
-	req, _ = http.NewRequest("GET", fmt.Sprintf("https://osu.ppy.sh/api/v2/users/%s", OSUid), nil)
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-	response, err = c.Do(req)
+	recentScore, err := callApi[[]Score](fmt.Sprintf("https://osu.ppy.sh/api/v2/users/%s/scores/recent%s", OSUid, "?mode="+mode), token, c)
 	if err != nil {
-		log.Errorf("GetBest err: %v", err)
+		log.Errorln("get recent", err)
 		ctx.Send("失败了...")
 		return
 	}
-	all, _ = io.ReadAll(response.Body)
-	if err := json.NewDecoder(bytes.NewReader(all)).Decode(&user); err != nil {
-		log.Errorf("GetBest err: %v %v", err, string(all))
-		ctx.Send("失败了...")
-		return
-	}
-	defer response.Body.Close()
-	img, err := drawUserInfo(user, scores)
+	user, err := callApi[ApiUser](fmt.Sprintf("https://osu.ppy.sh/api/v2/users/%s", OSUid), token, c)
 	if err != nil {
-		log.Errorf("GetBest err: %v", err)
+		log.Errorln("get user", err)
+		ctx.Send("失败了...")
+		return
+	}
+	if len(recentScore) == 0 {
+		recentScore = bestScore
+	}
+	img, err := drawUserInfo(user, recentScore, bestScore, mode)
+	if err != nil {
+		log.Errorln("draw user", err)
 		ctx.Send("失败了...")
 		return
 	}
 	auto, err := img.GenMessageAuto()
 	if err != nil {
-		log.Errorf("GetBest err: %v", err)
+		log.Errorln("gen message", err)
 		ctx.Send("失败了...")
 		return
 	}
 	ctx.Send(auto)
+}
+
+func getMode(arg string) string {
+	switch arg {
+	case "0":
+		fallthrough
+	case "standard":
+		return "standard"
+	case "1":
+		fallthrough
+	case "mania":
+
+		return "mania"
+	case "2":
+		fallthrough
+	case "taiko":
+
+		return "taiko"
+	case "3":
+		fallthrough
+	case "fruits":
+		fallthrough
+	case "catch":
+		return "fruits"
+	default:
+		return "standard"
+	}
+}
+
+func callApi[T any](URL, token string, c *client.HttpClient) (T, error) {
+	var ret T
+	req, _ := http.NewRequest("GET", URL, nil)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	response, err := c.Do(req)
+	if err != nil {
+		return ret, err
+	}
+	defer response.Body.Close()
+	all, _ := io.ReadAll(response.Body)
+	if err := json.NewDecoder(bytes.NewReader(all)).Decode(&ret); err != nil {
+		return ret, err
+	}
+	return ret, nil
 }
 
 var cache = struct {

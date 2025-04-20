@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	math2 "github.com/FloatTech/floatbox/math"
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/client"
 	"github.com/RicheyJang/PaimengBot/utils/images"
@@ -25,10 +26,16 @@ func netImage(URL string) (image.Image, error) {
 	decode, _, err := image.Decode(reader)
 	return decode, err
 }
-func drawUserInfo(user ApiUser, bests []Score) (*images.ImageCtx, error) {
+func drawUserInfo(user ApiUser, recent []Score, best []Score, mode string) (*images.ImageCtx, error) {
 	c := images.NewImageCtxWithBGColor(1260, 1267, "#ffffff")
-	regular, _ := images.ParseFont("Torus Regular.ttf")
-	semibold, _ := images.ParseFont("Torus Semi Bold.ttf")
+	regular, err := images.ParseFont("ttf/Torus Regular.ttf")
+	if err != nil {
+		return nil, err
+	}
+	semibold, err := images.ParseFont("ttf/Torus Semi Bold.ttf")
+	if err != nil {
+		return nil, err
+	}
 	// fbg, _ := os.Open("o.png")
 	// bg, _, _ := image.Decode(fbg)
 	// bg = imaging.AdjustFunc(bg, func(c color.NRGBA) color.NRGBA {
@@ -55,7 +62,7 @@ func drawUserInfo(user ApiUser, bests []Score) (*images.ImageCtx, error) {
 		c.ShadowRounded("#00000038", int(xStart+398), 337, 692, 153, 8, size, 3, depth, depth)
 		c.ShadowRounded("#00000038", int(xStart), 509, 1090.0, 131, 8, 6, 6, depth, depth)
 		c.ShadowRounded("#00000038", int(xStart), 660, 1090.0, 195, 8, 6, 6, depth, depth)
-		for i := 0; i < len(bests[:4]); i++ {
+		for i := 0; i < len(recent[math2.Min(1, len(recent)):]); i++ {
 			c.ShadowRounded("#00000038", int(xStart), 877+i*(69+20), 1090.0, 69, 8, 6, 6, depth, depth)
 		}
 	}
@@ -98,13 +105,18 @@ func drawUserInfo(user ApiUser, bests []Score) (*images.ImageCtx, error) {
 	c.SetColorAuto("#4D4D4D")
 	c.DrawString(user.Username, xStart+120, 105)
 	// osu!mania
-	c.SetRGBA255(0, 247, 247, 255)
+	c.SetColorAuto("#F3F5FB")
 	c.DrawRoundedRectangle(xStart, 143, 385, 47, 8)
 	c.Fill()
+	c.SetColorAuto("#373A66")
+	_ = c.SetFont(semibold, 29)
+	c.DrawStringAnchored(mode, xStart+385/2, 143+47/2-5, 0.5, 0.5)
 	// rank
+	_ = c.SetFont(semibold, 59)
 	c.SetColorAuto("#F3F5FB")
 	c.DrawRoundedRectangle4(xStart, 200, 385, 67, 8, 8, 0, 0)
 	c.Fill()
+	// rank text
 	_ = c.SetFont(regular, 40)
 	c.SetColorAuto("#373A66")
 	c.DrawStringAnchored("rank", xStart+385/2-16, 200+28, 1, 0.5)
@@ -244,9 +256,13 @@ func drawUserInfo(user ApiUser, bests []Score) (*images.ImageCtx, error) {
 	w, _ := c.MeasureString("best performance")
 	c.DrawRoundedRectangle(xStart+25+w, 660+23, 5, 27, 2.5)
 	c.Fill()
-	if len(bests) > 0 {
-		bb := bests[0]
-		// song cover
+	{
+		var bb Score
+		if len(best) > 0 {
+			bb = best[0]
+		} else {
+			bb = recent[0]
+		}
 		// c.ShadowRounded("#00000033", 752, 744, 168.0, 93, 4, 2, -2, 2, 2)
 		x := xStart + 20
 		c.DrawRoundedRectangle(x, 744, 168.0, 93, 4)
@@ -295,12 +311,28 @@ func drawUserInfo(user ApiUser, bests []Score) (*images.ImageCtx, error) {
 		c.DrawStringAnchored(fmt.Sprintf("%.1f", bb.Pp), xStart+1090-128, 798, 0, 0.5)
 	}
 
-	// bests
-	for i, b := range bests[:4] {
+	// recent
+	for i, b := range recent[math2.Min(1, len(recent)):] {
 		c.SetColorAuto("#E4E9F4")
 		c.DrawRoundedRectangle(xStart, 877+float64(i)*(69+20), 1090, 69, 8)
 		c.Fill()
 
+		{
+			x := xStart + 15
+			y := 877 + (i)*(69+20) + 15
+			c.DrawRoundedRectangle(x, float64(y), 39, 39, 4)
+			c.Clip()
+			img, err := netImage(b.Beatmapset.Covers.List)
+			if err == nil {
+				img = resize.Resize(0, 39, img, resize.Lanczos3)
+				c.DrawImage(img, int(x), y)
+			} else {
+				panic(err)
+				c.Fill()
+			}
+			c.ResetClip()
+			c.InnerShadowRounded("#00000033", int(x), y, 39, 39, 4, 2)
+		}
 		_ = c.SetFont(regular, 24)
 		c.SetColorAuto("#7D8083")
 		c.DrawStringAnchored(b.Beatmapset.Title, xStart+68, 877+float64(i)*(69+20)+17, 0, 0.5)

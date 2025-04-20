@@ -2,6 +2,7 @@ package HiOSU
 
 import (
 	"github.com/RicheyJang/PaimengBot/manager"
+	"github.com/sirupsen/logrus"
 )
 
 var info = manager.PluginInfo{
@@ -12,12 +13,14 @@ var info = manager.PluginInfo{
 	{cmd}osu账号查看：查看你绑定的ID
 	{cmd}osu信息 [模式代号]：查看你的账号信息，模式代号为一个数字，默认为0
 	{cmd}osu最近成绩 [模式代号] :获取最新一次的成绩
-		模式代号 0 = osu!标准, 1 = Taiko, 2 = CtB, 3 = osu!mania`,
+		模式：standard(0/标准模式)，mania(1/4K,8K键盘模式)，taiko(2/太鼓模式)，fruits(3/catch接接乐模式)
+`,
 	SuperUsage: `config-plugin配置项：
 	hiosu.key: 在 https://osu.ppy.sh/p/api 上申请的API KEY，必需`,
 	Classify: "游戏查询",
 }
 var proxy *manager.PluginProxy
+var log = logrus.New().WithField("plugin", "HiOSU")
 
 func init() {
 	proxy = manager.RegisterPlugin(info)
