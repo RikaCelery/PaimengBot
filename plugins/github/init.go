@@ -7,6 +7,7 @@ import (
 	"github.com/RicheyJang/PaimengBot/manager"
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/client"
+	"github.com/RicheyJang/PaimengBot/utils/ctxext"
 	log "github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
@@ -45,6 +46,8 @@ func handleReg(ctx *zero.Ctx) {
 	// 调用API
 	var c = client.NewHttpClient(nil)
 	target := url.QueryEscape(utils.GetRegexpMatched(ctx)[1])
+	ctxext.ReactionLoadingAdd(ctx)
+	defer ctxext.ReactionLoadingRemove(ctx)
 	// 获取结果
 	json, errApi := c.GetGJson(githubAPI + "?q=" + target + "&per_page=" + strconv.FormatInt(int64(maxResult), 10))
 	if errApi != nil {
