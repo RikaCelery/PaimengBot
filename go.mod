@@ -122,7 +122,9 @@ require (
 	modernc.org/sqlite v1.33.1 // indirect
 )
 
-replace github.com/wdvxdr1123/ZeroBot => github.com/RikaCelery/ZeroBot v0.0.0-20250418153841-2bb0d31991c3
+replace github.com/jozsefsallai/gophersauce => github.com/RikaCelery/gophersauce v0.0.0-20250419152344-cd82cd02021c
+
+replace github.com/wdvxdr1123/ZeroBot => github.com/RikaCelery/ZeroBot v0.0.0-20250419043733-1d5c73373efe
 
 replace modernc.org/sqlite => github.com/fumiama/sqlite3 v1.29.10-simp
 
