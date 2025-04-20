@@ -6,6 +6,7 @@ import (
 	"math/rand"
 
 	"github.com/RicheyJang/PaimengBot/manager"
+	"github.com/RicheyJang/PaimengBot/utils/client"
 	"github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
@@ -37,10 +38,14 @@ func init() { // 插件主体
 			logrus.Infoln("<aiwife> user locked")
 		}
 		return !locked
-	}).SetBlock(true).
-		Handle(func(ctx *zero.Ctx) {
-			miku := rand.Intn(100000) + 1
-			ctx.SendChain(message.At(ctx.Event.UserID), message.Image(fmt.Sprintf(bed, miku)))
-			proxy.UnlockUser(ctx.Event.UserID)
-		})
+	}).SetBlock(true).Handle(func(ctx *zero.Ctx) {
+		defer proxy.UnlockUser(ctx.Event.UserID)
+		miku := rand.Intn(100000) + 1
+		bytes, err := client.GetBytesRetry(fmt.Sprintf(bed, miku), 3)
+		if err != nil {
+			ctx.SendChain(message.At(ctx.Event.UserID), message.Text("ERROR: ", err))
+			return
+		}
+		ctx.SendChain(message.At(ctx.Event.UserID), message.ImageBytes(bytes))
+	})
 }

@@ -7,6 +7,16 @@ import (
 	"os"
 )
 
+func GetBytesRetry(url string, tryTime int) ([]byte, error) {
+	c := NewHttpClient(&HttpOptions{TryTime: tryTime})
+	reader, err := c.GetReader(url)
+	if err != nil {
+		return nil, err
+	}
+	defer reader.Close()
+	return io.ReadAll(reader)
+}
+
 // DownloadToFile 下载文件，并返回其绝对路径
 func DownloadToFile(filename, url string, tryTime int) error {
 	c := NewHttpClient(&HttpOptions{TryTime: tryTime})
