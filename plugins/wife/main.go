@@ -19,6 +19,7 @@ func init() {
 		Brief: "从老婆库抽每日老婆",
 		Usage: `用法：
 	{cmd}抽老婆：查看今日二次元老婆`,
+		Classify: "其他",
 	})
 	engine.DataFolder()
 	var cards []string
