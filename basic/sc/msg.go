@@ -1,18 +1,22 @@
 package sc
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"image"
 	"image/color"
-	"strings"
+	"strconv"
+	"sync"
 	"time"
 
+	"github.com/FloatTech/rendercard"
 	"github.com/RicheyJang/PaimengBot/basic/dao"
-	"github.com/RicheyJang/PaimengBot/utils"
+	"github.com/RicheyJang/PaimengBot/utils/client"
 	"github.com/RicheyJang/PaimengBot/utils/images"
+	"github.com/disintegration/imaging"
 
 	"github.com/fogleman/gg"
-	log "github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
 	"github.com/wdvxdr1123/ZeroBot/message"
 )
@@ -23,96 +27,251 @@ type signInfo struct {
 	double   bool
 	orgFavor float64
 	addFavor float64
+	bg       string
 	orgCoin  float64
 	addCoin  float64
 	signDays int
 	lastSign time.Time // 最近一次签到时间
 }
 
-func (s signInfo) genMessage() (message.Message, *images.ImageCtx) {
-	W, H, avaSize := 500, 300, 100
-	img := images.NewImageCtxWithBGColor(W, H, "white")
-	// 背景 linear-gradient(135deg,#fff5c3,#9452a5)
-	gra := gg.NewLinearGradient(0, 0, float64(W), float64(H))
-	gra.AddColorStop(0, color.NRGBA{R: uint8(255), G: uint8(245), B: uint8(195), A: uint8(200)})
-	gra.AddColorStop(1, color.NRGBA{R: uint8(148), G: uint8(82), B: uint8(165), A: uint8(200)})
-	img.Push()
-	img.DrawRectangle(0, 0, float64(W), float64(H))
-	img.SetFillStyle(gra)
-	img.Fill()
-	img.Pop()
-	// 写昵称+ID
-	str := fmt.Sprintf("%s(%d)", strings.TrimSpace(s.name), s.id)
-	err := img.PasteStringDefault(str, 24, 1.3, 40, 20, float64(W))
+func initPic(uid int64) (avatar []byte, err error) {
+	avatar, err = client.GetBytesRetry("https://q4.qlogo.cn/g?b=qq&nk="+strconv.FormatInt(uid, 10)+"&s=640", 3)
 	if err != nil {
-		log.Warnf("PasteStringDefault err: %v", err)
-		return message.Message{message.Text("签到成功\n" + s.String())}, nil
+		return
 	}
-	// 画头像
-	height := 70
-	avaReader, err := utils.GetQQAvatar(s.id, avaSize)
+	return avatar, nil
+}
+func drawScore17b2(a *signInfo) (img *images.ImageCtx, err error) {
+	getAvatar, err := initPic(a.id)
 	if err != nil {
-		log.Warnf("GetQQAvatar err: %v", err)
-		return message.Message{message.Text("签到成功\n" + s.String())}, nil
+		return
 	}
-	ava, _, err := image.Decode(avaReader)
-	_ = avaReader.Close()
+	back, err := images.NetImage(proxy.GetConfigString("background"))
 	if err != nil {
-		log.Warnf("Avatar Decode err: %v", err)
-		return message.Message{message.Text("签到成功\n" + s.String())}, nil
+		return
 	}
-	ava = images.ClipImgToCircle(ava)
-	img.DrawImage(ava, 20, height)
-	// 头像旁边的文字
-	level, up := LevelAt(s.orgFavor + s.addFavor)
-	err = img.PasteStringDefault(fmt.Sprintf("连续签到%d天\nLv%d", s.signDays, level),
-		18, 1.88, float64(avaSize+30), float64(height), float64(W))
-	if err != nil {
-		log.Warnf("PasteStringDefault err: %v", err)
-		return message.Message{message.Text("签到成功\n" + s.String())}, nil
-	}
-	// 头像旁边的等级进度条
-	img.SetHexColor("#6eb7f0")
-	length := 290.0
-	img.DrawRoundedRectangle(float64(20+avaSize+60), float64(height+30), length, 35, 5)
-	img.Stroke()
-	length *= 1 - up/SumFavorAt(level)
-	img.DrawRoundedRectangle(float64(20+avaSize+60), float64(height+30), length, 35, 5)
-	img.Fill()
-	// 头像旁边的还需多少升级的文字
-	err = img.PasteStringDefault(fmt.Sprintf("总好感度%.2f, 还需%.2f升级", s.orgFavor+s.addFavor, up),
-		18, 1, float64(avaSize+30), float64(height+70), float64(W))
-	if err != nil {
-		log.Warnf("PasteStringDefault err: %v", err)
-		return message.Message{message.Text("签到成功\n" + s.String())}, nil
-	}
-	// 今日成果文字
-	height += avaSize + 30
-	err = img.PasteStringDefault(fmt.Sprintf("今日好感度 + %.2f\n今日获得 %.0f%s", s.addFavor, RealCoin(s.addCoin), Unit()),
-		26, 1.62, 30, float64(height), float64(W))
-	if err != nil {
-		log.Warnf("PasteStringDefault err: %v", err)
-		return message.Message{message.Text("签到成功\n" + s.String())}, nil
-	}
-	// 双倍
-	if s.double {
-		img.SetHexColor("#ffd591")
-		img.DrawCircle(float64(W-75), float64(height+35), 40)
-		img.Fill()
-		if err = img.UseDefaultFont(24); err != nil {
-			log.Warnf("UseDefaultFont err: %v", err)
-			return message.Message{message.Text("签到成功\n" + s.String())}, nil
+
+	bx, by := float64(back.Bounds().Dx()), float64(back.Bounds().Dy())
+
+	sc := 1280 / bx
+	var colors []color.RGBA
+
+	canvas := images.NewImageCtx(1280, 1280*int(by)/int(bx))
+	cw, ch := float64(canvas.Width()), float64(canvas.Height())
+
+	sch := ch * 6 / 10
+
+	var blurback, scbackimg, backshadowimg, avatarimg, avatarbackimg, avatarshadowimg, whitetext, blacktext image.Image
+	wg := &sync.WaitGroup{}
+	wg.Add(7)
+	scback := images.NewImageCtx(canvas.Width(), canvas.Height())
+
+	scback.ScaleAbout(sc, sc, cw/2, ch/2)
+	scback.DrawImageAnchored(back, canvas.Width()/2, canvas.Height()/2, 0.5, 0.5)
+	scback.Identity()
+
+	colors = images.TakeColor(scback.Image(), 3)
+	go func() {
+		defer wg.Done()
+
+		blurback = imaging.Blur(scback.Image(), 20)
+
+		scbackimg = rendercard.Fillet(scback.Image(), 12)
+	}()
+
+	go func() {
+		defer wg.Done()
+		pureblack := images.NewImageCtx(canvas.Width(), canvas.Height())
+		pureblack.SetRGBA255(0, 0, 0, 255)
+		pureblack.Clear()
+
+		shadow := images.NewImageCtx(canvas.Width(), canvas.Height())
+		shadow.ScaleAbout(0.6, 0.6, cw-cw/3, ch/2)
+		shadow.DrawImageAnchored(pureblack.Image(), canvas.Width()-canvas.Width()/3, canvas.Height()/2, 0.5, 0.5)
+		shadow.Identity()
+
+		backshadowimg = imaging.Blur(shadow.Image(), 12)
+	}()
+
+	aw, ah := (ch-sch)/2/2/2*3, (ch-sch)/2/2/2*3
+
+	go func() {
+		defer wg.Done()
+		avatar, _, err := image.Decode(bytes.NewReader(getAvatar))
+		if err != nil {
+			return
 		}
-		img.SetHexColor("#ff4d4f")
-		img.DrawString("双倍", float64(W-100), float64(height+40))
+
+		isc := (ch - sch) / 2 / 2 / 2 * 3 / float64(avatar.Bounds().Dy())
+
+		scavatar := gg.NewContext(int(aw), int(ah))
+
+		scavatar.ScaleAbout(isc, isc, aw/2, ah/2)
+		scavatar.DrawImageAnchored(avatar, scavatar.Width()/2, scavatar.Height()/2, 0.5, 0.5)
+		scavatar.Identity()
+
+		avatarimg = rendercard.Fillet(scavatar.Image(), 8)
+	}()
+
+	err = canvas.UseDefaultFont((ch - sch) / 2 / 2 / 2)
+	if err != nil {
+		return
+	}
+	namew, _ := canvas.MeasureString(a.name)
+
+	go func() {
+		defer wg.Done()
+		avatarshadowimg = imaging.Blur(customrectangle(cw, ch, aw, ah, namew, color.Black), 8)
+	}()
+
+	go func() {
+		defer wg.Done()
+		avatarbackimg = customrectangle(cw, ch, aw, ah, namew, colors[0])
+	}()
+
+	go func() {
+		defer wg.Done()
+		whitetext, err = customtext(a, cw, ch, aw, color.White)
+		if err != nil {
+			return
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		blacktext, err = customtext(a, cw, ch, aw, color.Black)
+		if err != nil {
+			return
+		}
+	}()
+
+	wg.Wait()
+	if scbackimg == nil || backshadowimg == nil || avatarimg == nil || avatarbackimg == nil || avatarshadowimg == nil || whitetext == nil || blacktext == nil {
+		err = errors.New("图片渲染失败")
+		return
+	}
+
+	canvas.DrawImageAnchored(blurback, canvas.Width()/2, canvas.Height()/2, 0.5, 0.5)
+
+	canvas.DrawImage(backshadowimg, 0, 0)
+
+	canvas.ScaleAbout(0.6, 0.6, cw-cw/3, ch/2)
+	canvas.DrawImageAnchored(scbackimg, canvas.Width()-canvas.Width()/3, canvas.Height()/2, 0.5, 0.5)
+	canvas.Identity()
+
+	canvas.DrawImage(avatarshadowimg, 0, 0)
+	canvas.DrawImage(avatarbackimg, 0, 0)
+	canvas.DrawImageAnchored(avatarimg, int((ch-sch)/2/2), int((ch-sch)/2/2), 0.5, 0.5)
+
+	canvas.DrawImage(blacktext, 2, 2)
+	canvas.DrawImage(whitetext, 0, 0)
+
+	img = canvas
+	return
+}
+
+func customrectangle(cw, ch, aw, ah, namew float64, rtgcolor color.Color) (img image.Image) {
+	canvas := gg.NewContext(int(cw), int(ch))
+	sch := ch * 6 / 10
+	canvas.DrawRoundedRectangle((ch-sch)/2/2-aw/2-aw/40, (ch-sch)/2/2-aw/2-ah/40, aw+aw/40*2, ah+ah/40*2, 8)
+	canvas.SetColor(rtgcolor)
+	canvas.Fill()
+	canvas.DrawRoundedRectangle((ch-sch)/2/2, (ch-sch)/2/2-ah/4, aw/2+aw/40*5+namew, ah/2, 8)
+	canvas.Fill()
+
+	img = canvas.Image()
+	return
+}
+
+func customtext(a *signInfo, cw, ch, aw float64, textcolor color.Color) (img image.Image, err error) {
+	canvas := images.NewImageCtx(int(cw), int(ch))
+	canvas.SetColor(textcolor)
+	scw, sch := cw*6/10, ch*6/10
+	err = canvas.UseDefaultFont((ch - sch) / 2 / 2 / 2)
+	if err != nil {
+		return
+	}
+	canvas.DrawStringAnchored(a.name, (ch-sch)/2/2+aw/2+aw/40*2, (ch-sch)/2/2-5, 0, 0.5)
+	err = canvas.UseDefaultFont((ch - sch) / 2 / 2 / 3 * 2)
+	if err != nil {
+		return
+	}
+	canvas.DrawStringAnchored(time.Now().Format("2006/01/02"), cw-cw/6, ch/2-sch/2-canvas.FontHeight(), 0.5, 0.5)
+
+	err = canvas.UseDefaultFont((ch - sch) / 2 / 2 / 2)
+	if err != nil {
+		return
+	}
+
+	level, up := LevelAt(a.orgFavor + a.addFavor)
+	nextLevelStyle := fmt.Sprintf("还需%.2f", up)
+
+	canvas.DrawStringAnchored("Level "+strconv.Itoa(level), cw/3*2-scw/2, ch/2+sch/2+canvas.FontHeight(), 0, 0.5)
+	canvas.DrawStringAnchored(nextLevelStyle, cw/3*2+scw/2, ch/2+sch/2+canvas.FontHeight(), 1, 0.5)
+
+	err = canvas.UseDefaultFont((ch - sch) / 2 / 2 / 3)
+	if err != nil {
+		return
+	}
+
+	canvas.DrawStringAnchored("Create By ZeroBot-Plugin ", 0+4, ch, 0, -0.5)
+
+	err = canvas.UseDefaultFont((ch - sch) / 2 / 5 * 3)
+	if err != nil {
+		return
+	}
+
+	tempfh := canvas.FontHeight()
+
+	canvas.DrawStringAnchored(getHourWord(time.Now()), ((cw-scw)-(cw/3-scw/2))/8, (ch-sch)/2+sch/4, 0, 0.5)
+
+	err = canvas.UseDefaultFont((ch - sch) / 2 / 5)
+	if err != nil {
+		return
+	}
+
+	canvas.DrawStringAnchored("+ "+strconv.FormatFloat(RealCoin(a.addCoin), 'f', 2, 64)+Unit(), ((cw-scw)-(cw/3-scw/2))/8, (ch-sch)/2+sch/4+tempfh, 0, 0.5)
+	canvas.DrawStringAnchored("+ "+strconv.FormatFloat(RealCoin(a.addFavor), 'f', 2, 64)+"好感", ((cw-scw)-(cw/3-scw/2))/8, (ch-sch)/2+sch/4+tempfh+canvas.FontHeight(), 0, 1)
+
+	err = canvas.UseDefaultFont((ch - sch) / 2 / 4)
+	if err != nil {
+		return
+	}
+
+	canvas.DrawStringAnchored("你有 "+strconv.FormatFloat(RealCoin(a.orgCoin+a.addCoin), 'f', 2, 64)+" 枚"+Unit(), ((cw-scw)-(cw/3-scw/2))/8, (ch-sch)/2+sch/4*3, 0, 0.5)
+
+	img = canvas.Image()
+	return
+}
+
+func getHourWord(t time.Time) string {
+	h := t.Hour()
+	switch {
+	case 6 <= h && h < 12:
+		return "早上好"
+	case 12 <= h && h < 14:
+		return "中午好"
+	case 14 <= h && h < 19:
+		return "下午好"
+	case 19 <= h && h < 24:
+		return "晚上好"
+	case 0 <= h && h < 6:
+		return "凌晨好"
+	default:
+		return ""
+	}
+}
+func (s signInfo) genMessageZbp() (message.Message, *images.ImageCtx, error) {
+	img, err := drawScore17b2(&s)
+	if err != nil {
+		return nil, nil, err
 	}
 	// 生成消息
 	imgMsg, err := img.GenMessageAuto()
 	if err != nil {
-		log.Warnf("GenMessageAuto err: %v", err)
-		return message.Message{message.Text("签到成功\n" + s.String())}, nil
+		return nil, nil, err
 	}
-	return message.Message{imgMsg}, img
+	return message.Message{imgMsg}, img, nil
 }
 
 func (s signInfo) String() string {

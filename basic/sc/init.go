@@ -65,6 +65,7 @@ func init() {
 	proxy.OnCommands([]string{"增加好感度", "增加财富"}, zero.SuperUserPermission).SetBlock(true).ThirdPriority().Handle(addHandler)
 	manager.AddPreHook(costHook).SetPriority(10)
 	manager.AddPostHook(returnCostHook)
+	proxy.AddConfig("background", "https://pic.re/image")
 	proxy.AddConfig("onlygroup", true)
 	proxy.AddConfig("coin.unit", "原石")
 	proxy.AddConfig("coin.rate", 80)
@@ -162,7 +163,10 @@ func signHandler(ctx *zero.Ctx) {
 	}
 	// 绘图 发送
 	if !skipSend {
-		genMessage, imageCtx := si.genMessage()
+		genMessage, imageCtx, err := si.genMessageZbp()
+		if err != nil {
+			log.Errorln("<sc>", err)
+		}
 		ctx.Send(genMessage)
 		if imageCtx == nil {
 			return
