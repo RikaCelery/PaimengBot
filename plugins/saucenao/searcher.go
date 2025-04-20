@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/FloatTech/floatbox/binary"
@@ -84,7 +85,21 @@ func init() { // 插件主体
 	})
 
 	// 以图搜图
-	engine.OnMessage(zero.NewPattern(nil).Reply().SetOptional().Command(`^以图搜图|搜索图片|以图识图|source|src\?|src？`).AsRule(), ctxext.DoOnceOnSuccess(func(ctx *zero.Ctx) bool {
+	engine.OnMessage(func(ctx *zero.Ctx) bool {
+		raw := strings.TrimSpace(ctx.ExtractPlainText())
+		if strings.HasPrefix(raw, zero.BotConfig.CommandPrefix) {
+			raw = strings.TrimPrefix(raw, zero.BotConfig.CommandPrefix)
+		} else {
+			return false
+		}
+		commands := []string{"以图搜图", "搜索图片", "以图识图", "source", "src？", "src?"}
+		for _, command := range commands {
+			if strings.EqualFold(raw, command) {
+				return true
+			}
+		}
+		return false
+	}, ctxext.DoOnceOnSuccess(func(ctx *zero.Ctx) bool {
 		newcli, err := gophersauce.NewClient(&gophersauce.Settings{
 			MaxResults: 1,
 			APIKey:     engine.GetConfigString(configApiKey),
