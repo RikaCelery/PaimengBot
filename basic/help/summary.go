@@ -48,6 +48,9 @@ func formSummaryHelpMsg(isSuper, isPrimary bool, priority int, userID int64, gro
 		// 生成项目(一个插件)
 		var item blockItem
 		item.name = plugin.Name
+		if plugin.Brief != "" {
+			item.brief = " " + plugin.Brief
+		}
 		item.color = "black"
 		if _, ok := groupBan[plugin.Key]; ok {
 			item.disabled = true
@@ -171,6 +174,7 @@ type blockInfo struct {
 
 type blockItem struct {
 	name     string
+	brief    string
 	color    string
 	disabled bool
 }
@@ -195,6 +199,11 @@ func (block *blockInfo) fill(num int) {
 		w, h := images.MeasureStringDefault(item.name, fontSize, lineSpace)
 		block.w = math.Max(block.w, w)
 		block.h += 10 + h
+		if item.brief != "" {
+			w, h := images.MeasureStringDefault(item.brief, 20, lineSpace)
+			block.w = math.Max(block.w, w)
+			block.h += 5 + h
+		}
 	}
 	block.w += 20
 	block.h += 20
@@ -227,7 +236,18 @@ func (block *blockInfo) fill(num int) {
 		if item.disabled { // 已禁用插件
 			img.PasteLine(10, nowH+tmpH/2+3, 10+tmpW, nowH+tmpH/2+3, 6, "red")
 		}
-		nowH += 10 + tmpH
+		nowH += tmpH
+		nowH += 5
+		if item.brief != "" {
+			_ = img.UseDefaultFont(20)
+			img.SetColorAuto("#848484")
+			img.DrawStringWrapped(item.brief, 10, nowH, 0, 0, block.w-5, 1, gg.AlignLeft)
+			tmpW, tmpH = img.MeasureString(item.name)
+			_ = img.UseDefaultFont(fontSize)
+			nowH += tmpH
+		}
+		nowH += 5
+
 	}
 }
 

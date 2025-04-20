@@ -31,6 +31,7 @@ func init() {
 只允许白名单网址截图
 用法：
 	{cmd}截图 <网址>`,
+		Classify: "实用工具",
 	})
 	type cmd struct {
 		Width   int      `arg:"-W" default:"1280"`

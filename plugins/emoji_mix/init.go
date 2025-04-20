@@ -26,12 +26,14 @@ import (
 
 var proxy *manager.PluginProxy
 var info = manager.PluginInfo{
-	Name: "混合表情",
+	Name:  "混合表情",
+	Brief: "1+1>2!!!",
 	SuperUsage: `
 config-plugin配置项：
 	emoji_mix.mix_limiter: 每30分钟最大触发次数
 	emoji_mix.command_limiter: 每20秒 每个人 最多触发次数（用于获取动图命令限流）
 `,
+	Classify: "其他",
 }
 
 func init() {

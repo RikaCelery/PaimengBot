@@ -69,6 +69,7 @@ func init() { // 插件主体
 	{cmd}以图搜图/{cmd}搜索图片/{cmd}以图识图/{cmd}source/{cmd}src?/{cmd}src？ [图片]
 		回复一张图也可以自动识别`,
 		SuperUsage: `	{cmd}^(开启|打开|启用|关闭|关掉|禁用)搜图显示图片$：为当前群 开启/关闭 图片显示`,
+		Classify:   "实用工具",
 	})
 	engine.AddConfig(configEnablePicGlobal, false)
 	engine.AddConfig(configApiKey, "")

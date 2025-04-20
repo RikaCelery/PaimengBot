@@ -128,6 +128,8 @@ func init() {
 	[回复]/q -g：灰色滤镜
 	[回复]/q -g -d：灰色滤镜，加上日期水印
 `,
+		Brief:    "记录群友怪话",
+		Classify: "怪东西",
 	})
 	var quoteArgs struct {
 		Size      int  `arg:"positional" default:"0" help:"不为零时渲染为历史消息记录"`

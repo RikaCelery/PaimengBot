@@ -21,7 +21,8 @@ import (
 
 var proxy *manager.PluginProxy
 var info = manager.PluginInfo{
-	Name: "控制命令",
+	Name:  "控制命令",
+	Brief: "自检/关机/重启",
 	Usage: `用于Bot的基本控制，仅限私聊
 用法：
 	{cmd}自检：展示程序与环境状态

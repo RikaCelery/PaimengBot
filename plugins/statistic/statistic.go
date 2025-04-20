@@ -25,7 +25,8 @@ import (
 
 var proxy *manager.PluginProxy
 var info = manager.PluginInfo{
-	Name: "统计",
+	Name:  "统计",
+	Brief: "功能使用分析",
 	Usage: `统计并展示各种功能使用情况
 个人命令：（统计你自己的使用情况）
 	{cmd}统计

@@ -84,6 +84,7 @@ B为了报复A, 好感度+5(什么柜子play)
 A为BC做媒,成功B、C对A好感度+1反之-1
 做媒成功BC好感度+1
 Tips: 群老婆列表过0点刷新`,
+		Classify: "其他",
 	})
 	getdb = ctxext.DoOnceOnSuccess(func(ctx *zero.Ctx) bool {
 		民政局.db = sql.New(engine.DataFolder() + "结婚登记表.db")

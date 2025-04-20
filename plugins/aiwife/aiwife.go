@@ -25,7 +25,8 @@ var (
 	{cmd}ai老婆
 备注：
 	等上一条发出去之后才可以再发`,
-		Brief: "ai随机生成老婆",
+		Brief:    "随机ai生成图",
+		Classify: "其他",
 	}
 	proxy *manager.PluginProxy
 )

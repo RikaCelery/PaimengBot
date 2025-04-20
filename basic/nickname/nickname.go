@@ -9,14 +9,16 @@ import (
 	"github.com/RicheyJang/PaimengBot/utils"
 	"github.com/RicheyJang/PaimengBot/utils/rules"
 
+	"gorm.io/gorm/clause"
+
 	log "github.com/sirupsen/logrus"
 	zero "github.com/wdvxdr1123/ZeroBot"
-	"gorm.io/gorm/clause"
 )
 
 var proxy *manager.PluginProxy
 var info = manager.PluginInfo{
-	Name: "昵称",
+	Name:  "昵称",
+	Brief: "设置Bot对你的昵称",
 	Usage: `
 用法：
 	(无需{cmd})以后叫我XXX：将你的昵称设置为XXX

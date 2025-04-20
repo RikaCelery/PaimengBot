@@ -331,7 +331,7 @@ func init() {
 注：某些预览需要向Bot妈申请权限, 你可以使用 /report 或者 #联系管理员 功能来向Bot妈申请
 `,
 		IsPassive: true,
-		Classify:  "一般功能",
+		Classify:  "实用工具",
 	})
 	initMapper(e)
 	e.OnCommands([]string{"previewer"}, zero.SuperUserPermission, func(ctx *zero.Ctx) bool {
