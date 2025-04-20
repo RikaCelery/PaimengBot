@@ -2,7 +2,6 @@ package HiOSU
 
 import (
 	"fmt"
-	"image"
 	"image/color"
 	"math"
 	"strconv"
@@ -11,21 +10,10 @@ import (
 
 	math2 "github.com/FloatTech/floatbox/math"
 	"github.com/RicheyJang/PaimengBot/utils"
-	"github.com/RicheyJang/PaimengBot/utils/client"
 	"github.com/RicheyJang/PaimengBot/utils/images"
 	"github.com/nfnt/resize"
 )
 
-func netImage(URL string) (image.Image, error) {
-	c := client.NewHttpClient(&client.HttpOptions{TryTime: 3})
-	reader, err := c.GetReader(URL)
-	if err != nil {
-		return nil, err
-	}
-	defer reader.Close()
-	decode, _, err := image.Decode(reader)
-	return decode, err
-}
 func drawUserInfo(user ApiUser, recent []Score, best []Score, mode string) (*images.ImageCtx, error) {
 	c := images.NewImageCtxWithBGColor(1260, 1267, "#ffffff")
 	regular, err := images.ParseFont("ttf/Torus Regular.ttf")
@@ -73,7 +61,7 @@ func drawUserInfo(user ApiUser, recent []Score, best []Score, mode string) (*ima
 	// c.DrawRoundedRectangle(44, 34, 663, 1180, 10)
 	// c.Clip()
 	// {
-	// 	i, err := netImage("https://pic.re/images?min_size=600max_size=2000")
+	// 	i, err := NetImage("https://pic.re/images?min_size=600max_size=2000")
 	// 	if err == nil {
 	// 		i = resize.Resize(0, 1180, i, resize.Lanczos3)
 	// 		c.DrawImageAnchored(i, 44+663/2, 34+1180/2, 0.5, 0.5)
@@ -91,7 +79,7 @@ func drawUserInfo(user ApiUser, recent []Score, best []Score, mode string) (*ima
 	c.DrawRoundedRectangle(xStart, 34, 96, 96, 10)
 	c.Clip()
 	{
-		i, err := netImage(user.AvatarURL)
+		i, err := images.NetImage(user.AvatarURL)
 		if err == nil {
 			i = resize.Resize(96, 96, i, resize.Lanczos3)
 			c.DrawImage(i, int(xStart), 34)
@@ -267,7 +255,7 @@ func drawUserInfo(user ApiUser, recent []Score, best []Score, mode string) (*ima
 		x := xStart + 20
 		c.DrawRoundedRectangle(x, 744, 168.0, 93, 4)
 		c.Clip()
-		i, err := netImage(bb.Beatmapset.Covers.Card)
+		i, err := images.NetImage(bb.Beatmapset.Covers.Card)
 		if err == nil {
 			i = resize.Resize(0, 93, i, resize.Lanczos3)
 			c.DrawImage(i, int(x), 744)
@@ -322,7 +310,7 @@ func drawUserInfo(user ApiUser, recent []Score, best []Score, mode string) (*ima
 			y := 877 + (i)*(69+20) + 15
 			c.DrawRoundedRectangle(x, float64(y), 39, 39, 4)
 			c.Clip()
-			img, err := netImage(b.Beatmapset.Covers.List)
+			img, err := images.NetImage(b.Beatmapset.Covers.List)
 			if err == nil {
 				img = resize.Resize(0, 39, img, resize.Lanczos3)
 				c.DrawImage(img, int(x), y)
