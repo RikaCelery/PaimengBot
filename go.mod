@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/FloatTech/floatbox v0.0.0-20241106130736-5aea0a935024
 	github.com/FloatTech/gg v1.1.3
-	github.com/FloatTech/imgfactory v0.2.2-0.20230315152233-49741fc994f9
+	github.com/FloatTech/imgfactory v0.2.2-0.20230413152719-e101cc3606ef
 	github.com/FloatTech/rendercard v0.2.0
 	github.com/FloatTech/sqlite v1.7.1
 	github.com/PuerkitoBio/goquery v1.8.0
@@ -18,6 +18,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/fumiama/cron v1.3.0
 	github.com/fumiama/unibase2n v0.0.0-20240530074540-ec743fd5a6d6
+	github.com/gabriel-vasile/mimetype v1.0.4
 	github.com/glebarez/sqlite v1.3.5
 	github.com/go-ego/gse v0.80.3
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
@@ -48,10 +49,7 @@ require (
 	modernc.org/sortutil v1.2.1
 )
 
-require (
-	github.com/gabriel-vasile/mimetype v1.0.4 // indirect
-	go.uber.org/multierr v1.11.0 // indirect
-)
+require go.uber.org/multierr v1.11.0 // indirect
 
 require (
 	github.com/FloatTech/ttl v0.0.0-20240716161252-965925764562 // indirect
@@ -124,7 +122,7 @@ require (
 
 replace github.com/jozsefsallai/gophersauce => github.com/RikaCelery/gophersauce v0.0.0-20250419152344-cd82cd02021c
 
-replace github.com/wdvxdr1123/ZeroBot => github.com/RikaCelery/ZeroBot v0.0.0-20250419043733-1d5c73373efe
+replace github.com/wdvxdr1123/ZeroBot => github.com/RikaCelery/ZeroBot v0.0.0-20250505140157-51adb75c6510
 
 replace modernc.org/sqlite => github.com/fumiama/sqlite3 v1.29.10-simp
 
