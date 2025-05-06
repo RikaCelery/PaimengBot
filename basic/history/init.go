@@ -99,58 +99,63 @@ func hashImageFromUrl(url string) (phash, hmd5, format string, err error) {
 	phash = fmt.Sprintf("%016x", h.GetHash())
 	return
 }
-func preprocess(msg message.Message) (ret message.Message) {
+func preprocess(msgs message.Message) (ret message.Message) {
+	for i := range msgs {
+		// clone
+		msg := message.Segment{Type: msgs[i].Type}
+		for s, s2 := range msgs[i].Data {
+			msg.Data[s] = s2
+		}
+		ret = append(ret, msg)
 
-	for i := range msg {
-		switch msg[i].Type {
+		switch msg.Type {
 		case "text":
 		case "at":
 		case "video":
-
-			url := msg[i].Data["url"]
-			file_size := msg[i].Data["file_size"]
-			file := msg[i].Data["file"]
+			url := msg.Data["url"]
+			file_size := msg.Data["file_size"]
+			file := msg.Data["file"]
 			md5, err := storeVideo(url)
 			if err != nil {
 				logrus.Warnf("<history>gen video hashes error %v", err)
 				continue
 			}
-			for k := range msg[i].Data {
-				delete(msg[i].Data, k)
+			for k := range msg.Data {
+				delete(msg.Data, k)
 			}
 
 			if file_size != "" {
-				msg[i].Data["file_size"] = file_size
+				msg.Data["file_size"] = file_size
 			}
-			msg[i].Data["file"] = file
-			msg[i].Data["md5"] = md5
+			msg.Data["file"] = file
+			msg.Data["md5"] = md5
 		case "image":
-			url := msg[i].Data["url"]
+			url := msg.Data["url"]
 			phash, md5hash, format, err := hashImageFromUrl(url)
 			if err != nil {
 				logrus.Warnf("<history>gen image hashes error %v", err)
 				continue
 			}
-			sub_type := msg[i].Data["sub_type"]
-			summary := msg[i].Data["summary"]
-			file_size := msg[i].Data["file_size"]
-			for k := range msg[i].Data {
-				delete(msg[i].Data, k)
+			sub_type := msg.Data["sub_type"]
+			summary := msg.Data["summary"]
+			file_size := msg.Data["file_size"]
+			for k := range msg.Data {
+				delete(msg.Data, k)
 			}
 			if sub_type != "" {
-				msg[i].Data["sub_type"] = sub_type
+				msg.Data["sub_type"] = sub_type
 			}
 			if summary != "" {
-				msg[i].Data["summary"] = summary
+				msg.Data["summary"] = summary
 			}
 			if file_size != "" {
-				msg[i].Data["file_size"] = file_size
+				msg.Data["file_size"] = file_size
 			}
 			// custom fields
-			msg[i].Data["md5"] = md5hash
-			msg[i].Data["phash"] = phash
-			msg[i].Data["format"] = format
+			msg.Data["md5"] = md5hash
+			msg.Data["phash"] = phash
+			msg.Data["format"] = format
 		}
 	}
-	return msg
+	return
 }
