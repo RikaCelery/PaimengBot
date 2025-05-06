@@ -32,6 +32,7 @@ import (
 	_ "github.com/RicheyJang/PaimengBot/plugins/dice"
 	_ "github.com/RicheyJang/PaimengBot/plugins/gif"
 	_ "github.com/RicheyJang/PaimengBot/plugins/image_2_ascii"
+	_ "github.com/RicheyJang/PaimengBot/plugins/mention_reminder"
 	_ "github.com/RicheyJang/PaimengBot/plugins/niuniu"
 	_ "github.com/RicheyJang/PaimengBot/plugins/previewer"
 	_ "github.com/RicheyJang/PaimengBot/plugins/qqwife"

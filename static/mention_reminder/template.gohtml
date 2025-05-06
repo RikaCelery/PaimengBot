@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="wrapper">
+    {{- range $index,$item := .}}
+        <div class="messages-container">
+            <div class="avatar"
+                 style="background-image: url('http://q4.qlogo.cn/g?b=qq&nk={{$item.Event.UserID}}&s=640');"></div>
+            <div class="messages-content__wrapper">
+                <div class="user-name text-ellipsis">
+                    <span class="text-ellipsis">{{$item.Nickname}}</span>
+                    <div class="group-member-label">
+                        <span class="title"></span>
+                    </div>
+                </div>
+                <div class="messages-content">
+                    {{- range  $item.Event.Msg}}
+                        {{- if eq .Type "text"}}
+                            <span class="text-normal">{{.Data.text}}</span>
+                        {{- else if eq .Type "at" -}}
+                            {{- if and .Data.name .Data.qq }}
+                                <span class="text-normal">{{.Data.name}}({{.Data.qq}})</span>
+                            {{- else if .Data.qq -}}
+                                <span class="text-normal">@{{.Data.qq}}</span>
+                            {{- else -}}
+                                <span class="text-normal">@未知用户</span>
+                            {{- end}}
+                        {{- else if eq .Type "face" -}}
+                            <span class="text-normal">[表情]</span>
+                        {{- else if eq .Type "image" -}}
+                            <span class="text-normal">[图片]</span>
+{{/*                            <div class="image pic-element">*/}}
+{{/*                                <img class="image-content" src="{{.Data.file}}"/>*/}}
+{{/*                            </div>*/}}
+                        {{- else if eq .Type "video" -}}
+                            <span class="text-normal">[视频]</span>
+                        {{- else if eq .Type "reply" -}}
+                            <div class="quote">
+                                <span class="text-normal">{{$item.Reply}}</span>
+{{/*                                <div class="user-name no-copy text-ellipsis">*/}}
+{{/*                                    <span class="text-ellipsis">[回复消息]</span>*/}}
+{{/*                                    <div class="q-tag q-tag--blue group-member-label">*/}}
+{{/*                                        <span class="title"></span>*/}}
+{{/*                                    </div>*/}}
+{{/*                                </div>*/}}
+                            </div>
+                        {{- end}}
+                    {{- end}}
+                </div>
+                <div class="time"><div>{{ $item.Event.Time.Format "2006-01-02 15:04:05" }}</div></div>
+            </div>
+        </div>
+    {{- end}}
+</div>
+</body>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Noto+Color+Emoji&family=Noto+Sans+Math&family=Noto+Sans+SC:wght@100..900&family=Noto+Serif+JP:wght@200..900&family=Noto+Serif+KR:wght@200..900&family=Noto+Serif+SC:wght@200..900&family=Yuji+Mai&display=swap');
+
+    * {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+    }
+
+    html {
+        font-family: "Noto Sans SC", "Noto Sans JP", "Noto Sans KR", "Noto Sans Math", "Noto Color Emoji", sans-serif;
+    }
+
+    body {
+        background: #fafafa;
+        /*background: linear-gradient(to left bottom, #e66465, #e5c391);*/
+        width: fit-content;
+        height: fit-content;
+        padding: 0;
+        margin: 0;
+    }
+
+    :root {
+        --bqqnt-base-text-color: 0, 0, 0;
+    }
+
+    .avatar {
+        background-position: center;
+        background-size: cover;
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background-repeat: no-repeat;
+    }
+
+    .messages-container {
+        position: relative;
+        display: grid;
+        grid-auto-rows: min-content;
+        grid-template-areas: ". . content";
+        grid-template-columns:
+          auto 8px 1fr;
+        justify-content: start;
+        transition-duration: 0.3s;
+        padding: 4px 10px;
+    }
+
+    .messages-container .user-name {
+        position: relative;
+        font-size: 14px;
+        line-height: 1;
+        color: color(srgb 0 0.116139 0.153846 / 0.52);
+        width: min-content;
+        margin-bottom: 5px;
+    }
+
+    .msg-content-container * {
+        max-width: 100%;
+    }
+    .wrapper{
+        padding: 10px;
+    }
+    .messages-content__wrapper {
+        color: #515151;
+        width: 100%;
+        grid-area: content;
+    }
+    .messages-content{
+        background-color: #fff;
+        box-shadow: rgba(0, 0, 0, 0.149) 0px 0px 4px 2px;
+        border-radius: 10px;
+        padding: 5px 10px 8px 10px;
+        min-width: 100px;
+        max-width: 400px;
+    }
+
+    .text-ellipsis {
+        max-width: 100%;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        text-overflow: ellipsis;
+        white-space-collapse: collapse;
+        text-wrap: nowrap;
+        unicode-bidi: isolate;
+    }
+
+    .user-name .q-tag {
+        background: transparent;
+    }
+
+    .messages-container .user-name .group-member-label {
+        margin-left: 4px;
+        font-size: min(var(--font_size_1), 14px);
+        line-height: min(var(--line_height_1), 20px);
+    }
+
+    .quote .user-name,
+    .quote .user-name .group-member-label,
+    .quote .text-normal {
+    }
+    .time{
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .time div{
+        font-size: 11px;
+        color: #777777;
+        background-color: rgba(112, 112, 112, 0.16);
+        border-radius: 10px;
+        padding: 0 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .msg-content-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+
+    .quote {
+        padding: 5px 5px 5px 10px;
+        position: relative;
+        box-shadow: inset 2px 0 0 0px rgba(0, 0, 0, 0.221);
+        background-color: rgba(0, 0, 0, 0.09);
+        border-radius: 3px 10px 10px 3px;
+        overflow: hidden;
+        width: fit-content;
+    }
+
+    .pic-element {
+        border-radius: 4px;
+        width: fit-content;
+        height: fit-content;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        margin: 4px 0px;
+    }
+
+    .image-content {
+        object-fit: cover;
+        object-position: center top;
+        text-indent: 100%;
+        width: auto;
+        max-height: 300px;
+        min-height: 30px;
+        max-width: 100%;
+    }
+
+    .wrapper {
+        width: fit-content;
+        height: fit-content;
+    }
+</style>
+</html>
+

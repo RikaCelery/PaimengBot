@@ -439,12 +439,46 @@ func ScreenShotPageTemplate(name string, data any, option ...ScreenShotPageOptio
 	return ScreenShotPageContent(buf.String(), option...)
 }
 
+// ScreenShotPageTemplateString 模板截屏
+func ScreenShotPageTemplateString(tmpl string, data any, option ...ScreenShotPageOption) (bytes []byte, err error) {
+	if !inited {
+		return nil, errors.New("playwright not inited")
+	}
+	t, err := template.New("").Funcs(funcs).Parse(tmpl)
+	if err != nil {
+		return nil, err
+	}
+	buf := strings.Builder{}
+	err = t.Execute(&buf, data)
+	if err != nil {
+		return nil, err
+	}
+	return ScreenShotPageContent(buf.String(), option...)
+}
+
 // ScreenShotElementTemplate 元素模板截屏
 func ScreenShotElementTemplate(name string, selector string, data any, option ...ScreenShotElementOption) (bytes []byte, err error) {
 	if !inited {
 		return nil, errors.New("playwright not inited")
 	}
 	t, err := template.New(name).Funcs(funcs).ParseGlob("template/**/*.*html")
+	if err != nil {
+		return nil, err
+	}
+	buf := strings.Builder{}
+	err = t.Execute(&buf, data)
+	if err != nil {
+		return nil, err
+	}
+	return ScreenShotElementContent(buf.String(), selector, option...)
+}
+
+// ScreenShotElementTemplateString 元素模板截屏
+func ScreenShotElementTemplateString(tmpl string, selector string, data any, option ...ScreenShotElementOption) (bytes []byte, err error) {
+	if !inited {
+		return nil, errors.New("playwright not inited")
+	}
+	t, err := template.New("").Funcs(funcs).Parse(tmpl)
 	if err != nil {
 		return nil, err
 	}
