@@ -102,7 +102,7 @@ func hashImageFromUrl(url string) (phash, hmd5, format string, err error) {
 func preprocess(msgs message.Message) (ret message.Message) {
 	for i := range msgs {
 		// clone
-		msg := message.Segment{Type: msgs[i].Type}
+		msg := message.Segment{Type: msgs[i].Type, Data: make(map[string]string)}
 		for s, s2 := range msgs[i].Data {
 			msg.Data[s] = s2
 		}
