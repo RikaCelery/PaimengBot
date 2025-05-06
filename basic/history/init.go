@@ -106,11 +106,15 @@ func preprocess(msgs message.Message) (ret message.Message) {
 		for s, s2 := range msgs[i].Data {
 			msg.Data[s] = s2
 		}
+		if msg.Type == "at" && msg.Data["qq"] == "all" && i > 0 && msgs[i-1].Type == "reply" {
+			continue
+		}
 		ret = append(ret, msg)
 
 		switch msg.Type {
 		case "text":
 		case "at":
+
 		case "video":
 			url := msg.Data["url"]
 			file_size := msg.Data["file_size"]
