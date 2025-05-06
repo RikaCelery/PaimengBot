@@ -122,7 +122,7 @@ require (
 
 replace github.com/jozsefsallai/gophersauce => github.com/RikaCelery/gophersauce v0.0.0-20250419152344-cd82cd02021c
 
-replace github.com/wdvxdr1123/ZeroBot => github.com/RikaCelery/ZeroBot v0.0.0-20250505140157-51adb75c6510
+replace github.com/wdvxdr1123/ZeroBot => github.com/RikaCelery/ZeroBot v0.0.0-20250506043246-8236a5d8f423
 
 replace modernc.org/sqlite => github.com/fumiama/sqlite3 v1.29.10-simp
 
